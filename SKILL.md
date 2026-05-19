@@ -61,7 +61,7 @@ Das genaue Format des Confirm-Dialogs (Element-Auflistung 1–10 einzeln, > 10 a
 
 Konkrete Rezepte werden in den Folgephasen mit live-verifizierten Inhalten gefüllt. In Phase 1 sind sie als geplante Speicherorte gelistet:
 
-- [`recipes/walls.md`](recipes/walls.md) — Wände (gerade, geschwungen, polygonal).
+- [`recipes/wall-operations.md`](recipes/wall-operations.md) — Wand-Operationen (Lesen, Modifizieren, Löschen, Klassifizieren — kein Create per MCP v29).
 - [`recipes/openings.md`](recipes/openings.md) — Fenster, Türen, Wandöffnungen.
 - [`recipes/slabs-columns-beams.md`](recipes/slabs-columns-beams.md) — Decken, Stützen, Träger.
 - [`recipes/zones.md`](recipes/zones.md) — Zonen / Räume.
