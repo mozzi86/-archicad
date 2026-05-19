@@ -1,0 +1,84 @@
+---
+description: Use for any Archicad modeling task via the MCP server (mcp__archicad__*).
+---
+
+# Archicad-Skill
+
+Dieser Skill befähigt Claude, in einem laufenden Archicad-Projekt zu arbeiten — Wände zu erstellen, Bestand abzufragen, Materialien zuzuweisen, Bulk-Klassifizierungen durchzuführen — über den Archicad-MCP-Server. Er ist als Hub-and-Spoke organisiert: diese Datei ist immer geladen und dient als Einstieg; tiefere Details liegen in `reference/`-Dateien, die bei Bedarf nachgeladen werden; konkrete Element-Rezepte (Wand, Fenster, …) liegen in `recipes/`.
+
+Drei Dinge bleiben durchgängig wichtig: wir holen vor jedem Auftrag Kontext (Warm-up), wir entdecken die nötigen MCP-Tools statt sie zu erraten (Discovery), und wir verändern Bestand nur mit ausdrücklicher Bestätigung (asymmetrische Sicherheit).
+
+## Vor jedem Auftrag — Warm-up
+
+Bevor wir mit einem Archicad-Auftrag loslegen, holen wir uns Kontext: welche Archicad-Instanz läuft, welches Projekt ist offen, welche Story ist aktiv, welche Einheit gilt, welche Layer sind sichtbar. Ohne diesen Kontext bauen wir Wände im falschen Geschoss oder mit falscher Einheit.
+
+Wir ziehen diesen Kontext **pro Auftrag einmal** und cachen ihn dann. Bei einem neuen Auftrag starten wir frisch. Das Story-Feld behandeln wir als **volatil** — wenn der User in seiner Aufgabe einen anderen Floor erwähnt („im OG", „1. OG"), ziehen wir es neu, denn der User könnte währenddessen in Archicad das Geschoss gewechselt haben.
+
+Welche genauen Felder wir holen und mit welchen MCP-Aufrufen — das steht im Detail in [`reference/workflow-context.md`](reference/workflow-context.md).
+
+## Wie wir mit dem MCP-Server arbeiten — Discovery-Pattern
+
+Der Archicad-MCP-Server ist Discovery-zentriert: er listet seine Tools nicht statisch auf, sondern erwartet, dass wir per Semantik-Suche das passende finden. Das ist gut so — Archicad-Versionen ändern sich, statische Tool-Namen würden veralten. Wir nutzen voll-qualifizierte Tool-Namen (`mcp__archicad__*`), damit klar ist, welcher MCP-Server gemeint ist, wenn mehrere im Projekt aktiv sind.
+
+Der typische Ablauf für eine Operation:
+
+1. **Aktion auf Englisch formulieren** — z. B. „create wall element on story" oder „delete elements by id". Der MCP-Index ist englisch.
+2. **`mcp__archicad__archicad_discover_tools`** mit dieser Aktion als Query aufrufen. Wir bekommen eine Kandidaten-Liste zurück.
+3. **Kandidaten lesen** — Name, Beschreibung, Parameter-Schema. Wir wählen den semantisch passendsten Treffer.
+4. **`mcp__archicad__archicad_call_tool`** mit dem gewählten Tool-Namen und den Argumenten aufrufen. Der `port` aus dem Warm-up gehört immer dazu.
+5. **Ergebnis prüfen** — Element-ID zurückbekommen, Erfolg verifizieren.
+
+Wenn ein Discovery-Treffer nicht stimmt (Schemafehler, `tool not found`), versuchen wir die Discovery mit einer Synonym-Query („create wall" → „add wall" / „insert wall"). Nach zwei Fehlversuchen melden wir uns beim User und raten nicht weiter.
+
+Mehr zu Discovery-Strategien, Fehlerklassen, Paginierung und Port-Handling siehe [`reference/mcp-conventions.md`](reference/mcp-conventions.md).
+
+## Sicherheit — wir verändern dein Modell mit Bedacht
+
+Das Sicherheitsmodell ist **asymmetrisch**: Operationen, die rückgängig zu machen sind, dürfen wir frei tun; Operationen, die Bestand verändern, brauchen Bestätigung. Das spiegelt einen natürlichen Architekten-Reflex — neu zeichnen ist schnell, Bestand anfassen mit Bedacht.
+
+**SAFE-01 — Asymmetrisches Modell.** Create und Read sind frei. Wenn Claude eine Wand erstellt und sie sich als falsch herausstellt, ist Archicads Undo zur Stelle. Update und Delete dagegen erfordern eine Confirm-Schleife mit den betroffenen Element-IDs in einer Übersicht — weil ein falsches ID-Mapping echten Bestand zerstören kann, und Undo-Tiefe in komplexen Sessions endlich ist. Es gibt **keine Obergrenze** für die Batch-Größe einer Operation. Wenn 500 Wände dran sind, zeigen wir eine Summary mit Pro-Klasse-Counts und führen nach einem `ja` aus.
+
+**SAFE-02 — Kein Update als Create+Delete.** Wir implementieren Updates nicht als Sequenz „lösche alt, erstelle neu". Wenn der MCP-Server keinen direkten Update-Endpoint für eine Operation anbietet, melden wir das dem User und lassen ihn entscheiden — wir umgehen die Confirm-Schleife nicht still durch einen harmlos-wirkenden Create gefolgt von einem Delete.
+
+**SAFE-03 — Layer-not-visible-Ausnahme.** Create ist normalerweise frei, aber wenn der Ziel-Layer in Archicad nicht sichtbar ist, halten wir an und konfirmieren. Sonst landet das neue Element unsichtbar im Modell, der User merkt nichts, ein erneuter Versuch erzeugt Duplikate. Sichtbarkeit prüfen wir aus dem Warm-up (Feld „sichtbare Layer").
+
+**SAFE-04 — Hosted-Element-Pre-Check bei Delete.** Bevor wir eine Wand löschen, fragen wir nach, welche Elemente auf ihr hosten — Fenster, Türen, Wandöffnungen — und zeigen sie im Confirm-Dialog. Sonst entstehen waisenförmige Öffnungen, die in IFC-Exporten stillschweigend Datenkorruption bedeuten.
+
+**SAFE-05 — Element-ID-Threading.** Wenn wir aus einem Create eine Element-ID zurückbekommen (etwa eine Wand-ID), behalten wir sie im Arbeitsgedächtnis für die Dauer des Auftrags. Wenn der nächste Schritt ein Fenster in dieser Wand setzen will, verwenden wir die ID direkt als Host-Parameter — wir suchen sie nicht erneut. Ohne diese Regel brechen Multi-Element-Workflows (Wand → Fenster) stillschweigend ab, weil das Fenster keine Host-ID findet.
+
+Das genaue Format des Confirm-Dialogs (Element-Auflistung 1–10 einzeln, > 10 als Summary mit `details`-Option, Antwortoptionen `ja` / `nein` / `details` / `abbrechen`) und das Verhalten bei „nein" oder Mid-Batch-Fehler siehe [`reference/mcp-conventions.md`](reference/mcp-conventions.md).
+
+## Wo welches Wissen liegt
+
+### Reference (Hintergrund + Konventionen)
+
+- [`reference/mcp-conventions.md`](reference/mcp-conventions.md) — Discovery-Strategien im Detail, Fehlerklassen, Paginierung, Confirm-Format-Beispiele, Port-Handling.
+- [`reference/workflow-context.md`](reference/workflow-context.md) — Die 7 Warm-up-Felder im Detail: Port, Projekt-Info, Längeneinheit, aktive Story, sichtbare Layer, Pen-Set, Klassifikations-System.
+- [`reference/bulk-operations.md`](reference/bulk-operations.md) — Das universelle Read → Filter → Group → Confirm → Apply-Muster für Massen-Updates, inkl. Klassifizierungs-Spezifika.
+- [`reference/self-improvement.md`](reference/self-improvement.md) — Wie der Skill aus Sessions lernt: Reflection-Trigger am Auftrags-Ende, Datums-Marker für neue Einträge, Verification-Loop bei Wiederholfehlern.
+
+### Recipes (pro Elementtyp)
+
+Konkrete Rezepte werden in den Folgephasen mit live-verifizierten Inhalten gefüllt. In Phase 1 sind sie als geplante Speicherorte gelistet:
+
+- [`recipes/walls.md`](recipes/walls.md) — Wände (gerade, geschwungen, polygonal).
+- [`recipes/openings.md`](recipes/openings.md) — Fenster, Türen, Wandöffnungen.
+- [`recipes/slabs-columns-beams.md`](recipes/slabs-columns-beams.md) — Decken, Stützen, Träger.
+- [`recipes/zones.md`](recipes/zones.md) — Zonen / Räume.
+- [`recipes/curtain-walls.md`](recipes/curtain-walls.md) — Fassaden, Pfosten-Riegel.
+- [`recipes/library-objects.md`](recipes/library-objects.md) — Bibliothekselemente (Möbel, Sanitär, GDL allgemein).
+- [`recipes/surfaces-materials.md`](recipes/surfaces-materials.md) — Surfaces, Building Materials, Composites.
+- [`recipes/fills-hatches.md`](recipes/fills-hatches.md) — 2D-Schraffuren.
+- [`recipes/lines-polylines.md`](recipes/lines-polylines.md) — 2D-Linien, Polylinien, Bögen, Splines.
+
+Diese Dateien existieren als Skelette (Phase 1) und werden mit live-verifizierten Inhalten in den Folgephasen gefüllt.
+
+## Am Ende jedes Auftrags — Lern-Check
+
+Wenn ein Archicad-Auftrag abgeschlossen ist, stellen wir dem User eine einzige Frage:
+
+> Lern-Check: War da was Neues — ein Tool-Name, eine Geometrie-Stolperfalle, ein Klassifikations-Trick — das in den Skill sollte?
+
+Wenn ja, tragen wir es in die passende Datei ein, mit Datums-Marker. Mehr dazu in [`reference/self-improvement.md`](reference/self-improvement.md).
+
+Es ist völlig in Ordnung, wenn die Antwort meistens „nein" ist. Wir wollen keine Skill-Bloat, sondern echte Lern-Gewinne festhalten.
