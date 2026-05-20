@@ -54,7 +54,9 @@ Das genaue Format des Confirm-Dialogs (Element-Auflistung 1–10 einzeln, > 10 a
 
 - [`reference/mcp-conventions.md`](reference/mcp-conventions.md) — Discovery-Strategien im Detail, Fehlerklassen, Paginierung, Confirm-Format-Beispiele, Port-Handling.
 - [`reference/workflow-context.md`](reference/workflow-context.md) — Die 7 Warm-up-Felder im Detail: Port, Projekt-Info, Längeneinheit, aktive Story, sichtbare Layer, Pen-Set, Klassifikations-System.
-- [`reference/bulk-operations.md`](reference/bulk-operations.md) — Das universelle Read → Filter → Group → Confirm → Apply-Muster für Massen-Updates, inkl. Klassifizierungs-Spezifika.
+- [`reference/bulk-operations.md`](reference/bulk-operations.md) — Das universelle Read → Filter → Group → Confirm → Apply-Muster für Massen-Updates, inkl. Klassifizierungs-Spezifika, Property-Enum-Normalisierung und Identifier-Mapping.
+- [`reference/schedule-pipeline.md`](reference/schedule-pipeline.md) — Export-Parse-Match-Update-Pipeline für Daten aus Archicad-Schedules (XLSX/CSV) bei Bulk-Updates, wenn MCP die Quell-Daten nicht direkt liefern kann.
+- [`reference/property-expression-linking.md`](reference/property-expression-linking.md) — Native Archicad-Synchronisation zwischen GDL-Parameter und Property via Expression-Editor; oft eleganter als Bulk-Copy.
 - [`reference/self-improvement.md`](reference/self-improvement.md) — Wie der Skill aus Sessions lernt: Reflection-Trigger am Auftrags-Ende, Datums-Marker für neue Einträge, Verification-Loop bei Wiederholfehlern.
 
 ### Recipes (pro Elementtyp)
