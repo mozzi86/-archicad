@@ -34,20 +34,6 @@ Entwickelt von **Mudi** (Architekturbüro), live-verifiziert an realen -Projekte
 
 ### Schritt 1 — Skill nach `~/.claude/skills/archicad/` kopieren
 
-**Mac/Linux:**
-```bash
-# Aus dem Schwarz-OneDrive (passe den Pfad ggf. an deinen OneDrive-Pfad an)
-cp -r "$HOME/Library/CloudStorage/- Dokumente/Vorlagen/Claude-Skills/Mudi-Archicad" \
-   "$HOME/.claude/skills/archicad"
-```
-
-**Windows:**
-```powershell
-# Aus OneDrive in lokales Claude-Skills-Verzeichnis kopieren
-Copy-Item -Recurse "$env:USERPROFILE\OneDrive -  Architekturbüro\-Buero - Dokumente\Vorlagen\Claude-Skills\Mudi-Archicad" `
-   "$env:USERPROFILE\.claude\skills\archicad"
-```
-
 ### Schritt 2 — Claude Code neu starten
 
 Der Skill wird beim nächsten Start automatisch erkannt (`description`-Trigger im Frontmatter: „Use for any Archicad modeling task via the MCP server").
