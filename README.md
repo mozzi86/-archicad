@@ -2,7 +2,7 @@
 
 Ein Claude-Code-Skill, der Claude befähigt, im laufenden Archicad-Projekt zu arbeiten — Wände/Decken/Fenster/Türen klassifizieren, Property-Werte setzen, Bulk-Operationen ausführen, IFC-Probleme diagnostizieren, DWG→IFC-Pipelines bauen. Über den Archicad-MCP-Server (`mcp__archicad__*`).
 
-Entwickelt von **Mudi** (Schwarz Architekturbüro Nürnberg), live-verifiziert an realen Schwarz-Projekten (AFW-WC_Sanierung_Amtsgericht_Fürth und anderen). Mit Schwarz-Office-spezifischem Wissen ausgestattet (SAB_Klassifizierung, Z_/A_-Layer-Schema, bekannte Template-Bugs).
+Entwickelt von **Mudi** (Architekturbüro), live-verifiziert an realen -Projekten  Mit -Office-spezifischem Wissen ausgestattet (Klassifizierung, Z_/A_-Layer-Schema, bekannte Template-Bugs).
 
 ## Was der Skill kann
 
@@ -21,7 +21,7 @@ Entwickelt von **Mudi** (Schwarz Architekturbüro Nürnberg), live-verifiziert a
 | 2D-Linien / Polylinien | ✅ live-verifiziert | `recipes/lines-polylines.md` |
 | DWG → IFC-Pipeline (Lageplan/KG 500) | ✅ live-verifiziert | `reference/dwg-ifc-import.md` |
 | DWG → IFC für KG 300 (Wände/Decken/Stützen) | Pattern-Vorlage | `reference/dwg-ifc-kg300.md` |
-| Schwarz-Office-Wissen (Template-Bugs, GUIDs) | konsolidiert | `reference/schwarz-office-facts.md` |
+| Office-Wissen (Template-Bugs, GUIDs) | konsolidiert | `reference/schwarz-office-facts.md` |
 
 ## Voraussetzungen
 
@@ -37,14 +37,14 @@ Entwickelt von **Mudi** (Schwarz Architekturbüro Nürnberg), live-verifiziert a
 **Mac/Linux:**
 ```bash
 # Aus dem Schwarz-OneDrive (passe den Pfad ggf. an deinen OneDrive-Pfad an)
-cp -r "$HOME/Library/CloudStorage/OneDrive-SchwarzArchitekturbüroNürnbergGbR/SAB-Buero - Dokumente/Vorlagen/Claude-Skills/Mudi-Archicad" \
+cp -r "$HOME/Library/CloudStorage/- Dokumente/Vorlagen/Claude-Skills/Mudi-Archicad" \
    "$HOME/.claude/skills/archicad"
 ```
 
 **Windows:**
 ```powershell
 # Aus OneDrive in lokales Claude-Skills-Verzeichnis kopieren
-Copy-Item -Recurse "$env:USERPROFILE\OneDrive - Schwarz Architekturbüro Nürnberg GbR\SAB-Buero - Dokumente\Vorlagen\Claude-Skills\Mudi-Archicad" `
+Copy-Item -Recurse "$env:USERPROFILE\OneDrive -  Architekturbüro\-Buero - Dokumente\Vorlagen\Claude-Skills\Mudi-Archicad" `
    "$env:USERPROFILE\.claude\skills\archicad"
 ```
 
@@ -110,8 +110,8 @@ Siehe `git log` im Skill-Ordner. 38+ atomic Commits mit Phase-1-bis-6-Entwicklun
 
 ## Lizenz / Nutzung
 
-Intern für Schwarz Architekturbüro Nürnberg GbR. Bitte nicht ohne Rücksprache mit Mudi außerhalb des Büros weitergeben — enthält office-spezifische GUIDs, Layer-Konventionen und Workflows.
+Bitte nicht ohne Rücksprache mit Mudi außerhalb des Büros weitergeben — enthält office-spezifische GUIDs, Layer-Konventionen und Workflows.
 
 ---
 
-**Autor:** Mudi · **Office:** Schwarz Architekturbüro Nürnberg GbR · **Stand:** Mai 2026 · **Skill-Version:** v1.0-rc1
+**Autor:** Mudi · **Office:**  · **Stand:** Mai 2026 · **Skill-Version:** v1.0-rc1
