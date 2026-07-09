@@ -6,7 +6,7 @@ Live-verifiziert an realen BIM-Projekten (Teamwork und Solo, AC29).
 
 ## Was ist neu in v1.1 (Juli 2026)
 
-Auf Basis einer Konkurrenz-Analyse (tapir-archicad-MCP, ALAI-Archicad-CLI, ProfRino/bonsai-bim-skills, AlpacaLabs/skills-for-architects) sind fünf konkrete Verbesserungen eingeflossen:
+Auf Basis einer open source Analyse (tapir-archicad-MCP, ALAI-Archicad-CLI, ProfRino/bonsai-bim-skills, AlpacaLabs/skills-for-architects) sind fünf konkrete Verbesserungen eingeflossen:
 
 - **`/arc`-Slash-Command** — Fast-Path für Read-only-Queries („wieviele Zonen?", „welches Projekt läuft?"). Umgeht MCP-Discovery, 3–5× schneller. → `commands/arc.md`
 - **`arc`-CLI** — 210-Zeilen Python-CLI (stdlib only) für direkten HTTP-Zugriff auf die JSON-API. Verben: `ports`, `info`, `zones`, `layers`, `selected`, `tapir <cmd>`, `call <cmd>`, `doctor`. Umgeht MCP-Pagination bei Bulk-Operationen (kritisch bei >100 Elementen). → `scripts/arc`
