@@ -22,8 +22,8 @@ Entwickelt von **Mudi** (Architekturbüro), live-verifiziert an realen -Projekte
 | DWG → IFC-Pipeline (Lageplan/KG 500) | ✅ live-verifiziert | `reference/dwg-ifc-import.md` |
 | DWG → IFC für KG 300 (Wände/Decken/Stützen) | Pattern-Vorlage | `reference/dwg-ifc-kg300.md` |
 | Office-Wissen (Template-Bugs, GUIDs) | konsolidiert | `reference/schwarz-office-facts.md` |
-| **Fast-Path für Read-only-Queries** (`/archicad`) | ✅ neu 2026-07 | `commands/archicad.md` |
-| **Direkter HTTP-CLI-Wrapper** (`ac`) | ✅ neu 2026-07 | `scripts/ac` |
+| **Fast-Path für Read-only-Queries** (`/arc`) | ✅ neu 2026-07 | `commands/arc.md` |
+| **Direkter HTTP-CLI-Wrapper** (`arc`) | ✅ neu 2026-07 | `scripts/arc` |
 
 ## Voraussetzungen
 
@@ -52,27 +52,29 @@ Claude sollte den `archicad`-Skill nutzen und via `mcp__archicad__discovery_list
 
 Der Skill kommt mit zwei Beschleunigern für Read-only-Queries und Bulk-Operationen:
 
-**a) `/archicad`-Slash-Command** (für Einzelfragen wie „wieviele Zonen?", „welches Projekt?"):
+**a) `/arc`-Slash-Command** (für Einzelfragen wie „wieviele Zonen?", „welches Projekt?"):
 ```bash
-ln -sf ~/.claude/skills/archicad/commands/archicad.md ~/.claude/commands/archicad.md
+ln -sf ~/.claude/skills/archicad/commands/arc.md ~/.claude/commands/arc.md
 ```
 
-**b) `ac`-CLI** (direkter HTTP-Zugriff, umgeht MCP-Pagination):
+**b) `arc`-CLI** (direkter HTTP-Zugriff, umgeht MCP-Pagination):
 ```bash
-ln -sf ~/.claude/skills/archicad/scripts/ac ~/.local/bin/ac
-ac doctor   # Self-Check: Instanzen, Tapir-Add-On, MCP-Config
+ln -sf ~/.claude/skills/archicad/scripts/arc ~/.local/bin/arc
+arc doctor   # Self-Check: Instanzen, Tapir-Add-On, MCP-Config
 ```
 
 Nutzung:
 ```bash
-ac ports              # aktive Instanzen
-ac info               # Projekt + Story
-ac zones              # alle Zonen-GUIDs
-ac tapir GetElementsByType '{"elementType":"Wall"}'
-ac call GetProjectInfo
+arc ports              # aktive Instanzen
+arc info               # Projekt + Story
+arc zones              # alle Zonen-GUIDs
+arc tapir GetElementsByType '{"elementType":"Wall"}'
+arc call GetProjectInfo
 ```
 
-Details: `scripts/ac --help` und `reference/mcp-conventions.md § Direkter HTTP-Zugriff`.
+Details: `scripts/arc --help` und `reference/mcp-conventions.md § Direkter HTTP-Zugriff`.
+
+**Namens-Historie:** früher `/archicad` und `ac` — umbenannt weil `ac` mit dem macOS-System-Binary `/usr/sbin/ac` (BSD process accounting) kollidiert und `/archicad` mit dem Skill-Namen. Falls du noch alte Symlinks hast: `rm ~/.claude/commands/archicad.md ~/.local/bin/ac` und die Zeilen oben neu ausführen.
 
 ## Was der Skill NICHT kann
 
