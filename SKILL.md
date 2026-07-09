@@ -1,5 +1,13 @@
 ---
-description: Use for any Archicad modeling task via the MCP server (mcp__archicad__*).
+description: |
+  Use for any task in a running Archicad project via the MCP server (mcp__archicad__*).
+  Trigger when the user says things like: "klassifiziere alle Wände / Fenster / Räume",
+  "Bodenbelag synchronisieren", "IFC-Diagnose / Proxy-Bug", "Zonen-Property setzen",
+  "DWG-Decken importieren", "Bulk-Klassifikation nach SAB", "wieviele Zonen / Räume /
+  Elemente sind im Modell", "welche Instanz läuft gerade", "welches Projekt ist offen",
+  "erstelle Wand / Fenster / Objekt", "verschiebe Elemente", "Property-Wert lesen /
+  schreiben", "Klassifikations-System / KG-300 / Layer / Story / Element-Filter" —
+  and any call to mcp__archicad__* tools.
 ---
 
 # Archicad-Skill
