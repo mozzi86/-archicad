@@ -22,6 +22,8 @@ Entwickelt von **Mudi** (Architekturbüro), live-verifiziert an realen -Projekte
 | DWG → IFC-Pipeline (Lageplan/KG 500) | ✅ live-verifiziert | `reference/dwg-ifc-import.md` |
 | DWG → IFC für KG 300 (Wände/Decken/Stützen) | Pattern-Vorlage | `reference/dwg-ifc-kg300.md` |
 | Office-Wissen (Template-Bugs, GUIDs) | konsolidiert | `reference/schwarz-office-facts.md` |
+| **Fast-Path für Read-only-Queries** (`/archicad`) | ✅ neu 2026-07 | `commands/archicad.md` |
+| **Direkter HTTP-CLI-Wrapper** (`ac`) | ✅ neu 2026-07 | `scripts/ac` |
 
 ## Voraussetzungen
 
@@ -36,7 +38,7 @@ Entwickelt von **Mudi** (Architekturbüro), live-verifiziert an realen -Projekte
 
 ### Schritt 2 — Claude Code neu starten
 
-Der Skill wird beim nächsten Start automatisch erkannt (`description`-Trigger im Frontmatter: „Use for any Archicad modeling task via the MCP server").
+Der Skill wird beim nächsten Start automatisch erkannt. Der `description`-Trigger im Frontmatter matcht auf konkrete User-Utterances („klassifiziere alle Wände", „Bodenbelag synchronisieren", „IFC-Diagnose", …) sowie auf jeden Aufruf von `mcp__archicad__*`-Tools.
 
 ### Schritt 3 — Verifikation
 
@@ -45,6 +47,32 @@ In Claude Code eingeben:
 Welche Archicad-Instanz läuft?
 ```
 Claude sollte den `archicad`-Skill nutzen und via `mcp__archicad__discovery_list_active_archicads` antworten.
+
+### Schritt 4 — Fast-Path aktivieren (optional, empfohlen)
+
+Der Skill kommt mit zwei Beschleunigern für Read-only-Queries und Bulk-Operationen:
+
+**a) `/archicad`-Slash-Command** (für Einzelfragen wie „wieviele Zonen?", „welches Projekt?"):
+```bash
+ln -sf ~/.claude/skills/archicad/commands/archicad.md ~/.claude/commands/archicad.md
+```
+
+**b) `ac`-CLI** (direkter HTTP-Zugriff, umgeht MCP-Pagination):
+```bash
+ln -sf ~/.claude/skills/archicad/scripts/ac ~/.local/bin/ac
+ac doctor   # Self-Check: Instanzen, Tapir-Add-On, MCP-Config
+```
+
+Nutzung:
+```bash
+ac ports              # aktive Instanzen
+ac info               # Projekt + Story
+ac zones              # alle Zonen-GUIDs
+ac tapir GetElementsByType '{"elementType":"Wall"}'
+ac call GetProjectInfo
+```
+
+Details: `scripts/ac --help` und `reference/mcp-conventions.md § Direkter HTTP-Zugriff`.
 
 ## Was der Skill NICHT kann
 
