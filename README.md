@@ -1,8 +1,8 @@
 # Archicad-Skill für Claude Code
 
-Ein Claude-Code-Skill, der Claude befähigt, im laufenden Archicad-Projekt zu arbeiten — Wände/Decken/Fenster/Türen klassifizieren, Property-Werte setzen, Bulk-Operationen ausführen, IFC-Probleme diagnostizieren, DWG→IFC-Pipelines bauen. Über den Archicad-MCP-Server (`mcp__archicad__*`).
+Ein Claude-Code-Skill, der Claude befähigt, im laufenden Archicad-Projekt zu arbeiten — Wände/Decken/Fenster/Türen klassifizieren, Property-Werte setzen, Bulk-Operationen ausführen, IFC-Probleme diagnostizieren, DWG→IFC-Pipelines bauen. Über den Archicad-MCP-Server (`mcp__archicad__*`) plus optionalem direktem HTTP-Fast-Path.
 
-Entwickelt von **Mudi** (Architekturbüro), live-verifiziert an realen -Projekten  Mit -Office-spezifischem Wissen ausgestattet (Klassifizierung, Z_/A_-Layer-Schema, bekannte Template-Bugs).
+Live-verifiziert an realen BIM-Projekten (Teamwork und Solo, AC29).
 
 ## Was der Skill kann
 
@@ -22,25 +22,42 @@ Entwickelt von **Mudi** (Architekturbüro), live-verifiziert an realen -Projekte
 | DWG → IFC-Pipeline (Lageplan/KG 500) | ✅ live-verifiziert | `reference/dwg-ifc-import.md` |
 | DWG → IFC für KG 300 (Wände/Decken/Stützen) | Pattern-Vorlage | `reference/dwg-ifc-kg300.md` |
 | Office-Wissen (Template-Bugs, GUIDs) | konsolidiert | `reference/schwarz-office-facts.md` |
-| **Fast-Path für Read-only-Queries** (`/arc`) | ✅ neu 2026-07 | `commands/arc.md` |
-| **Direkter HTTP-CLI-Wrapper** (`arc`) | ✅ neu 2026-07 | `scripts/arc` |
+| **Fast-Path für Read-only-Queries** (`/arc`) | ✅ neu | `commands/arc.md` |
+| **Direkter HTTP-CLI-Wrapper** (`arc`) | ✅ neu | `scripts/arc` |
 
 ## Voraussetzungen
 
 1. **Claude Code** installiert ([Anthropic-Doku](https://docs.anthropic.com/claude-code))
-2. **Archicad-MCP-Server** konfiguriert in deiner `~/.claude/mcp.json`
-3. **Archicad 29+** mit aktiviertem MCP-Plugin laufend
+2. **Archicad-MCP-Server** konfiguriert (z. B. via [`tapir-archicad-mcp`](https://github.com/SzamosiMate/tapir-archicad-MCP) — Registrierung als `archicad` in `~/.claude.json`)
+3. **Archicad 27+** mit aktiviertem [Tapir Add-On](https://github.com/ENZYME-APD/tapir-archicad-automation) (Port 19723)
 4. **Archicad-Projekt offen** (Solo oder Teamwork)
 
 ## Installation
 
-### Schritt 1 — Skill nach `~/.claude/skills/archicad/` kopieren
+### Schritt 1 — Repo klonen
 
-### Schritt 2 — Claude Code neu starten
+```bash
+# per SSH (empfohlen, kein Auth-Prompt bei künftigen Pulls)
+git clone git@github.com:mozzi86/-archicad.git ~/.claude/repos/archicad-skill
+
+# oder per HTTPS
+git clone https://github.com/mozzi86/-archicad.git ~/.claude/repos/archicad-skill
+```
+
+### Schritt 2 — Skill-Ordner verlinken
+
+```bash
+mkdir -p ~/.claude/skills
+ln -s ~/.claude/repos/archicad-skill ~/.claude/skills/archicad
+```
+
+Damit landet der Skill dort, wo Claude Code ihn findet — updates funktionieren dann per `git pull` im Repo, ohne neu zu kopieren.
+
+### Schritt 3 — Claude Code neu starten
 
 Der Skill wird beim nächsten Start automatisch erkannt. Der `description`-Trigger im Frontmatter matcht auf konkrete User-Utterances („klassifiziere alle Wände", „Bodenbelag synchronisieren", „IFC-Diagnose", …) sowie auf jeden Aufruf von `mcp__archicad__*`-Tools.
 
-### Schritt 3 — Verifikation
+### Schritt 4 — Verifikation
 
 In Claude Code eingeben:
 ```
@@ -48,22 +65,22 @@ Welche Archicad-Instanz läuft?
 ```
 Claude sollte den `archicad`-Skill nutzen und via `mcp__archicad__discovery_list_active_archicads` antworten.
 
-### Schritt 4 — Fast-Path aktivieren (optional, empfohlen)
+### Schritt 5 — Fast-Path aktivieren (optional, empfohlen)
 
-Der Skill kommt mit zwei Beschleunigern für Read-only-Queries und Bulk-Operationen:
+Der Skill kommt mit zwei Beschleunigern für Read-only-Queries und Bulk-Operationen, die den MCP-Discovery-Roundtrip umgehen:
 
 **a) `/arc`-Slash-Command** (für Einzelfragen wie „wieviele Zonen?", „welches Projekt?"):
 ```bash
 ln -sf ~/.claude/skills/archicad/commands/arc.md ~/.claude/commands/arc.md
 ```
 
-**b) `arc`-CLI** (direkter HTTP-Zugriff, umgeht MCP-Pagination):
+**b) `arc`-CLI** (direkter HTTP-Zugriff, umgeht MCP-Pagination bei Bulk-Operationen):
 ```bash
 ln -sf ~/.claude/skills/archicad/scripts/arc ~/.local/bin/arc
 arc doctor   # Self-Check: Instanzen, Tapir-Add-On, MCP-Config
 ```
 
-Nutzung:
+Nutzung im Terminal:
 ```bash
 arc ports              # aktive Instanzen
 arc info               # Projekt + Story
@@ -72,9 +89,7 @@ arc tapir GetElementsByType '{"elementType":"Wall"}'
 arc call GetProjectInfo
 ```
 
-Details: `scripts/arc --help` und `reference/mcp-conventions.md § Direkter HTTP-Zugriff`.
-
-**Namens-Historie:** früher `/archicad` und `ac` — umbenannt weil `ac` mit dem macOS-System-Binary `/usr/sbin/ac` (BSD process accounting) kollidiert und `/archicad` mit dem Skill-Namen. Falls du noch alte Symlinks hast: `rm ~/.claude/commands/archicad.md ~/.local/bin/ac` und die Zeilen oben neu ausführen.
+Details: `arc --help` und `reference/mcp-conventions.md § Direkter HTTP-Zugriff`.
 
 ## Was der Skill NICHT kann
 
@@ -83,14 +98,14 @@ Ehrliche Scope-Grenzen (siehe `reference/dwg-ifc-kg300.md` § „Was die Pipelin
 - **IFC-Übersetzer-Settings** ändern → UI-Aufgabe, MCP hat keine Endpoints
 - **Werkzeug-Standard-Einstellungen** anpassen → UI-Aufgabe
 - **Komposite-Zuweisung** an existierendes Element → `set_details.typeSpecificDetails` ist WallSettings-only
-- **Wand/Tür/Fenster/Curtain-Wall erstellen** → kein MCP-Create-Endpoint in v29 (User zeichnet manuell)
+- **Wand/Tür/Fenster/Curtain-Wall erstellen** → kein MCP-Create-Endpoint in v29 (User zeichnet manuell). Ein community-Vorschlag ([Issue #10 in tapir-archicad-MCP](https://github.com/SzamosiMate/tapir-archicad-MCP/issues/10)) will 54 Creation-Tools nachziehen — nicht gemergt.
 - **DWG-Annotation-Parsing** (Raumcodes, BRH-Werte, Plantext-Specs) → out-of-scope, Backlog
 
 ## Benutzungs-Beispiele
 
 **Bulk-Klassifizierung aller Wände:**
 ```
-Klassifiziere alle Wände im offenen Projekt als SAB > Wand. Mit Teamwork-Reserve + Verify.
+Klassifiziere alle Wände im offenen Projekt nach SAB > Wand. Mit Teamwork-Reserve + Verify.
 ```
 
 **Bodenbelag-Sync auf Räume:**
@@ -104,30 +119,48 @@ Ich habe alles als IfcBuildingElementProxy im Export. Was ist los?
 ```
 → Skill kennt den Schwarz-Template-Bug und die Fix-Anleitung (siehe `reference/schwarz-office-facts.md`).
 
+**Fast-Query per Slash-Command:**
+```
+/arc wieviele Fenster sind auf Story 2?
+```
+→ Umgeht MCP-Discovery, curl direkt an die JSON-API. 3–5× schneller.
+
 ## Update-Workflow
 
-Wenn Mudi den Skill weiterentwickelt:
-1. Mudi pusht Änderungen ins OneDrive-Vorlagen-Verzeichnis
-2. Du kopierst neu (Schritt 1 wiederholen) oder synct deinen lokalen Pfad
-3. Optional: `git log --oneline` in deinem lokalen `~/.claude/skills/archicad/.git` zeigt die Commit-Historie
+Da der Skill via git verlinkt ist:
+
+```bash
+cd ~/.claude/repos/archicad-skill
+git pull
+```
+
+Fertig — beim nächsten Claude-Code-Start ist der neue Stand aktiv.
+
+Wenn du eigene Änderungen hast (z. B. neue Recipes, Fixes):
+```bash
+cd ~/.claude/repos/archicad-skill
+git add . && git commit -m "…" && git push
+```
 
 ## Mitwirken / Feedback
 
 Wenn du beim Arbeiten was findest:
 - **Neuer Tool-Name** den MCP zurückgibt, der nicht dokumentiert ist → in `recipes/<passende-datei>.md` mit Datums-Marker ergänzen
-- **Bug** im Schwarz-Template → in `reference/schwarz-office-facts.md` § „Bekannte Schwarz-Template-Bugs"
+- **Bug** im Office-Template → in `reference/schwarz-office-facts.md` § „Bekannte Schwarz-Template-Bugs"
 - **Neues Workflow-Pattern** das du oft brauchst → eigenes Recipe oder Reference ergänzen
 
-Skill-Update zurück an Mudi (per Direkt-Nachricht oder OneDrive-Commit) damit alle profitieren.
+Commit + Push. Pull Requests sind willkommen, wenn's Fremd-User werden.
 
 ## Versionshistorie
 
-Siehe `git log` im Skill-Ordner. 38+ atomic Commits mit Phase-1-bis-6-Entwicklungshistorie + Memory-Konsolidierung.
+Siehe `git log` im Repo. 40+ atomic Commits mit Phase-1-bis-6-Entwicklungshistorie, Live-Verify-Lektionen und den Fast-Path-Additions (Juli 2026).
 
 ## Lizenz / Nutzung
 
-Bitte nicht ohne Rücksprache mit Mudi außerhalb des Büros weitergeben — enthält office-spezifische GUIDs, Layer-Konventionen und Workflows.
+Enthält büro-spezifische GUIDs, Layer-Konventionen und Workflows im `reference/schwarz-office-facts.md`. Für Eigengebrauch frei nutzbar; bei Weitergabe an Fremdbüros bitte diese eine Datei entfernen oder anpassen.
+
+Alles andere (Recipes, MCP-Conventions, Fast-Path-Tools) ist generisch AC29 + Tapir und für jeden Archicad-Nutzer sinnvoll.
 
 ---
 
-**Autor:** Mudi · **Office:**  · **Stand:** Mai 2026 · **Skill-Version:** v1.0-rc1
+**Repo:** [mozzi86/-archicad](https://github.com/mozzi86/-archicad) · **Stand:** Juli 2026 · **Skill-Version:** v1.1
