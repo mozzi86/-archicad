@@ -1,4 +1,5 @@
 ---
+name: archicad
 description: |
   Use for any task in a running Archicad project via the MCP server (mcp__archicad__*).
   Trigger when the user says things like: "klassifiziere alle Wände / Fenster / Räume",
@@ -73,6 +74,7 @@ Das genaue Format des Confirm-Dialogs (Element-Auflistung 1–10 einzeln, > 10 a
 
 Konkrete Rezepte werden in den Folgephasen mit live-verifizierten Inhalten gefüllt. In Phase 1 sind sie als geplante Speicherorte gelistet:
 
+- [`recipes/initial-setup.md`](recipes/initial-setup.md) — **Einmalige Erstinstallation**: Tapir-Add-On + MCP-Server (`tapir-archicad-mcp` via uv) + Claude-Registrierung + Smoke-Test. Hierhin, wenn `mcp__archicad__*`-Tools fehlen oder ein Kollege den Skill neu einrichtet. <!-- 2026-07-10 -->
 - [`recipes/wall-operations.md`](recipes/wall-operations.md) — Wand-Operationen (Lesen, Modifizieren, Löschen, Klassifizieren — kein Create per MCP v29).
 - [`recipes/openings.md`](recipes/openings.md) — Fenster, Türen, Wandöffnungen.
 - [`recipes/slabs-columns-beams.md`](recipes/slabs-columns-beams.md) — Decken, Stützen, Träger.
