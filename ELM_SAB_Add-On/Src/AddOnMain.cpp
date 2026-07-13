@@ -8,6 +8,7 @@
 
 #include "ELMCommandBase.hpp"
 #include "SetPenOfElementsCommand.hpp"
+#include "GetPenOfElementsCommand.hpp"
 
 static const GSResID AddOnInfoID          = ID_ADDON_INFO;
     static const Int32 AddOnNameID        = 1;
@@ -46,6 +47,7 @@ GSErrCode Initialize (void)
     GSErrCode err = NoError;
 
     err |= RegisterJsonCommand<SetPenOfElementsCommand> ();
+    err |= RegisterJsonCommand<GetPenOfElementsCommand> ();
 
     return err;
 }

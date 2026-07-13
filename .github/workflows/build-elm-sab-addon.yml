@@ -1,5 +1,8 @@
 name: Build ELM_SAB_Add-On (Mac, AC29)
 
+permissions:
+  contents: write
+
 on:
   push:
     paths:
@@ -50,8 +53,8 @@ jobs:
           artifacts: "ELM_SAB_Add-On_AC29_Mac.zip"
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish build log on failure
-        if: failure()
+      - name: Publish build log
+        if: always()
         uses: ncipollo/release-action@v1
         with:
           tag: elm-sab-latest
