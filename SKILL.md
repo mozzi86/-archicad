@@ -76,6 +76,7 @@ Das genaue Format des Confirm-Dialogs (Element-Auflistung 1–10 einzeln, > 10 a
 Konkrete Rezepte werden in den Folgephasen mit live-verifizierten Inhalten gefüllt. In Phase 1 sind sie als geplante Speicherorte gelistet:
 
 - [`recipes/initial-setup.md`](recipes/initial-setup.md) — **Einmalige Erstinstallation**: Tapir-Add-On + MCP-Server (`tapir-archicad-mcp` via uv) + Claude-Registrierung + Smoke-Test. Hierhin, wenn `mcp__archicad__*`-Tools fehlen oder ein Kollege den Skill neu einrichtet. <!-- 2026-07-10 -->
+- [`recipes/konturen-zu-waende.md`](recipes/konturen-zu-waende.md) — 2D-Konturen → Polygon-Wände: Pipeline, SAB-Regeln (Quell-Ebene=Ziel-Ebene), Gotchas, THN-Worked-Example (live-verifiziert 2026-07-13).
 - [`recipes/wall-operations.md`](recipes/wall-operations.md) — Wand-Operationen (Lesen, Erstellen, Modifizieren, Löschen, Klassifizieren — Create seit Tapir 1.5.3 via `elements_create_walls`).
 - [`recipes/openings.md`](recipes/openings.md) — Fenster, Türen, Wandöffnungen.
 - [`recipes/slabs-columns-beams.md`](recipes/slabs-columns-beams.md) — Decken, Stützen, Träger.
