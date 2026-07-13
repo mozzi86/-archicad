@@ -1,0 +1,62 @@
+name: Build ELM_SAB_Add-On (Mac, AC29)
+
+on:
+  push:
+    paths:
+      - 'ELM_SAB_Add-On/**'
+      - '.github/workflows/build-elm-sab-addon.yml'
+  workflow_dispatch:
+
+jobs:
+  build_mac:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download API DevKit 29
+        run: |
+          curl -sL -o devkit.zip "https://github.com/GRAPHISOFT/archicad-api-devkit/releases/download/29.3000/API.Development.Kit.MAC.29.3000.zip"
+          mkdir -p ELM_SAB_Add-On/Build/DevKits/AC29
+          unzip -q devkit.zip -d ELM_SAB_Add-On/Build/DevKits/AC29
+
+      - name: Generate Project
+        run: |
+          cmake -B ELM_SAB_Add-On/Build -G "Xcode" \
+            -DAC_VERSION=29 \
+            -DAC_API_DEVKIT_DIR="$PWD/ELM_SAB_Add-On/Build/DevKits/AC29/Support" \
+            ELM_SAB_Add-On 2>&1 | tee build.log
+
+      - name: Build RelWithDebInfo
+        run: |
+          set -o pipefail
+          cmake --build ELM_SAB_Add-On/Build --config RelWithDebInfo 2>&1 | tee -a build.log
+
+      - name: Ad-hoc sign + zip
+        run: |
+          BUNDLE=$(find ELM_SAB_Add-On/Build -name "*.bundle" -not -path "*DevKits*" | head -1)
+          echo "Bundle: $BUNDLE"
+          codesign --force --deep -s - "$BUNDLE"
+          ditto -c -k --keepParent "$BUNDLE" ELM_SAB_Add-On_AC29_Mac.zip
+
+      - name: Publish bundle to rolling release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: elm-sab-latest
+          name: "ELM_SAB_Add-On latest (CI)"
+          prerelease: true
+          allowUpdates: true
+          removeArtifacts: true
+          artifacts: "ELM_SAB_Add-On_AC29_Mac.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish build log on failure
+        if: failure()
+        uses: ncipollo/release-action@v1
+        with:
+          tag: elm-sab-latest
+          name: "ELM_SAB_Add-On latest (CI)"
+          prerelease: true
+          allowUpdates: true
+          artifacts: "build.log"
+          token: ${{ secrets.GITHUB_TOKEN }}
