@@ -12,9 +12,10 @@ ein kleines Zusatz-Add-On bleibt von Tapir-Updates unberührt, und beide sind pa
 
 | Befehl | Status | Zweck |
 |---|---|---|
-| `SetPenOfElements` | v0.1 — ungebaut, Compile-Check steht aus | Stifte von 2D-Elementen (Hatch, Line, PolyLine, Arc, Circle, Spline, Text) auf definierte Stift-Indizes setzen. Use-Case: importierte Fachplaner-DWGs mit wilden RGB-Stiften auf SAB-Stifttabelle normalisieren (THN-Projekt, Nagel-Brandschutzpläne). |
+| `GetPenOfElements` | v0.2 | Stifte + RGB-Overrides (Hatch: hasForeground/BackgroundRGB + Farbwerte) von 2D-Elementen lesen. |
+| `SetPenOfElements` | v0.2 | Stifte setzen + RGB-Overrides löschen (`clearForegroundRGB`/`clearBackgroundRGB`); optionaler `databases`-Parameter wechselt selbst durch Arbeitsblätter (v0.1-Limit behoben). Produktiv erprobt: THN-Farbabgleich, 32.806 Elemente. |
 
-Geplant: `GetPenOfElements` (Diagnose vor Änderung), ggf. `SetFillTypeOfElements`.
+Geplant: ggf. `SetFillTypeOfElements`, RGB-Override gezielt SETZEN (bisher nur löschen).
 
 ## Build (macOS)
 

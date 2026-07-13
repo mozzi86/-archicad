@@ -67,12 +67,31 @@ GS::ObjectState GetPenOfElementsCommand::Execute (const GS::ObjectState& paramet
         pens.Add ("success", true);
 
         switch (element.header.type.typeID) {
-            case API_HatchID:
+            case API_HatchID: {
                 pens.Add ("elementType", "Hatch");
                 pens.Add ("contourPen", (Int32) element.hatch.contPen.penIndex);
                 pens.Add ("fillForegroundPen", (Int32) element.hatch.fillPen.penIndex);
                 pens.Add ("fillBackgroundPen", (Int32) element.hatch.fillBGPen);
+                const bool hasFgRGB = (element.hatch.hatchFlags & APIHatch_HasFgRGBColor) != 0;
+                const bool hasBgRGB = (element.hatch.hatchFlags & APIHatch_HasBkgRGBColor) != 0;
+                pens.Add ("hasForegroundRGB", hasFgRGB);
+                pens.Add ("hasBackgroundRGB", hasBgRGB);
+                if (hasFgRGB) {
+                    GS::ObjectState fg;
+                    fg.Add ("red",   element.hatch.foregroundRGB.f_red);
+                    fg.Add ("green", element.hatch.foregroundRGB.f_green);
+                    fg.Add ("blue",  element.hatch.foregroundRGB.f_blue);
+                    pens.Add ("foregroundRGB", fg);
+                }
+                if (hasBgRGB) {
+                    GS::ObjectState bg;
+                    bg.Add ("red",   element.hatch.backgroundRGB.f_red);
+                    bg.Add ("green", element.hatch.backgroundRGB.f_green);
+                    bg.Add ("blue",  element.hatch.backgroundRGB.f_blue);
+                    pens.Add ("backgroundRGB", bg);
+                }
                 break;
+            }
             case API_LineID:
                 pens.Add ("elementType", "Line");
                 pens.Add ("contourPen", (Int32) element.line.linePen.penIndex);
