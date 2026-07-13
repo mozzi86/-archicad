@@ -54,3 +54,4 @@ GS::ObjectState CreateErrorResponse (GSErrCode errorCode, const GS::UniString& e
 GS::ObjectState CreateFailedExecutionResult (GSErrCode errorCode, const GS::UniString& errorMessage);
 GS::ObjectState CreateSuccessfulExecutionResult ();
 API_Guid        GetGuidFromObjectState (const GS::ObjectState& os);
+GS::ObjectState CreateGuidObjectStateELM (const API_Guid& guid);

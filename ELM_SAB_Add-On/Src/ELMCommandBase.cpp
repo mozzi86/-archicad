@@ -31,3 +31,8 @@ API_Guid GetGuidFromObjectState (const GS::ObjectState& os)
     }
     return APIGuidFromString (guidStr.ToCStr ());
 }
+
+GS::ObjectState CreateGuidObjectStateELM (const API_Guid& guid)
+{
+    return GS::ObjectState ("guid", APIGuidToString (guid));
+}

@@ -9,6 +9,7 @@
 #include "ELMCommandBase.hpp"
 #include "SetPenOfElementsCommand.hpp"
 #include "GetPenOfElementsCommand.hpp"
+#include "CreatePolygonWallsCommand.hpp"
 
 #include <cstdio>
 
@@ -86,6 +87,7 @@ GSErrCode Initialize (void)
 
     err |= RegisterJsonCommand<SetPenOfElementsCommand> ("Registriere SetPenOfElements");
     err |= RegisterJsonCommand<GetPenOfElementsCommand> ("Registriere GetPenOfElements");
+    err |= RegisterJsonCommand<CreatePolygonWallsCommand> ("Registriere CreatePolygonWalls");
 
     ELMLog ("Initialize fertig err=%ld", (long) err);
     return err;
