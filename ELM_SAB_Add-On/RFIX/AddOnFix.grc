@@ -1,6 +1,6 @@
 'MDID' 32500 "Add-On Identifier" {
-	944131939 /* GRAPHISOFT Developer ID — Schwarz Architekturbüro (ELM), registriert 2026-07-13 */
-	193474021 /* ELM_SAB_Add-On local id */
+	944131939 /* GRAPHISOFT Developer ID — Schwarz Architekturbüro, registriert 2026-07-13 */
+	1033975726 /* Local ID "ELM_SAB_Add-On / SAB JSON commands", Portal 2026-07-13 */
 }
 
 'GICN' 10001 "AddOnIcon" {
