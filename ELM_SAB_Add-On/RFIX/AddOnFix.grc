@@ -1,6 +1,6 @@
 'MDID' 32500 "Add-On Identifier" {
-	1 /* Set as your developer id. */
-	1 /* Set as your local id. */
+	829351804 /* SAB developer id (self-assigned, in-house) */
+	193474021 /* ELM_SAB_Add-On local id */
 }
 
 'GICN' 10001 "AddOnIcon" {
