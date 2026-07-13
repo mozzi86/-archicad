@@ -69,6 +69,7 @@ Das genaue Format des Confirm-Dialogs (Element-Auflistung 1–10 einzeln, > 10 a
 - [`reference/dwg-ifc-import.md`](reference/dwg-ifc-import.md) — Vorverarbeitungs-Pipeline für 2D-Lagepläne (DWG) zu lückenfreien IFC4-Decken-Modellen mit Z-Staffel, vor Archicad-Hotlink-Import. (Live-verifiziertes Lageplan-/KG-500-Spezialfall.)
 - [`reference/dwg-ifc-kg300.md`](reference/dwg-ifc-kg300.md) — Verallgemeinerung der Pipeline auf KG 300 Baukonstruktionen (310 Baugrube bis 395 Sonstige): pro Cost-Group IFC-Entity + Polygonization-Strategie + DWG-Layer-Hints + Z-Schema, plus umgekehrte Richtung (Bulk-KG-Zuweisung auf bestehende Elemente) und Mapping zu SAB_Klassifizierung_29.
 - [`reference/self-improvement.md`](reference/self-improvement.md) — Wie der Skill aus Sessions lernt: Reflection-Trigger am Auftrags-Ende, Datums-Marker für neue Einträge, Verification-Loop bei Wiederholfehlern.
+- [`reference/mcp-extension.md`](reference/mcp-extension.md) — MCP-Stack-Architektur (tapir-archicad-mcp → Tapir-Add-On), Update-Prozedur, verifizierte Grenzen (kein Pen-Befehl, Layout-Buch-Lesen ja), Erweiterungs-Entscheidungsbaum und das hauseigene **ELM_SAB_Add-On** ([`ELM_SAB_Add-On/`](ELM_SAB_Add-On/)) mit `SetPenOfElements`.
 
 ### Recipes (pro Elementtyp)
 

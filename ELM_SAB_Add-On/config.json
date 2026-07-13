@@ -1,0 +1,15 @@
+{
+    "addOnName": "ELM_SAB_Add-On",
+    "defaultLanguage": "GER",
+    "languages": [
+        "INT",
+        "GER",
+        "JPN"
+    ],
+    "version": "0.1.0",
+    "copyright": {
+        "name": "ELM / Schwarz Architekturbüro Nürnberg GbR",
+        "year": "2026-%Y"
+    },
+    "description": "SAB-eigene JSON-Befehle für Archicad (Erweiterung neben Tapir): SetPenOfElements u.a."
+}

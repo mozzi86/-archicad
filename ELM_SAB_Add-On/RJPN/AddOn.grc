@@ -1,0 +1,6 @@
+#include "ResourceIds.hpp"
+
+'STR#' ID_ADDON_INFO "Add-on Name and Description" {
+/* [  1] */		"ELM_SAB_Add-On"
+/* [  2] */		"SAB-eigene JSON-Befehle (Namespace ELM_SAB): SetPenOfElements u.a. — Erweiterung neben Tapir."
+}
