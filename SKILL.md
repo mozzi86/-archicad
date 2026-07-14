@@ -82,6 +82,8 @@ Konkrete Rezepte werden in den Folgephasen mit live-verifizierten Inhalten gefü
 - [`recipes/oeffnungen-aus-konturen.md`](recipes/oeffnungen-aus-konturen.md) — Durchbrüche (BD/FBA/WD) als Öffnungs-Elemente mit SAB-Favoriten, normalisiert Rechteck/Kernbohrung, Maße+Höhen aus DWG-Texten (GetTextsOfElements v0.5); inkl. ModifySlabs-Crash-Bug (live-verifiziert 2026-07-14).
 - [`recipes/tueren-aus-boegen.md`](recipes/tueren-aus-boegen.md) — Türen aus DWG-Aufschlag-Bögen via Türwand-Pattern (Polywand-Türen sind per API unsteuerbar!); Flags aus Bogen-Geometrie, Nummern via Element-ID (live-verifiziert 2026-07-14).
 - [`recipes/treppen-aus-stufenlinien.md`](recipes/treppen-aus-stufenlinien.md) — Treppenläufe aus Stufenlinien-Clustern (CreateStairs, realistische Steigung, Deckenausschnitt; live-verifiziert 2026-07-14).
+- [`recipes/aussenwaende-aus-schraffur.md`](recipes/aussenwaende-aus-schraffur.md) — Schraffur-Trick: Außenwände aus Wand-Schraffur-Zellen, wenn Konturen nicht schließen (dünne Zellen vereinigen; live-verifiziert 2026-07-14).
+- [`recipes/pfaehle-aus-kreisen.md`](recipes/pfaehle-aus-kreisen.md) — Bohrpfähle/Bohrpfahlwände aus 2D-Kreisen + Kreis-Polylinien (Kreis-Fit, Selektion-als-Muster, tiefe Stützen über mehrere Geschosse; live-verifiziert 2026-07-14).
 - [`recipes/wall-operations.md`](recipes/wall-operations.md) — Wand-Operationen (Lesen, Erstellen, Modifizieren, Löschen, Klassifizieren — Create seit Tapir 1.5.3 via `elements_create_walls`).
 - [`recipes/openings.md`](recipes/openings.md) — Fenster, Türen, Wandöffnungen.
 - [`recipes/slabs-columns-beams.md`](recipes/slabs-columns-beams.md) — Decken, Stützen, Träger.
