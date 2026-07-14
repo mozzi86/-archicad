@@ -78,6 +78,7 @@ Konkrete Rezepte werden in den Folgephasen mit live-verifizierten Inhalten gefü
 - [`recipes/initial-setup.md`](recipes/initial-setup.md) — **Einmalige Erstinstallation**: Tapir-Add-On + MCP-Server (`tapir-archicad-mcp` via uv) + Claude-Registrierung + Smoke-Test. Hierhin, wenn `mcp__archicad__*`-Tools fehlen oder ein Kollege den Skill neu einrichtet. <!-- 2026-07-10 -->
 - [`recipes/konturen-zu-waende.md`](recipes/konturen-zu-waende.md) — 2D-Konturen → Polygon-Wände: Pipeline, SAB-Regeln (Quell-Ebene=Ziel-Ebene), Gotchas, THN-Worked-Example (live-verifiziert 2026-07-13).
 - [`recipes/decken-und-durchbrueche.md`](recipes/decken-und-durchbrueche.md) — Decken + Durchbruch-Löcher aus Konturen (Footprint-Union, CreateSlabs häppchenweise, Absturz-Lehren; live-verifiziert 2026-07-14).
+- [`recipes/oeffnungen-aus-konturen.md`](recipes/oeffnungen-aus-konturen.md) — Durchbrüche (BD/FBA/WD) als Öffnungs-Elemente mit SAB-Favoriten, normalisiert Rechteck/Kernbohrung, Maße+Höhen aus DWG-Texten (GetTextsOfElements v0.5); inkl. ModifySlabs-Crash-Bug (live-verifiziert 2026-07-14).
 - [`recipes/wall-operations.md`](recipes/wall-operations.md) — Wand-Operationen (Lesen, Erstellen, Modifizieren, Löschen, Klassifizieren — Create seit Tapir 1.5.3 via `elements_create_walls`).
 - [`recipes/openings.md`](recipes/openings.md) — Fenster, Türen, Wandöffnungen.
 - [`recipes/slabs-columns-beams.md`](recipes/slabs-columns-beams.md) — Decken, Stützen, Träger.
