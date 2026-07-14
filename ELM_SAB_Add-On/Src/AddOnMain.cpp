@@ -11,6 +11,7 @@
 #include "GetPenOfElementsCommand.hpp"
 #include "CreatePolygonWallsCommand.hpp"
 #include "Get2DGeometryCommand.hpp"
+#include "GetTextsCommand.hpp"
 
 #include <cstdio>
 
@@ -90,6 +91,7 @@ GSErrCode Initialize (void)
     err |= RegisterJsonCommand<GetPenOfElementsCommand> ("Registriere GetPenOfElements");
     err |= RegisterJsonCommand<CreatePolygonWallsCommand> ("Registriere CreatePolygonWalls");
     err |= RegisterJsonCommand<Get2DGeometryCommand> ("Registriere Get2DGeometryOfElements");
+    err |= RegisterJsonCommand<GetTextsCommand> ("Registriere GetTextsOfElements");
 
     ELMLog ("Initialize fertig err=%ld", (long) err);
     return err;
