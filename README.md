@@ -199,9 +199,9 @@ Siehe `git log` im Repo. 40+ atomic Commits mit Phase-1-bis-6-Entwicklungshistor
 
 ## Lizenz / Nutzung
 
-Enthält büro-spezifische GUIDs, Layer-Konventionen und Workflows im `reference/schwarz-office-facts.md`. Für Eigengebrauch frei nutzbar; bei Weitergabe an Fremdbüros bitte diese eine Datei entfernen oder anpassen.
+**Nutzung auf eigene Gefahr, ohne Gewähr.** Der Skill liest und verändert ein laufendes Archicad-Modell — verändernde Operationen (Update/Delete) laufen nur nach Bestätigung, aber die Verantwortung und die Sicherung deines Modells liegen bei dir.
 
-Alles andere (Recipes, MCP-Conventions, Fast-Path-Tools) ist generisch AC29 + Tapir und für jeden Archicad-Nutzer sinnvoll.
+Jeder darf das Repo **klonen/pullen** und den Skill nutzen — und ihn mit **Claude an sein eigenes Büro anpassen**. `reference/schwarz-office-facts.md` enthält Schwarz-Architekturbüro-spezifische GUIDs, Layer-Konventionen und Workflows; für ein anderes Büro einfach Claude bitten, die Datei durch die eigenen Fakten zu ersetzen (oder sie löschen). Alles andere — Recipes, MCP-Conventions, Fast-Path-Tools — ist generisch AC29 + Tapir und für jeden Archicad-Nutzer brauchbar.
 
 ---
 
