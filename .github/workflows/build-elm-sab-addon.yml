@@ -1,4 +1,4 @@
-name: Build ELM_SAB_Add-On (Mac, AC29)
+name: Build ELM_SAB_Add-On (Mac + Win, AC29)
 
 permissions:
   contents: write
@@ -10,6 +10,9 @@ on:
       - '.github/workflows/build-elm-sab-addon.yml'
   workflow_dispatch:
 
+# Beide Jobs publizieren unabhängig in dieselbe rollende Release (elm-sab-latest).
+# Kein removeArtifacts: ncipollo ersetzt gleichnamige Artefakte (replacesArtifacts=default true),
+# lässt die des anderen Jobs aber stehen — so überschreiben sich Mac/Win im Parallellauf nicht.
 jobs:
   build_mac:
     runs-on: macos-latest
@@ -21,7 +24,7 @@ jobs:
         working-directory: ELM_SAB_Add-On
         run: |
           set -o pipefail
-          python3 Tools/BuildAddOn.py -c config.json -v 29 -b RelWithDebInfo -p -r 2>&1 | tee ../build.log
+          python3 Tools/BuildAddOn.py -c config.json -v 29 -b RelWithDebInfo -p -r 2>&1 | tee ../build-mac.log
 
       - name: Locate, ad-hoc sign + zip
         run: |
@@ -37,7 +40,6 @@ jobs:
           name: "ELM_SAB_Add-On latest (CI)"
           prerelease: true
           allowUpdates: true
-          removeArtifacts: true
           artifacts: "ELM_SAB_Add-On_AC29_Mac.zip"
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -49,5 +51,47 @@ jobs:
           name: "ELM_SAB_Add-On latest (CI)"
           prerelease: true
           allowUpdates: true
-          artifacts: "build.log"
+          artifacts: "build-mac.log"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  build_win:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash   # git-bash ist auf windows-latest vorhanden → find/tee/pipefail wie beim Mac-Job
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build via BuildAddOn.py (lädt DevKit + LP_XMLConverter selbst)
+        working-directory: ELM_SAB_Add-On
+        run: |
+          set -o pipefail
+          python Tools/BuildAddOn.py -c config.json -v 29 -b RelWithDebInfo -p -r 2>&1 | tee ../build-win.log
+
+      - name: Locate .apx
+        run: |
+          APX=$(find ELM_SAB_Add-On/Build -name "*.apx" -not -path "*DevKit*" | head -1)
+          echo "APX: $APX"
+          cp "$APX" ELM_SAB_Add-On_AC29_Win.apx
+
+      - name: Publish apx to rolling release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: elm-sab-latest
+          name: "ELM_SAB_Add-On latest (CI)"
+          prerelease: true
+          allowUpdates: true
+          artifacts: "ELM_SAB_Add-On_AC29_Win.apx"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish build log
+        if: always()
+        uses: ncipollo/release-action@v1
+        with:
+          tag: elm-sab-latest
+          name: "ELM_SAB_Add-On latest (CI)"
+          prerelease: true
+          allowUpdates: true
+          artifacts: "build-win.log"
           token: ${{ secrets.GITHUB_TOKEN }}

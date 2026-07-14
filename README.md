@@ -53,19 +53,26 @@ SAB-eigenes Archicad-Add-On (JSON-Namespace `ELM_SAB`), das die JSON-API um Befe
 
 <div align="center">
 
-[![Download ELM_SAB Add-On](https://img.shields.io/badge/Download-ELM__SAB%20Add--On%20(AC29%20Mac)-2ea44f?style=for-the-badge&logo=github&logoColor=white)](https://github.com/mozzi86/-archicad/releases/download/elm-sab-latest/ELM_SAB_Add-On_AC29_Mac.zip)
+[![Download macOS](https://img.shields.io/badge/Download-macOS%20(AC29)%20.bundle-2ea44f?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/mozzi86/-archicad/releases/download/elm-sab-latest/ELM_SAB_Add-On_AC29_Mac.zip)
+&nbsp;&nbsp;
+[![Download Windows](https://img.shields.io/badge/Download-Windows%20(AC29)%20.apx-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/mozzi86/-archicad/releases/download/elm-sab-latest/ELM_SAB_Add-On_AC29_Win.apx)
 
 </div>
 
-Direktlink (falls das Badge nicht lädt): [`ELM_SAB_Add-On_AC29_Mac.zip`](https://github.com/mozzi86/-archicad/releases/download/elm-sab-latest/ELM_SAB_Add-On_AC29_Mac.zip) · [alle Releases](https://github.com/mozzi86/-archicad/releases/tag/elm-sab-latest)
+Direktlinks (falls ein Badge nicht lädt): [`…_Mac.zip`](https://github.com/mozzi86/-archicad/releases/download/elm-sab-latest/ELM_SAB_Add-On_AC29_Mac.zip) · [`…_Win.apx`](https://github.com/mozzi86/-archicad/releases/download/elm-sab-latest/ELM_SAB_Add-On_AC29_Win.apx) · [alle Releases](https://github.com/mozzi86/-archicad/releases/tag/elm-sab-latest)
 
-**Installation (macOS, Archicad 29):**
+**Installation macOS (Archicad 29):**
 1. ZIP herunterladen und entpacken → `ELM_SAB_Add-On_AC29_Mac.bundle`
 2. Bundle nach `/Applications/GRAPHISOFT/Archicad 29/Add-Ons/` kopieren
 3. Falls macOS blockt („kann nicht überprüft werden"): `xattr -dr com.apple.quarantine "/Applications/GRAPHISOFT/Archicad 29/Add-Ons/ELM_SAB_Add-On_AC29_Mac.bundle"`
 4. Archicad neu starten → **Optionen → Add-On-Manager**: `ELM_SAB` muss geladen sein
 
-> Die Downloads sind ad-hoc signiert und tragen noch die Platzhalter-Developer-ID (MDID 1/1) — für den Einsatz auf dem eigenen Rechner ausreichend. Quelle + Build siehe [`ELM_SAB_Add-On/`](ELM_SAB_Add-On/).
+**Installation Windows (Archicad 29):**
+1. `ELM_SAB_Add-On_AC29_Win.apx` herunterladen (bei SmartScreen-Warnung „Trotzdem behalten / ausführen")
+2. Datei nach `C:\Program Files\GRAPHISOFT\Archicad 29\Add-Ons\` kopieren
+3. Archicad neu starten → **Optionen → Add-On-Manager**: `ELM_SAB` muss geladen sein
+
+> Die Downloads sind unsigniert bzw. ad-hoc signiert und tragen noch die Platzhalter-Developer-ID (MDID 1/1) — für den Einsatz auf dem eigenen Rechner ausreichend. Beide Artefakte baut die CI automatisch bei jeder Änderung unter `ELM_SAB_Add-On/`. Quelle + Build siehe [`ELM_SAB_Add-On/`](ELM_SAB_Add-On/).
 
 ## Installation
 
