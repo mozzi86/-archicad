@@ -183,7 +183,7 @@ GS::ObjectState CreateRoofsCommand::Execute (const GS::ObjectState& parameters, 
 
             element.roof.u.planeRoof.baseLine.c1 = c1;
             element.roof.u.planeRoof.baseLine.c2 = c2;
-            element.roof.u.planeRoof.angle = angleDeg * PI / 180.0;
+            element.roof.u.planeRoof.angle = angleDeg * 3.14159265358979323846 / 180.0;
 
             bool posSign = true;
             roofData.Get ("posSign", posSign);
