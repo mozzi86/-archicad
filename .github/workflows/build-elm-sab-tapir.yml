@@ -1,0 +1,105 @@
+name: Build ELM_SAB_Tapir (Kombi-Add-On, AC29)
+
+permissions:
+  contents: write
+
+on:
+  push:
+    paths:
+      - 'ELM_SAB_Tapir/**'
+      - '.github/workflows/build-elm-sab-tapir.yml'
+  workflow_dispatch:
+
+jobs:
+  build_mac:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download DevKit 29
+        run: python3 ELM_SAB_Tapir/Tools/download_and_unzip.py https://github.com/GRAPHISOFT/archicad-api-devkit/releases/download/29.3000/API.Development.Kit.MAC.29.3000.zip ELM_SAB_Tapir/Build/DevKits/AC29
+
+      - name: Generate Project
+        run: cmake -B ELM_SAB_Tapir/Build -G "Xcode" -DAC_VERSION=29 -DAC_API_DEVKIT_DIR="ELM_SAB_Tapir/Build/DevKits/AC29/Support" ELM_SAB_Tapir 2>&1 | tee cmake-tapir.log
+
+      - name: Build RelWithDebInfo
+        run: |
+          set -o pipefail
+          cmake --build ELM_SAB_Tapir/Build --config RelWithDebInfo 2>&1 | tee build-tapir-mac.log
+
+      - name: Locate, ad-hoc sign + zip
+        run: |
+          BUNDLE=$(find ELM_SAB_Tapir/Build -name "*.bundle" -not -path "*DevKit*" | head -1)
+          echo "Bundle: $BUNDLE"
+          codesign --force --deep -s - "$BUNDLE"
+          ditto -c -k --keepParent "$BUNDLE" ELM_SAB_Tapir_AC29_Mac.zip
+
+      - name: Publish bundle to rolling release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: elm-sab-tapir-latest
+          name: "ELM_SAB_Tapir Kombi latest (CI)"
+          prerelease: true
+          allowUpdates: true
+          artifacts: "ELM_SAB_Tapir_AC29_Mac.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish build log
+        if: always()
+        uses: ncipollo/release-action@v1
+        with:
+          tag: elm-sab-tapir-latest
+          name: "ELM_SAB_Tapir Kombi latest (CI)"
+          prerelease: true
+          allowUpdates: true
+          artifacts: "build-tapir-mac.log,cmake-tapir.log"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  build_win:
+    runs-on: windows-2022
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download DevKit 29
+        run: python Tools/download_and_unzip.py https://github.com/GRAPHISOFT/archicad-api-devkit/releases/download/29.3000/API.Development.Kit.WIN.29.3000.zip Build/DevKits/AC29
+        working-directory: ELM_SAB_Tapir
+
+      - name: Generate Project
+        run: cmake -B ELM_SAB_Tapir/Build -G "Visual Studio 17 2022" -A "x64" -T "v143" -DAC_VERSION=29 -DAC_API_DEVKIT_DIR="ELM_SAB_Tapir/Build/DevKits/AC29/Support" ELM_SAB_Tapir
+
+      - name: Build RelWithDebInfo
+        run: |
+          set -o pipefail
+          cmake --build ELM_SAB_Tapir/Build --config RelWithDebInfo 2>&1 | tee build-tapir-win.log
+
+      - name: Locate .apx
+        run: |
+          APX=$(find ELM_SAB_Tapir/Build -name "*.apx" -not -path "*DevKit*" | head -1)
+          echo "APX: $APX"
+          cp "$APX" ELM_SAB_Tapir_AC29_Win.apx
+
+      - name: Publish apx to rolling release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: elm-sab-tapir-latest
+          name: "ELM_SAB_Tapir Kombi latest (CI)"
+          prerelease: true
+          allowUpdates: true
+          artifacts: "ELM_SAB_Tapir_AC29_Win.apx"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish build log
+        if: always()
+        uses: ncipollo/release-action@v1
+        with:
+          tag: elm-sab-tapir-latest
+          name: "ELM_SAB_Tapir Kombi latest (CI)"
+          prerelease: true
+          allowUpdates: true
+          artifacts: "build-tapir-win.log"
+          token: ${{ secrets.GITHUB_TOKEN }}
