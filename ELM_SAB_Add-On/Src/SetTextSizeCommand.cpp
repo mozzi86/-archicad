@@ -93,16 +93,22 @@ GS::ObjectState SetTextSizeCommand::Execute (const GS::ObjectState& parameters, 
                     err = ACAPI_Element_Change (&element, &mask, nullptr, 0, true);
                     break;
 
-                case API_LabelID:
+                case API_LabelID: {
                     if (element.label.labelClass != APILblClass_Text) {
                         executionResults (CreateFailedExecutionResult (APIERR_BADELEMENTTYPE, "Nur Text-Labels (kein Symbol-Etikett)"));
                         continue;
                     }
-                    oldSize = element.label.u.text.size;
-                    element.label.u.text.size = hasSize ? sizeMm : element.label.u.text.size * factor;
+                    // DevKit-Muster (Element_Test): textSize (top-level) UND
+                    // u.text.size setzen — nur das Union-Feld wird ignoriert.
+                    oldSize = element.label.textSize;
+                    const double newLabelSize = hasSize ? sizeMm : oldSize * factor;
+                    element.label.textSize = newLabelSize;
+                    element.label.u.text.size = newLabelSize;
+                    ACAPI_ELEMENT_MASK_SET (mask, API_LabelType, textSize);
                     ACAPI_ELEMENT_MASK_SET (mask, API_LabelType, u.text.size);
                     err = ACAPI_Element_Change (&element, &mask, nullptr, 0, true);
                     break;
+                }
 
                 default:
                     executionResults (CreateFailedExecutionResult (APIERR_BADELEMENTTYPE, "Nur Text oder Label"));

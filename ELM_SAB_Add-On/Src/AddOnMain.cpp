@@ -56,7 +56,7 @@ static GSErrCode RegisterJsonCommand (const char* name)
 static GSErrCode MenuCommandHandler (const API_MenuParams* menuParams)
 {
     if (menuParams->menuItemRef.menuResID == ID_ADDON_MENU) {
-        ACAPI_WriteReport ("ELM_SAB_Add-On v0.8.0 aktiv.\nBefehle: GetPenOfElements, SetPenOfElements, CreatePolygonWalls, Get2DGeometryOfElements, GetTextsOfElements, CreateRoofs, SetTextSizeOfElements\nLog: /tmp/ELM_SAB_AddOn.log", true);
+        ACAPI_WriteReport ("ELM_SAB_Add-On v0.8.1 aktiv.\nBefehle: GetPenOfElements, SetPenOfElements, CreatePolygonWalls, Get2DGeometryOfElements, GetTextsOfElements, CreateRoofs, SetTextSizeOfElements\nLog: /tmp/ELM_SAB_AddOn.log", true);
     }
     return NoError;
 }
