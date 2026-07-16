@@ -115,6 +115,8 @@ GS::ObjectState GetPenOfElementsCommand::Execute (const GS::ObjectState& paramet
             case API_TextID:
                 pens.Add ("elementType", "Text");
                 pens.Add ("contourPen", (Int32) element.text.pen);
+                pens.Add ("hasFill", element.text.usedFill);
+                pens.Add ("fillPen", (Int32) element.text.fillPen);
                 break;
             default:
                 pensOfElements (CreateFailedExecutionResult (APIERR_BADELEMENTTYPE, "Elementtyp wird nicht unterstützt"));

@@ -205,6 +205,15 @@ GSErrCode ChangeOneElement (const API_Guid& guid, const PenChangeRequest& req)
                 ACAPI_ELEMENT_MASK_SET (mask, API_TextType, pen);
                 changed = true;
             }
+            // Deckung (opaker Text-Hintergrund): fillBackgroundPen setzt
+            // usedFill=true + fillPen — SAB-Workflow „Text erbt Schraffur-Farbe".
+            if (req.hasFillBgPen) {
+                element.text.usedFill = true;
+                element.text.fillPen = (short) req.fillBgPen;
+                ACAPI_ELEMENT_MASK_SET (mask, API_TextType, usedFill);
+                ACAPI_ELEMENT_MASK_SET (mask, API_TextType, fillPen);
+                changed = true;
+            }
             break;
 
         default:
