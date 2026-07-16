@@ -61,8 +61,14 @@ GS::ObjectState GetTextsCommand::Execute (const GS::ObjectState& parameters, GS:
             continue;
         }
 
-        if (element.header.type.typeID != API_TextID) {
-            textsOfElements (CreateFailedExecutionResult (APIERR_BADELEMENTTYPE, "Nur Text"));
+        const bool isText  = (element.header.type.typeID == API_TextID);
+        const bool isLabel = (element.header.type.typeID == API_LabelID);
+        if (!isText && !isLabel) {
+            textsOfElements (CreateFailedExecutionResult (APIERR_BADELEMENTTYPE, "Nur Text oder Label"));
+            continue;
+        }
+        if (isLabel && element.label.labelClass != APILblClass_Text) {
+            textsOfElements (CreateFailedExecutionResult (APIERR_BADELEMENTTYPE, "Nur Text-Labels (kein Symbol-Etikett)"));
             continue;
         }
 
@@ -76,13 +82,15 @@ GS::ObjectState GetTextsCommand::Execute (const GS::ObjectState& parameters, GS:
 
         GS::ObjectState item;
         item.Add ("success", true);
+        item.Add ("elementType", isLabel ? "Label" : "Text");
         item.Add ("layerIndex", (Int32) element.header.layer.ToInt32_Deprecated ());
         item.Add ("floorIndex", (Int32) element.header.floorInd);
         item.Add ("content", *memo.textContent);
+        item.Add ("sizeMm", isLabel ? element.label.u.text.size : element.text.size);
 
         GS::ObjectState loc;
-        loc.Add ("x", element.text.loc.x);
-        loc.Add ("y", element.text.loc.y);
+        loc.Add ("x", isLabel ? element.label.u.text.loc.x : element.text.loc.x);
+        loc.Add ("y", isLabel ? element.label.u.text.loc.y : element.text.loc.y);
         item.Add ("location", loc);
 
         ACAPI_DisposeElemMemoHdls (&memo);

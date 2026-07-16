@@ -13,6 +13,7 @@
 #include "Get2DGeometryCommand.hpp"
 #include "GetTextsCommand.hpp"
 #include "CreateRoofsCommand.hpp"
+#include "SetTextSizeCommand.hpp"
 
 #include <cstdio>
 
@@ -55,7 +56,7 @@ static GSErrCode RegisterJsonCommand (const char* name)
 static GSErrCode MenuCommandHandler (const API_MenuParams* menuParams)
 {
     if (menuParams->menuItemRef.menuResID == ID_ADDON_MENU) {
-        ACAPI_WriteReport ("ELM_SAB_Add-On v0.6.0 aktiv.\nBefehle: GetPenOfElements, SetPenOfElements, CreatePolygonWalls, Get2DGeometryOfElements, GetTextsOfElements, CreateRoofs\nLog: /tmp/ELM_SAB_AddOn.log", true);
+        ACAPI_WriteReport ("ELM_SAB_Add-On v0.8.0 aktiv.\nBefehle: GetPenOfElements, SetPenOfElements, CreatePolygonWalls, Get2DGeometryOfElements, GetTextsOfElements, CreateRoofs, SetTextSizeOfElements\nLog: /tmp/ELM_SAB_AddOn.log", true);
     }
     return NoError;
 }
@@ -94,6 +95,7 @@ GSErrCode Initialize (void)
     err |= RegisterJsonCommand<Get2DGeometryCommand> ("Registriere Get2DGeometryOfElements");
     err |= RegisterJsonCommand<GetTextsCommand> ("Registriere GetTextsOfElements");
     err |= RegisterJsonCommand<CreateRoofsCommand> ("Registriere CreateRoofs");
+    err |= RegisterJsonCommand<SetTextSizeCommand> ("Registriere SetTextSizeOfElements");
 
     ELMLog ("Initialize fertig err=%ld", (long) err);
     return err;
