@@ -121,8 +121,34 @@ GS::ObjectState Get2DGeometryCommand::Execute (const GS::ObjectState& parameters
                 ACAPI_DisposeElemMemoHdls (&memo);
                 break;
             }
+            case API_HatchID: {
+                geo.Add ("elementType", "Hatch");
+                API_ElementMemo memo = {};
+                err = ACAPI_Element_GetMemo (element.header.guid, &memo, APIMemoMask_Polygon);
+                if (err != NoError || memo.coords == nullptr) {
+                    ACAPI_DisposeElemMemoHdls (&memo);
+                    geometryOfElements (CreateFailedExecutionResult (err, "Polygon-Memo nicht lesbar"));
+                    continue;
+                }
+                const auto& coords = geo.AddList<GS::ObjectState> ("coordinates");
+                const Int32 n = element.hatch.poly.nCoords;
+                for (Int32 i = 1; i <= n; ++i)
+                    coords (CoordOS ((*memo.coords)[i].x, (*memo.coords)[i].y));
+                const auto& arcs = geo.AddList<GS::ObjectState> ("arcs");
+                if (memo.parcs != nullptr) {
+                    for (Int32 i = 0; i < element.hatch.poly.nArcs; ++i) {
+                        GS::ObjectState a;
+                        a.Add ("begIndex", (Int32) (*memo.parcs)[i].begIndex);
+                        a.Add ("endIndex", (Int32) (*memo.parcs)[i].endIndex);
+                        a.Add ("arcAngle", (*memo.parcs)[i].arcAngle);
+                        arcs (a);
+                    }
+                }
+                ACAPI_DisposeElemMemoHdls (&memo);
+                break;
+            }
             default:
-                geometryOfElements (CreateFailedExecutionResult (APIERR_BADELEMENTTYPE, "Nur Line, Arc, Circle, PolyLine"));
+                geometryOfElements (CreateFailedExecutionResult (APIERR_BADELEMENTTYPE, "Nur Line, Arc, Circle, PolyLine, Hatch"));
                 continue;
         }
 
