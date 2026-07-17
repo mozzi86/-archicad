@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Symbol IsArchivable="true" IsPlaceable="true" MainGUID="231685C7-A854-4EFD-BDF8-58A54941FCFF" MigrationValue="Normal" Owner="1196638531" Signature="1196644685" Version="46">
+
+<Ancestry SectVersion="1" SectionFlags="0" SubIdent="0" Template="false">
+	<MainGUID>F938E33A-329D-4A36-BE3E-85E126820996</MainGUID>
+	<MainGUID>B176ABF1-5813-478F-926B-28EE7C5DC1F7</MainGUID>
+	<MainGUID>4FD10D67-2F29-4844-A65A-6597589B0CB5</MainGUID>
+	<MainGUID>BDB8C3EE-4019-46C8-91D0-7A8DE0A5EC6D</MainGUID>
+</Ancestry>
+
+<Script_2D SectVersion="20" SectionFlags="0" SubIdent="0">
+<![CDATA[
+! SAB_QR_Etikett_7 - Capmo-Schild: Ticket-ID + Status live vom Quader,
+! QR auf weissem Feld, Mikro-URL mit deckendem Untergrund in Textbreite.
+pen qrpen
+fill qrfill
+msz = A / qrn
+
+hotspot2 0, 0
+hotspot2 A, 0
+hotspot2 A, A
+hotspot2 0, A
+
+l1_ = tickettxt
+l2_ = ""
+uu_ = qrurl
+! PROPVAL-Konstanten sind SKRIPT-definiert (aus Graphisofts Property Label),
+! KEINE GDL-Builtins — ohne Definition waeren sie 0 und der Typvergleich scheitert still!
+PROPVAL_BOOL = 1
+PROPVAL_INT = 2
+PROPVAL_REALNUM = 3
+PROPVAL_STRING = 4
+dim pv1_[]
+dim pv2_[]
+dim pv3_[]
+ty1_ = 0
+ty2_ = 0
+ty3_ = 0
+da_ = 0
+db_ = 0
+r1_ = request ("Property_Value_Of_Parent", pgid1, ty1_, da_, db_, pv1_) ! Ticket Kurztext
+r2_ = request ("Property_Value_Of_Parent", pgid2, ty2_, da_, db_, pv2_) ! Ticket Status
+r3_ = request ("Property_Value_Of_Parent", pgid3, ty3_, da_, db_, pv3_) ! Capmo-Link
+if r1_ > 3 and vardim1(pv1_) > 0 then
+	if ty1_ = PROPVAL_STRING then
+		l1_ = "Ticket ID: " + pv1_[1]
+	else
+		l1_ = "Ticket ID: " + str(pv1_[1], 10, 0)
+	endif
+endif
+if r2_ > 3 and vardim1(pv2_) > 0 then
+	if ty2_ = PROPVAL_STRING then
+		l2_ = "Status: " + pv2_[1]
+	else
+		l2_ = "Status: " + str(pv2_[1], 10, 0)
+	endif
+endif
+if r3_ > 3 and vardim1(pv3_) > 0 then
+	if ty3_ = PROPVAL_STRING then
+		if strlen (pv3_[1]) > 0 then uu_ = pv3_[1]
+	endif
+endif
+
+mm_ = GLOB_SCALE / 1000
+! Ticket-Text skaliert mit der Schildbreite (passt bei jedem Massstab)
+th_ = A * txtfac
+tmm_ = th_ / mm_
+uh_ = urlmm * mm_
+sh_ = uh_*3          ! Hoehe der weissen URL-Zeile
+x1_ = -2*msz
+x2_ = A + 2*msz
+
+! Stile frueh definieren — stw() fuer die URL-Untergrund-Breite braucht den Stil
+define style "sabqr_big" AC_TextFont_1, tmm_, 7, 0
+define style "sabqr_url" AC_TextFont_1, urlmm, 4, 0
+
+! URL-Breite in Modell-m (stw liefert Papier-mm) — ubgfak = Kalibrierfaktor
+set style "sabqr_url"
+uw_ = stw (uu_) / 1000 * GLOB_SCALE * ubgfak
+ux2_ = x1_ + msz + uw_ + msz
+if ux2_ < x2_ - msz*0.5 then ux2_ = x2_ - msz*0.5
+
+if bgon then
+	y1_ = -2*msz - sh_ - msz
+	y2_ = A + 3*msz + th_*2.6
+	poly2_b 4, 6, bgpen, bgpen, x1_,y1_,1, x2_,y1_,1, x2_,y2_,1, x1_,y2_,1
+	! Weisses QR-Feld inkl. Ruhezone
+	poly2_b 4, 6, whitepen, whitepen, -msz,-msz,1, A+msz,-msz,1, A+msz,A+msz,1, -msz,A+msz,1
+	! Weisse URL-Zeile: deckend in voller TEXT-Breite (ragt ueber das Schild hinaus)
+	poly2_b 4, 6, whitepen, whitepen, x1_+msz*0.5,-2*msz-sh_,1, ux2_,-2*msz-sh_,1, ux2_,-2*msz,1, x1_+msz*0.5,-2*msz,1
+endif
+
+pen qrpen
+set style "sabqr_big"
+if strlen (l2_) > 0 then
+	text2 -msz, A + 2*msz + th_*1.25, l1_
+	text2 -msz, A + 2*msz, l2_
+else
+	text2 -msz, A + 2*msz, l1_
+endif
+
+! QR-Module (j=7: Rahmen + Fuellung + GESCHLOSSEN — ohne Bit 4 gilt das
+! Polygon als offen und Archicad zeichnet die Fuellung still nicht)
+if qrn >= 21 then
+	for rw_ = 0 to qrn-1
+		yy2 = A - rw_ * msz
+		yy1 = yy2 - msz
+		cl_ = 0
+		cs_ = -1
+		while cl_ <= qrn-1 do
+			i = rw_ * qrn + cl_
+			gosub "getbit"
+			if bt_ = 1 and cs_ < 0 then cs_ = cl_
+			lc_ = 0
+			if cl_ = qrn-1 then lc_ = 1
+			if (bt_ = 0 or lc_ = 1) and cs_ >= 0 then
+				ce_ = cl_
+				if bt_ = 1 and lc_ = 1 then ce_ = qrn
+				xx1 = cs_ * msz
+				xx2 = ce_ * msz
+				poly2_b 4, 7, qrpen, qrpen, xx1,yy1,1, xx2,yy1,1, xx2,yy2,1, xx1,yy2,1
+				cs_ = -1
+			endif
+			cl_ = cl_ + 1
+		endwhile
+	next rw_
+endif
+
+set style "sabqr_url"
+text2 x1_ + msz, -2*msz - sh_/2, uu_
+
+if dbgon then
+	text2 -msz, -2*msz - sh_ - msz - uh_*2, "DBG r1=" + str(r1_,3,0) + " r2=" + str(r2_,3,0) + " r3=" + str(r3_,3,0) + " t1=" + str(ty1_,3,0) + " bits=" + str(strlen(qrbits1),4,0) + " qrn=" + str(qrn,3,0)
+endif
+end
+
+"getbit":
+	ix_ = int(i / 250)
+	p_ = i - ix_ * 250 + 1
+	s = ""
+	if ix_ = 0 then s = qrbits1
+	if ix_ = 1 then s = qrbits2
+	if ix_ = 2 then s = qrbits3
+	if ix_ = 3 then s = qrbits4
+	if ix_ = 4 then s = qrbits5
+	if ix_ = 5 then s = qrbits6
+	if ix_ = 6 then s = qrbits7
+	if ix_ = 7 then s = qrbits8
+	if ix_ = 8 then s = qrbits9
+	if ix_ = 9 then s = qrbits10
+	bt_ = 0
+	if p_ <= strlen(s) then
+		if strsub(s, p_, 1) = "1" then bt_ = 1
+	endif
+return
+]]>
+</Script_2D>
+
+<ParamSection SectVersion="27" SectionFlags="0" SubIdent="0">
+	<ParamSectHeader>
+		<AutoHotspots>false</AutoHotspots>
+		<StatBits>
+			<STBit_UIDefault/>
+		</StatBits>
+		<WDLeftFrame>0</WDLeftFrame>
+		<WDRightFrame>0</WDRightFrame>
+		<WDTopFrame>0</WDTopFrame>
+		<WDBotFrame>0</WDBotFrame>
+		<LayFlags>65535</LayFlags>
+		<WDMirrorThickness>0</WDMirrorThickness>
+		<WDWallInset>0</WDWallInset>
+	</ParamSectHeader>
+	<Parameters>
+
+		<Length Name="A">
+			<Description><![CDATA["Dimension 1"]]></Description>
+			<Fix/>
+			<Value>0.5</Value>
+		</Length>
+		<Length Name="B">
+			<Description><![CDATA["Dimension 2"]]></Description>
+			<Fix/>
+			<Value>1</Value>
+		</Length>
+		<Boolean Name="AC_CustomReadability">
+			<Description><![CDATA[""]]></Description>
+			<Flags>
+				<ParFlg_Hidden/>
+			</Flags>
+			<Value>0</Value>
+		</Boolean>
+		<Integer Name="AC_LabelOrientation">
+			<Description><![CDATA[""]]></Description>
+			<Value>1</Value>
+		</Integer>
+		<String Name="AC_TextFont_1">
+			<Description><![CDATA["Marker Text 1 Type (default)"]]></Description>
+			<Value><![CDATA["Arial"]]></Value>
+		</String>
+		<RealNum Name="AC_TextSize_1">
+			<Description><![CDATA["Marker Text 1 Size (default)"]]></Description>
+			<Value>3</Value>
+		</RealNum>
+		<Integer Name="AC_TextStyle_1">
+			<Description><![CDATA["Marker Text 1 Style (default)"]]></Description>
+			<Value>0</Value>
+		</Integer>
+		<Integer Name="AC_TextAlignment_1">
+			<Description><![CDATA["Marker Text 1 Alignment (default)"]]></Description>
+			<Value>1</Value>
+		</Integer>
+		<RealNum Name="AC_TextLeading_1">
+			<Description><![CDATA["Marker Text 1 Leading (default)"]]></Description>
+			<Value>1</Value>
+		</RealNum>
+		<RealNum Name="AC_TextCharWidthFactor_1">
+			<Description><![CDATA["Marker Text 1 Char Width Factor (default)"]]></Description>
+			<Value>1</Value>
+		</RealNum>
+		<RealNum Name="AC_TextCharSpaceFactor_1">
+			<Description><![CDATA["Marker Text 1 Text Char Space Factor (default)"]]></Description>
+			<Value>1</Value>
+		</RealNum>
+		<PenColor Name="AC_TextPen_1">
+			<Description><![CDATA["Marker Text 1 Pen (default)"]]></Description>
+			<Value>46</Value>
+		</PenColor>
+		<Boolean Name="AC_bLabelAlwaysReadable">
+			<Description><![CDATA[""]]></Description>
+			<Value>1</Value>
+		</Boolean>
+		<Boolean Name="AC_bLabelTextWrap">
+			<Description><![CDATA[""]]></Description>
+			<Value>0</Value>
+		</Boolean>
+		<Boolean Name="AC_bLabelOpaqueFill">
+			<Description><![CDATA[""]]></Description>
+			<Value>0</Value>
+		</Boolean>
+		<PenColor Name="AC_LabelTextBgrPen">
+			<Description><![CDATA[""]]></Description>
+			<Value>-1</Value>
+		</PenColor>
+		<Boolean Name="AC_bLabelFrame">
+			<Description><![CDATA[""]]></Description>
+			<Value>0</Value>
+		</Boolean>
+		<Length Name="AC_LabelFrameOffset">
+			<Description><![CDATA[""]]></Description>
+			<Value>0</Value>
+		</Length>
+		<PenColor Name="AC_LabelPointerPen">
+			<Description><![CDATA[""]]></Description>
+			<Value>85</Value>
+		</PenColor>
+		<LineType Name="AC_LabelPointerLineType">
+			<Description><![CDATA[""]]></Description>
+			<Value>1</Value>
+		</LineType>
+		<Integer Name="AC_LabelPointerConnection">
+			<Description><![CDATA[""]]></Description>
+			<Value>0</Value>
+		</Integer>
+		<String Name="tickettxt">
+			<Description><![CDATA["Ticket-Text (Fallback)"]]></Description>
+			<Value><![CDATA[""]]></Value>
+		</String>
+		<RealNum Name="txtfac">
+			<Description><![CDATA["Zeilenhoehe Ticket-Text (Anteil von A)"]]></Description>
+			<Value>0.12</Value>
+		</RealNum>
+		<RealNum Name="txtmm">
+			<Description><![CDATA["Textgroesse Ticket (mm)"]]></Description>
+			<Value>1</Value>
+		</RealNum>
+		<RealNum Name="urlmm">
+			<Description><![CDATA["Textgroesse URL (mm)"]]></Description>
+			<Value>0.1</Value>
+		</RealNum>
+		<Integer Name="qrn">
+			<Description><![CDATA["QR Module je Seite"]]></Description>
+			<Value>49</Value>
+		</Integer>
+		<String Name="pgid1">
+			<Description><![CDATA["Property-GUID Ticket Kurztext"]]></Description>
+			<Value><![CDATA["36F3B5DF-72D0-AD49-8E7D-5ABAAD15FBA5"]]></Value>
+		</String>
+		<String Name="pgid2">
+			<Description><![CDATA["Property-GUID Ticket Status"]]></Description>
+			<Value><![CDATA["DE4954F7-123A-7543-9A9B-27DE96FD98F0"]]></Value>
+		</String>
+		<String Name="pgid3">
+			<Description><![CDATA["Property-GUID Capmo-Link"]]></Description>
+			<Value><![CDATA["F6388AF3-B2A2-3448-A397-F54FFFC8F185"]]></Value>
+		</String>
+		<Boolean Name="dbgon">
+			<Description><![CDATA["Diagnose-Zeile anzeigen"]]></Description>
+			<Value>0</Value>
+		</Boolean>
+		<RealNum Name="ubgfak">
+			<Description><![CDATA["Kalibrierfaktor URL-Untergrund-Breite"]]></Description>
+			<Value>1</Value>
+		</RealNum>
+		<Boolean Name="bgon">
+			<Description><![CDATA["Hintergrund-Schild anzeigen"]]></Description>
+			<Value>1</Value>
+		</Boolean>
+		<PenColor Name="bgpen">
+			<Description><![CDATA["Stift Hintergrund (Capmo-Gruen)"]]></Description>
+			<Value>67</Value>
+		</PenColor>
+		<PenColor Name="whitepen">
+			<Description><![CDATA["Stift QR-Feld (weiss)"]]></Description>
+			<Value>19</Value>
+		</PenColor>
+		<PenColor Name="qrpen">
+			<Description><![CDATA["Stift"]]></Description>
+			<Value>1</Value>
+		</PenColor>
+		<FillPattern Name="qrfill">
+			<Description><![CDATA["Fuellmuster (deckend)"]]></Description>
+			<Value>295</Value>
+		</FillPattern>
+		<String Name="qrurl">
+			<Description><![CDATA["Capmo-URL (Fallback)"]]></Description>
+			<Value><![CDATA[""]]></Value>
+		</String>
+		<String Name="qrbits1">
+			<Description><![CDATA["QR-Bits Teil 1"]]></Description>
+			<Value><![CDATA[""]]></Value>
+		</String>
+		<String Name="qrbits2">
+			<Description><![CDATA["QR-Bits Teil 2"]]></Description>
+			<Value><![CDATA[""]]></Value>
+		</String>
+		<String Name="qrbits3">
+			<Description><![CDATA["QR-Bits Teil 3"]]></Description>
+			<Value><![CDATA[""]]></Value>
+		</String>
+		<String Name="qrbits4">
+			<Description><![CDATA["QR-Bits Teil 4"]]></Description>
+			<Value><![CDATA[""]]></Value>
+		</String>
+		<String Name="qrbits5">
+			<Description><![CDATA["QR-Bits Teil 5"]]></Description>
+			<Value><![CDATA[""]]></Value>
+		</String>
+		<String Name="qrbits6">
+			<Description><![CDATA["QR-Bits Teil 6"]]></Description>
+			<Value><![CDATA[""]]></Value>
+		</String>
+		<String Name="qrbits7">
+			<Description><![CDATA["QR-Bits Teil 7"]]></Description>
+			<Value><![CDATA[""]]></Value>
+		</String>
+		<String Name="qrbits8">
+			<Description><![CDATA["QR-Bits Teil 8"]]></Description>
+			<Value><![CDATA[""]]></Value>
+		</String>
+		<String Name="qrbits9">
+			<Description><![CDATA["QR-Bits Teil 9"]]></Description>
+			<Value><![CDATA[""]]></Value>
+		</String>
+		<String Name="qrbits10">
+			<Description><![CDATA["QR-Bits Teil 10"]]></Description>
+			<Value><![CDATA[""]]></Value>
+		</String>
+	</Parameters>
+</ParamSection>
+
+</Symbol>
