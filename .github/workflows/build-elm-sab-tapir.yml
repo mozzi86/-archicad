@@ -179,6 +179,11 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
+      # Muss der erste Schritt bleiben — checkout räumt das Arbeitsverzeichnis auf und
+      # würde sonst die heruntergeladenen Artefakte wieder wegwerfen.
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Alle Artefakte einsammeln
         uses: actions/download-artifact@v4
         with:
@@ -205,6 +210,22 @@ jobs:
           } > body.md
           echo "---- Release-Text ----"; cat body.md
           echo "---- Assets ----"; ls -l out/
+
+      # Der Zweig ci-status trägt das Ergebnis jedes Laufs in Textform. Anders als
+      # Actions-Logs und Release-Assets ist er in einem privaten Repo auch per SSH
+      # lesbar — `git fetch origin ci-status && git show origin/ci-status:status.md`.
+      # Der Zweig liegt außerhalb der paths-Filter oben, löst also keinen neuen Lauf aus.
+      - name: Status auf Zweig ci-status ablegen
+        run: |
+          cp body.md status.md
+          { echo "Commit: ${GITHUB_SHA}"; echo "Lauf:   ${GITHUB_RUN_ID}"; echo; ls -l out/; } > assets.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -q --orphan ci-status-tmp
+          git rm -rq --cached . || true
+          git add -f status.md assets.txt
+          git commit -qm "Build-Status ${GITHUB_SHA:0:7} (Lauf ${GITHUB_RUN_ID})"
+          git push -qf origin HEAD:refs/heads/ci-status
 
       - name: Release aktualisieren
         uses: ncipollo/release-action@v1
