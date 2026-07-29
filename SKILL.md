@@ -57,6 +57,14 @@ Das Sicherheitsmodell ist **asymmetrisch**: Operationen, die rückgängig zu mac
 
 Das genaue Format des Confirm-Dialogs (Element-Auflistung 1–10 einzeln, > 10 als Summary mit `details`-Option, Antwortoptionen `ja` / `nein` / `details` / `abbrechen`) und das Verhalten bei „nein" oder Mid-Batch-Fehler siehe [`reference/mcp-conventions.md`](reference/mcp-conventions.md).
 
+## Nach jedem Create — KI-Stempel <!-- 2026-07-17 -->
+
+Standard (User-Vorgabe vom 2026-07-17): **Jedes Element, das Claude erstellt, bekommt unmittelbar nach dem Create die User-Property „Allgemeine Werte / KI generiert"** (Zeichenfolge) mit dem Wert `KI generiert <YYYY-MM-DD>` (Tagesdatum). Das gilt für alle Elementtypen und gehört zum Create-Workflow dazu — kein separates Confirm nötig, es ist Teil des Erstellens.
+
+- Property-GUID **pro Projekt** frisch ermitteln (GUIDs sind projektspezifisch): `API.GetAllPropertyIds` (UserDefined) + `API.GetDetailsOfProperties`, Name `KI generiert`, Gruppe `Allgemeine Werte`.
+- Setzen bevorzugt per HTTP-Bypass `API.SetPropertyValuesOfElements` (flaches Schema, `propertyValue {type:"string", status:"normal", value:"KI generiert <Datum>"}`), danach **Rücklese-Verifikation**.
+- Fehlt die Property im Projekt: User kurz informieren und bitten, sie im Eigenschaften-Manager anzulegen (Zeichenfolge, Gruppe „Allgemeine Werte", verfügbar für alle Klassifizierungen). Nicht still weglassen, nicht selbst per API anlegen (Property-Create in AC29 fragil: defaultValue-Pflicht, eigene Gruppe nötig, Availability-Kopplung).
+
 ## Wo welches Wissen liegt
 
 ### Reference (Hintergrund + Konventionen)

@@ -99,8 +99,10 @@ else
 	text2 -msz, A + 2*msz, l1_
 endif
 
-! QR-Module (j=7: Rahmen + Fuellung + GESCHLOSSEN — ohne Bit 4 gilt das
-! Polygon als offen und Archicad zeichnet die Fuellung still nicht)
+! QR-Module (j=6: Fuellung + GESCHLOSSEN, OHNE Kontur — Bit 1 (Rahmen) wuerde
+! beim PDF-Plot mit echter Stiftstaerke die Module zu einem schwarzen Klotz
+! verschmieren; ohne Bit 4 gilt das Polygon als offen und die Fuellung
+! wird still nicht gezeichnet)
 if qrn >= 21 then
 	for rw_ = 0 to qrn-1
 		yy2 = A - rw_ * msz
@@ -118,7 +120,7 @@ if qrn >= 21 then
 				if bt_ = 1 and lc_ = 1 then ce_ = qrn
 				xx1 = cs_ * msz
 				xx2 = ce_ * msz
-				poly2_b 4, 7, qrpen, qrpen, xx1,yy1,1, xx2,yy1,1, xx2,yy2,1, xx1,yy2,1
+				poly2_b 4, 6, qrpen, qrpen, xx1,yy1,1, xx2,yy1,1, xx2,yy2,1, xx1,yy2,1
 				cs_ = -1
 			endif
 			cl_ = cl_ + 1
