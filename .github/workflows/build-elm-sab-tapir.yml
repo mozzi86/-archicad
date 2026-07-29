@@ -223,7 +223,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -q --orphan ci-status-tmp
           git rm -rq --cached . || true
-          git add -f status.md assets.txt
+          mkdir -p logs && cp out/*.log logs/ 2>/dev/null || true
+          git add -f status.md assets.txt logs
           git commit -qm "Build-Status ${GITHUB_SHA:0:7} (Lauf ${GITHUB_RUN_ID})"
           git push -qf origin HEAD:refs/heads/ci-status
 
