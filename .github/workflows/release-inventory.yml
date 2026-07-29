@@ -31,6 +31,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # EINMALIG, danach wieder entfernen: die drei Logs stammen aus der Zeit, als die CI
+      # nur AC29 baute und ihre Logs ohne Versionskürzel benannte. Seit dem Matrix-Build
+      # heißen sie build-mac-AC29.log usw.; die Altlasten lagen nur noch daneben und
+      # stifteten Verwirrung darüber, welches Log zu welcher Version gehört.
+      - name: Alt-Logs der früheren Namensgebung entfernen
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for a in build-tapir-mac.log build-tapir-win.log cmake-tapir.log; do
+            if gh release view elm-sab-tapir-latest --repo "$GITHUB_REPOSITORY" --json assets \
+                 | jq -e --arg a "$a" '.assets[] | select(.name == $a)' > /dev/null; then
+              echo "loesche $a"
+              gh release delete-asset elm-sab-tapir-latest "$a" --repo "$GITHUB_REPOSITORY" --yes
+            else
+              echo "schon weg, nichts zu tun: $a"
+            fi
+          done
+
       - name: Rollende Vorabversion abfragen
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
