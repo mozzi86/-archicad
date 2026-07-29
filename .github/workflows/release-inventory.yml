@@ -6,10 +6,15 @@ name: Release-Inventur
 # ci-release und ist damit per SSH abrufbar:
 #   git fetch origin ci-release && git show origin/ci-release:release-inventory.txt
 #
-# Läuft absichtlich nur, wenn diese Datei selbst angefasst wird — der teure Matrix-Build
-# soll davon nicht ausgelöst werden.
+# Läuft nach jedem Matrix-Build automatisch, damit die Inventur nie veraltet: der
+# Publish-Job schreibt seine Bilanz VOR dem Release-Upload, sein Erfolg allein beweist
+# also nicht, dass die Dateien wirklich am Release hängen. Diese Inventur schaut danach.
+# Der Trigger löst den teuren Matrix-Build nicht aus — das ist ein reiner Ubuntu-Job.
 
 on:
+  workflow_run:
+    workflows: ["Build ELM_SAB_Tapir (Kombi-Add-On, AC27/28/29)"]
+    types: [completed]
   push:
     paths:
       - '.github/workflows/release-inventory.yml'
