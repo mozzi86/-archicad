@@ -13,6 +13,12 @@ on:
 env:
   RELEASE_TAG: elm-sab-tapir-latest
 
+# Ein zweiter Push soll den laufenden Build ablösen statt daneben weiterzulaufen —
+# macOS-Runner zählen zehnfach auf das Minutenkonto privater Repos.
+concurrency:
+  group: elm-sab-tapir-${{ github.ref }}
+  cancel-in-progress: true
+
 # Jede Archicad-Hauptversion braucht ihr eigenes Bundle — ein AC29-Bundle lädt nicht in
 # AC28 und erscheint dort gar nicht im Add-On-Manager, ohne Fehlermeldung.
 #
@@ -204,6 +210,10 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ env.RELEASE_TAG }}
+          # Den rollenden Tag auf den gebauten Commit ziehen. Ohne das bleibt er beim
+          # ersten Build stehen, und man kann von außen nicht erkennen, aus welchem
+          # Stand die Assets stammen.
+          commit: ${{ github.sha }}
           name: "ELM_SAB_Tapir — AC27/28/29 (CI)"
           bodyFile: body.md
           prerelease: true
