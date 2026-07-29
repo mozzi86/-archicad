@@ -1,4 +1,4 @@
-name: Build ELM_SAB_Tapir (Kombi-Add-On, AC29)
+name: Build ELM_SAB_Tapir (Kombi-Add-On, AC27/28/29)
 
 permissions:
   contents: write
@@ -10,96 +10,203 @@ on:
       - '.github/workflows/build-elm-sab-tapir.yml'
   workflow_dispatch:
 
+env:
+  RELEASE_TAG: elm-sab-tapir-latest
+
+# Jede Archicad-Hauptversion braucht ihr eigenes Bundle — ein AC29-Bundle lädt nicht in
+# AC28 und erscheint dort gar nicht im Add-On-Manager, ohne Fehlermeldung.
+#
+# fail-fast ist aus: eine kaputte Version darf die anderen fünf nicht mitreißen.
+# Veröffentlicht wird erst am Ende in EINEM Job — sechs parallele Release-Writes auf
+# denselben Tag überschreiben sich gegenseitig.
+#
+# DevKit-Builds bewusst identisch mit dem Upstream-Tapir-CI (27.3001 / 28.3001 / 29.3000),
+# weil dort genau dieser Quellstand damit für AC25–29 grün baut. Neuere Builds existieren
+# (27.6003, 28.4001, 29.3100), sind für diese Quellen aber unerprobt — nur wechseln, wenn
+# es einen Grund gibt.
+#
+# Windows: Toolset v142 für AC27/28, v143 ab AC29 (Upstream-Split). Der Runner ist auf
+# windows-2022 gepinnt, weil v142 auf dem windows-2025-Image nicht mehr mitkommt.
+# macOS: ein Xcode-Generator für alle Versionen; ab AC26 baut CMakeCommon.cmake universal
+# (x86_64 + arm64), macos-latest genügt daher.
+
 jobs:
   build_mac:
+    name: macOS AC${{ matrix.ac }}
     runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ac: 29
+            devkit: https://github.com/GRAPHISOFT/archicad-api-devkit/releases/download/29.3000/API.Development.Kit.MAC.29.3000.zip
+          - ac: 28
+            devkit: https://github.com/GRAPHISOFT/archicad-api-devkit/releases/download/28.3001/API.Development.Kit.MAC.28.3001.zip
+          - ac: 27
+            devkit: https://github.com/GRAPHISOFT/archicad-api-devkit/releases/download/27.3001/API.Development.Kit.MAC.27.3001.zip
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download DevKit 29
-        run: python3 ELM_SAB_Tapir/Tools/download_and_unzip.py https://github.com/GRAPHISOFT/archicad-api-devkit/releases/download/29.3000/API.Development.Kit.MAC.29.3000.zip ELM_SAB_Tapir/Build/DevKits/AC29
+      - name: DevKit ${{ matrix.ac }} laden
+        run: python3 ELM_SAB_Tapir/Tools/download_and_unzip.py "${{ matrix.devkit }}" ELM_SAB_Tapir/Build/DevKits/AC${{ matrix.ac }}
 
-      - name: Generate Project
-        run: cmake -B ELM_SAB_Tapir/Build -G "Xcode" -DAC_VERSION=29 -DAC_API_DEVKIT_DIR="ELM_SAB_Tapir/Build/DevKits/AC29/Support" ELM_SAB_Tapir 2>&1 | tee cmake-tapir.log
+      - name: DevKit-Layout prüfen
+        run: |
+          SUP="ELM_SAB_Tapir/Build/DevKits/AC${{ matrix.ac }}/Support"
+          if [ ! -d "$SUP" ]; then
+            echo "::error::Support-Ordner fehlt unter $SUP — das ZIP-Layout weicht ab."
+            find ELM_SAB_Tapir/Build/DevKits/AC${{ matrix.ac }} -maxdepth 2
+            exit 1
+          fi
+          echo "Support-Ordner ok: $SUP"
 
-      - name: Build RelWithDebInfo
+      - name: Projekt generieren
         run: |
           set -o pipefail
-          cmake --build ELM_SAB_Tapir/Build --config RelWithDebInfo 2>&1 | tee build-tapir-mac.log
+          cmake -B ELM_SAB_Tapir/Build -G "Xcode" \
+            -DAC_VERSION=${{ matrix.ac }} \
+            -DAC_API_DEVKIT_DIR="ELM_SAB_Tapir/Build/DevKits/AC${{ matrix.ac }}/Support" \
+            ELM_SAB_Tapir 2>&1 | tee cmake-mac-AC${{ matrix.ac }}.log
 
-      - name: Locate, ad-hoc sign + zip
+      - name: Bauen (RelWithDebInfo)
+        run: |
+          set -o pipefail
+          cmake --build ELM_SAB_Tapir/Build --config RelWithDebInfo 2>&1 | tee build-mac-AC${{ matrix.ac }}.log
+
+      - name: Ad-hoc signieren und zippen
         run: |
           BUNDLE=$(find ELM_SAB_Tapir/Build -name "*.bundle" -not -path "*DevKit*" | head -1)
+          if [ -z "$BUNDLE" ]; then
+            echo "::error::Kein .bundle gefunden — der Build hat nichts erzeugt."
+            exit 1
+          fi
           echo "Bundle: $BUNDLE"
           codesign --force --deep -s - "$BUNDLE"
-          ditto -c -k --keepParent "$BUNDLE" ELM_SAB_Tapir_AC29_Mac.zip
+          ditto -c -k --keepParent "$BUNDLE" ELM_SAB_Tapir_AC${{ matrix.ac }}_Mac.zip
 
-      - name: Publish bundle to rolling release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: elm-sab-tapir-latest
-          name: "ELM_SAB_Tapir Kombi latest (CI)"
-          prerelease: true
-          allowUpdates: true
-          artifacts: "ELM_SAB_Tapir_AC29_Mac.zip"
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish build log
+      - name: Artefakt und Logs hochladen
         if: always()
-        uses: ncipollo/release-action@v1
+        uses: actions/upload-artifact@v4
         with:
-          tag: elm-sab-tapir-latest
-          name: "ELM_SAB_Tapir Kombi latest (CI)"
-          prerelease: true
-          allowUpdates: true
-          artifacts: "build-tapir-mac.log,cmake-tapir.log"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          name: mac-AC${{ matrix.ac }}
+          path: |
+            ELM_SAB_Tapir_AC${{ matrix.ac }}_Mac.zip
+            cmake-mac-AC${{ matrix.ac }}.log
+            build-mac-AC${{ matrix.ac }}.log
+          if-no-files-found: warn
 
   build_win:
+    name: Windows AC${{ matrix.ac }}
     runs-on: windows-2022
     defaults:
       run:
         shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ac: 29
+            devkit: https://github.com/GRAPHISOFT/archicad-api-devkit/releases/download/29.3000/API.Development.Kit.WIN.29.3000.zip
+            toolset: v143
+          - ac: 28
+            devkit: https://github.com/GRAPHISOFT/archicad-api-devkit/releases/download/28.3001/API.Development.Kit.WIN.28.3001.zip
+            toolset: v142
+          - ac: 27
+            devkit: https://github.com/GRAPHISOFT/archicad-api-devkit/releases/download/27.3001/API.Development.Kit.WIN.27.3001.zip
+            toolset: v142
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download DevKit 29
-        run: python Tools/download_and_unzip.py https://github.com/GRAPHISOFT/archicad-api-devkit/releases/download/29.3000/API.Development.Kit.WIN.29.3000.zip Build/DevKits/AC29
+      - name: DevKit ${{ matrix.ac }} laden
+        run: python Tools/download_and_unzip.py "${{ matrix.devkit }}" Build/DevKits/AC${{ matrix.ac }}
         working-directory: ELM_SAB_Tapir
 
-      - name: Generate Project
-        run: cmake -B ELM_SAB_Tapir/Build -G "Visual Studio 17 2022" -A "x64" -T "v143" -DAC_VERSION=29 -DAC_API_DEVKIT_DIR="ELM_SAB_Tapir/Build/DevKits/AC29/Support" ELM_SAB_Tapir
+      - name: DevKit-Layout prüfen
+        run: |
+          SUP="ELM_SAB_Tapir/Build/DevKits/AC${{ matrix.ac }}/Support"
+          if [ ! -d "$SUP" ]; then
+            echo "::error::Support-Ordner fehlt unter $SUP — das ZIP-Layout weicht ab."
+            find ELM_SAB_Tapir/Build/DevKits/AC${{ matrix.ac }} -maxdepth 2
+            exit 1
+          fi
+          echo "Support-Ordner ok: $SUP"
 
-      - name: Build RelWithDebInfo
+      - name: Projekt generieren (Toolset ${{ matrix.toolset }})
         run: |
           set -o pipefail
-          cmake --build ELM_SAB_Tapir/Build --config RelWithDebInfo 2>&1 | tee build-tapir-win.log
+          cmake -B ELM_SAB_Tapir/Build -G "Visual Studio 17 2022" -A "x64" -T "${{ matrix.toolset }}" \
+            -DAC_VERSION=${{ matrix.ac }} \
+            -DAC_API_DEVKIT_DIR="ELM_SAB_Tapir/Build/DevKits/AC${{ matrix.ac }}/Support" \
+            ELM_SAB_Tapir 2>&1 | tee cmake-win-AC${{ matrix.ac }}.log
 
-      - name: Locate .apx
+      - name: Bauen (RelWithDebInfo)
+        run: |
+          set -o pipefail
+          cmake --build ELM_SAB_Tapir/Build --config RelWithDebInfo 2>&1 | tee build-win-AC${{ matrix.ac }}.log
+
+      - name: .apx einsammeln
         run: |
           APX=$(find ELM_SAB_Tapir/Build -name "*.apx" -not -path "*DevKit*" | head -1)
+          if [ -z "$APX" ]; then
+            echo "::error::Keine .apx gefunden — der Build hat nichts erzeugt."
+            exit 1
+          fi
           echo "APX: $APX"
-          cp "$APX" ELM_SAB_Tapir_AC29_Win.apx
+          cp "$APX" ELM_SAB_Tapir_AC${{ matrix.ac }}_Win.apx
 
-      - name: Publish apx to rolling release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: elm-sab-tapir-latest
-          name: "ELM_SAB_Tapir Kombi latest (CI)"
-          prerelease: true
-          allowUpdates: true
-          artifacts: "ELM_SAB_Tapir_AC29_Win.apx"
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish build log
+      - name: Artefakt und Logs hochladen
         if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: win-AC${{ matrix.ac }}
+          path: |
+            ELM_SAB_Tapir_AC${{ matrix.ac }}_Win.apx
+            cmake-win-AC${{ matrix.ac }}.log
+            build-win-AC${{ matrix.ac }}.log
+          if-no-files-found: warn
+
+  publish:
+    name: In Release veröffentlichen
+    needs: [build_mac, build_win]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Alle Artefakte einsammeln
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Flach zusammenlegen und Bilanz ziehen
+        run: |
+          mkdir -p out
+          find dist -type f \( -name '*.zip' -o -name '*.apx' -o -name '*.log' \) -exec cp {} out/ \;
+          {
+            echo "Gebaut aus \`${GITHUB_SHA:0:7}\` — Basis Tapir 1.5.4 plus die SAB-eigenen Befehle."
+            echo
+            echo "| Archicad | macOS | Windows |"
+            echo "|---|---|---|"
+            for ac in 29 28 27; do
+              M="**fehlgeschlagen**"; W="**fehlgeschlagen**"
+              [ -f "out/ELM_SAB_Tapir_AC${ac}_Mac.zip" ] && M="\`ELM_SAB_Tapir_AC${ac}_Mac.zip\`"
+              [ -f "out/ELM_SAB_Tapir_AC${ac}_Win.apx" ] && W="\`ELM_SAB_Tapir_AC${ac}_Win.apx\`"
+              echo "| AC${ac} | ${M} | ${W} |"
+            done
+            echo
+            echo "Zu jeder fehlgeschlagenen Version liegt das passende \`build-*.log\` als Asset bei."
+            echo "Auf macOS nach dem Entpacken \`xattr -dr com.apple.quarantine\` auf das Bundle anwenden."
+          } > body.md
+          echo "---- Release-Text ----"; cat body.md
+          echo "---- Assets ----"; ls -l out/
+
+      - name: Release aktualisieren
         uses: ncipollo/release-action@v1
         with:
-          tag: elm-sab-tapir-latest
-          name: "ELM_SAB_Tapir Kombi latest (CI)"
+          tag: ${{ env.RELEASE_TAG }}
+          name: "ELM_SAB_Tapir — AC27/28/29 (CI)"
+          bodyFile: body.md
           prerelease: true
           allowUpdates: true
-          artifacts: "build-tapir-win.log"
+          artifacts: "out/*"
           token: ${{ secrets.GITHUB_TOKEN }}
