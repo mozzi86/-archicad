@@ -215,7 +215,14 @@ jobs:
       # Actions-Logs und Release-Assets ist er in einem privaten Repo auch per SSH
       # lesbar — `git fetch origin ci-status && git show origin/ci-status:status.md`.
       # Der Zweig liegt außerhalb der paths-Filter oben, löst also keinen neuen Lauf aus.
-      - name: Status auf Zweig ci-status ablegen
+      #
+      # Seit 2026-08-03 wandern auch die gebauten Add-On-Dateien mit (`bundles/`). Grund:
+      # Release-Assets brauchen einen Token, und ein nicht angemeldetes `gh` ist keins.
+      # Damit ist ein Bundle-Tausch ohne Browser und ohne Anmeldung möglich:
+      #   git fetch origin ci-status
+      #   git show origin/ci-status:bundles/ELM_SAB_Tapir_AC29_Mac.zip > bundle.zip
+      # Der Zweig wird als Waisen-Commit force-gepusht, wächst also nicht mit jedem Lauf.
+      - name: Status und Bundles auf Zweig ci-status ablegen
         run: |
           cp body.md status.md
           { echo "Commit: ${GITHUB_SHA}"; echo "Lauf:   ${GITHUB_RUN_ID}"; echo; ls -l out/; } > assets.txt
@@ -224,7 +231,9 @@ jobs:
           git checkout -q --orphan ci-status-tmp
           git rm -rq --cached . || true
           mkdir -p logs && cp out/*.log logs/ 2>/dev/null || true
-          git add -f status.md assets.txt logs
+          mkdir -p bundles && cp out/*.zip out/*.apx bundles/ 2>/dev/null || true
+          echo "---- was auf ci-status landet ----"; ls -l bundles/ || true
+          git add -f status.md assets.txt logs bundles
           git commit -qm "Build-Status ${GITHUB_SHA:0:7} (Lauf ${GITHUB_RUN_ID})"
           git push -qf origin HEAD:refs/heads/ci-status
 
