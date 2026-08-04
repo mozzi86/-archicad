@@ -65,6 +65,33 @@ Standard (User-Vorgabe vom 2026-07-17): **Jedes Element, das Claude erstellt, be
 - Setzen bevorzugt per HTTP-Bypass `API.SetPropertyValuesOfElements` (flaches Schema, `propertyValue {type:"string", status:"normal", value:"KI generiert <Datum>"}`), danach **Rücklese-Verifikation**.
 - Fehlt die Property im Projekt: User kurz informieren und bitten, sie im Eigenschaften-Manager anzulegen (Zeichenfolge, Gruppe „Allgemeine Werte", verfügbar für alle Klassifizierungen). Nicht still weglassen, nicht selbst per API anlegen (Property-Create in AC29 fragil: defaultValue-Pflicht, eigene Gruppe nötig, Availability-Kopplung).
 
+## API zuerst, UI nur wenn es sein muss <!-- 2026-07-30 -->
+
+Der Nutzer will Arbeit im Hintergrund erledigt sehen, nicht die Maus übernehmen müssen.
+Also: **bevor wir eine Aufgabe als „geht nur im UI" melden, fahren wir eine Discovery-Runde
+mit zwei Synonym-Queries.** Der MCP-Umfang wächst; mehrere Dinge, die früher als UI-only
+galten, sind längst per API machbar — Favoriten, Werkzeug-Defaults, Ebenen löschen,
+Ebenenkombinationen, Baustoffe anlegen, IFC exportieren.
+
+Bleibt ein echter UI-Schritt übrig, dann geben wir ihn als kurze Klickanleitung mit
+Zeitangabe und Erfolgsbedingung — und prüfen anschließend **selbst per API**, statt den
+Nutzer nachschauen zu lassen. UI-Schritte werden gebündelt, weil ein offener modaler Dialog
+jeden API-Call blockiert (Code `4001`). Was UI-only ist, was es nur zu sein scheint, und die
+Klickpfade: [`reference/ui-aufgaben.md`](reference/ui-aufgaben.md).
+
+## Ein `success` ist kein Beleg <!-- 2026-07-30 -->
+
+Mehrere Archicad-Endpoints melden Erfolg, ohne einen erbracht zu haben: Favoriten-Import
+ignoriert Dateien still, `apply_favorites_to_element_defaults` quittiert unpassende
+Favoriten, Library-Embed bestätigt Batches, deren Rücklese defekt ist. **Belegt ist eine
+Änderung erst durch einen frischen Read** — bei Favoriten durch einen Frisch-Export, bei
+Attributen durch erneutes Listen, bei Klassifizierung durch `dev_get_classifications_of_elements`.
+
+Umgekehrt gilt dasselbe für Nullbefunde: **„0 Treffer" ist erst ein Befund, wenn die
+Methode an einem bekannten Positivfall gegengeprüft wurde.** Ein Nullbefund ohne Gegenprobe
+hat in dieser Arbeit schon zur falschen Empfehlung geführt, Attribute zu löschen, die in
+Gebrauch waren — die Suche hatte den Attributtyp nicht unterschieden.
+
 ## Wo welches Wissen liegt
 
 ### Reference (Hintergrund + Konventionen)
@@ -78,6 +105,10 @@ Standard (User-Vorgabe vom 2026-07-17): **Jedes Element, das Claude erstellt, be
 - [`reference/dwg-ifc-kg300.md`](reference/dwg-ifc-kg300.md) — Verallgemeinerung der Pipeline auf KG 300 Baukonstruktionen (310 Baugrube bis 395 Sonstige): pro Cost-Group IFC-Entity + Polygonization-Strategie + DWG-Layer-Hints + Z-Schema, plus umgekehrte Richtung (Bulk-KG-Zuweisung auf bestehende Elemente) und Mapping zu SAB_Klassifizierung_29.
 - [`reference/self-improvement.md`](reference/self-improvement.md) — Wie der Skill aus Sessions lernt: Reflection-Trigger am Auftrags-Ende, Datums-Marker für neue Einträge, Verification-Loop bei Wiederholfehlern.
 - [`reference/mcp-extension.md`](reference/mcp-extension.md) — MCP-Stack-Architektur (tapir-archicad-mcp → Tapir-Add-On), Update-Prozedur, verifizierte Grenzen (kein Pen-Befehl, Layout-Buch-Lesen ja), Erweiterungs-Entscheidungsbaum und das hauseigene **ELM_SAB_Add-On** ([`ELM_SAB_Add-On/`](ELM_SAB_Add-On/)) mit `SetPenOfElements`.
+- [`reference/favoriten-und-defaults.md`](reference/favoriten-und-defaults.md) — Favoriten und Werkzeug-Standardeinstellungen per API umbauen: Export→Patch→Import-Round-Trip, die **AddPars-Falle**, textbasiertes XML-Patchen, Klassifizierungs-Block, Ebene an zwei Stellen, AttrTable-FourCC-Tabelle (live-verifiziert 2026-07-30 an 446 Favoriten).
+- [`reference/attribute-und-ebenen.md`](reference/attribute-und-ebenen.md) — Ebenen, Ebenenkombinationen (inkl. `intersectionGroupNr`), Baustoffe/Verbünde/Profile: Zwei-Schritt-Lesemuster, was per API löschbar ist und was in den Attributmanager gehört, Dubletten-Rezept, warum Umbenennen riskanter ist als Löschen.
+- [`reference/ifc-mapping-und-diagnose.md`](reference/ifc-mapping-und-diagnose.md) — Die **zwei getrennten IFC-Kanäle** (Typ-Zuordnungsbaum vs. Klassifizierungs-Checkbox), Übersetzer-Bäume, `dev_get_ifc_type_of_elements` als Proxy-Probe ohne Export, richtig zählen (RelatedObjects, nicht Relationen), Ziel-Mappings, Klassifikationsbäume per API.
+- [`reference/ui-aufgaben.md`](reference/ui-aufgaben.md) — Was wirklich UI-only ist und was fälschlich dafür gehalten wird, modale Dialoge (`4001`), macOS-Automation (Screenshot ja, Klicks nein), das Anleitungsformat, Klickpfade, ungesicherte Arbeit.
 - [`reference/referenzmodell-abgleich.md`](reference/referenzmodell-abgleich.md) — Zwei Modelle im selben Projekt abgleichen: Versatz per Passpunkt, Knautschzonen-Strategien (Hybrid statt Element-Matching), Property-/Klassifizierungs-Fallen (notAvailable, Enum-Formate), Teamwork-Diagnostik (live-verifiziert 2026-07-14).
 
 ### Recipes (pro Elementtyp)
@@ -92,6 +123,7 @@ Konkrete Rezepte werden in den Folgephasen mit live-verifizierten Inhalten gefü
 - [`recipes/treppen-aus-stufenlinien.md`](recipes/treppen-aus-stufenlinien.md) — Treppenläufe aus Stufenlinien-Clustern (CreateStairs, realistische Steigung, Deckenausschnitt; live-verifiziert 2026-07-14).
 - [`recipes/aussenwaende-aus-schraffur.md`](recipes/aussenwaende-aus-schraffur.md) — Schraffur-Trick: Außenwände aus Wand-Schraffur-Zellen, wenn Konturen nicht schließen (dünne Zellen vereinigen; live-verifiziert 2026-07-14).
 - [`recipes/pfaehle-aus-kreisen.md`](recipes/pfaehle-aus-kreisen.md) — Bohrpfähle/Bohrpfahlwände aus 2D-Kreisen + Kreis-Polylinien (Kreis-Fit, Selektion-als-Muster, tiefe Stützen über mehrere Geschosse; live-verifiziert 2026-07-14).
+- [`recipes/vorlagen-pflege.md`](recipes/vorlagen-pflege.md) — Bürovorlage (.tpl) umbauen: die **Reihenfolge** (Bibliotheken → Attribute → Favoriten → Properties → IFC-Übersetzer), Sicherungsstrategie, Abschlussbeleg, Fallen (live durchlaufen 2026-07-30).
 - [`recipes/wall-operations.md`](recipes/wall-operations.md) — Wand-Operationen (Lesen, Erstellen, Modifizieren, Löschen, Klassifizieren — Create seit Tapir 1.5.3 via `elements_create_walls`).
 - [`recipes/openings.md`](recipes/openings.md) — Fenster, Türen, Wandöffnungen.
 - [`recipes/slabs-columns-beams.md`](recipes/slabs-columns-beams.md) — Decken, Stützen, Träger.
