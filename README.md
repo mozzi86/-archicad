@@ -74,6 +74,32 @@ Direktlinks (falls ein Badge nicht lädt): [`…_Mac.zip`](https://github.com/mo
 
 > Die Downloads sind unsigniert bzw. ad-hoc signiert und tragen noch die Platzhalter-Developer-ID (MDID 1/1) — für den Einsatz auf dem eigenen Rechner ausreichend. Beide Artefakte baut die CI automatisch bei jeder Änderung unter `ELM_SAB_Add-On/`. Quelle + Build siehe [`ELM_SAB_Add-On/`](ELM_SAB_Add-On/).
 
+## ELMonkey SAB — Befehlsstatus (Kombi-Add-On `ELM_SAB_Tapir/`, Namespace `ELM_SAB`)
+
+Statustabelle nach dem Vorbild von revit-mcp-python — ✅ implementiert, 🔄 geplant.
+Nachfolger des alten ELM_SAB_Add-On: Tapir-Basis 1.5.4 plus alle SAB-Befehle in einem Bundle.
+Die CI baut AC27/28/29 × Mac/Win (`.github/workflows/build-elm-sab-tapir.yml`); Bundles liegen auf dem Zweig `ci-status` unter `bundles/`.
+
+| Befehl | Status | Seit | Zweck |
+|---|---|---|---|
+| `GetAddOnVersion` | ✅ | 0.9.9 | Version DIESES Bundles + Tapir-Unterbau + Build-Zeitstempel |
+| `CaptureView` | ✅ | 0.9.12 | Aktives Fenster (2D/3D) als PNG — visuelle Rücklese für Agenten |
+| `SetPenOfElements` / `GetPenOfElements` | ✅ | 0.9.0 | Stifte inkl. RGB-Overrides lesen/setzen (produktiv: 32.806 Elemente THN) |
+| `CreatePolygonWalls` | ✅ | 0.9.0 | Polygonwände aus Konturen |
+| `Get2DGeometryOfElements` | ✅ | 0.9.0 | 2D-Geometrie von Line/Arc/Circle/PolyLine/Hatch |
+| `GetTextsOfElements` / `SetTextsOfElements` | ✅ | 0.9.0 | Texte + Text-Labels lesen/ersetzen |
+| `SetTextSizeOfElements` | ✅ | 0.9.0 | Schriftgröße (mm oder Faktor) |
+| `SetAddParsOfElements` | ✅ | 0.9.0 | GDL-Parameter via Memo, crash-sicher, mit Rücklese |
+| `CreateRoofs` | ✅ | 0.9.0 | Ebene Dächer mit Pivotlinie und Neigung |
+| `GetColumnDetails` / `SetColumnDetails` / `SetColumnRotation` | ✅ | 0.9.5/0.9.6 | Stützen-Drehwinkel, Ursprung, Kernmaße |
+| `CreateCurtainWallFromAxes` | ✅ | 0.9.8 | Pfosten-Riegel-Fassade aus Achsmaßen, auch Trapez/Giebel |
+| Skript-Bestätigungsdialog (Palette) | ✅ | 0.9.12 | Rückfrage vor jedem Paletten-Skript; verschärft für UnusedViewCleaner |
+| 2D-Element-Zeichner (Linien/Kreise/Schraffuren erstellen) | 🔄 | — | Spec ready-for-agent in `~/.scratch/elmonkey/2d-element-zeichner/` |
+| `UpdateDrawings`-Fix (Tapir liefert -2130312306) | 🔄 | — | Kontextfrage offen, Upstream-PR-Kandidat |
+| Tapir-Unterbau 1.5.7 nachziehen | 🔄 | — | Auto-Update bewusst still — manueller Merge nötig |
+
+Python-Seite dazu (kein C++, via `scripts/arc`): `arc launch` (Start + API-Polling), `arc view-elements` (Elemente im aktiven Fenster), `arc splash` (Einfärben nach Property-Wert + Legende, `--clear` räumt auf).
+
 ## Installation
 
 ### Schritt 1 — Repo klonen
@@ -129,6 +155,9 @@ arc info               # Projekt + Story
 arc zones              # alle Zonen-GUIDs
 arc tapir GetElementsByType '{"elementType":"Wall"}'
 arc call GetProjectInfo
+arc launch Projekt.pln # Archicad kontrolliert starten + auf JSON-API warten
+arc view-elements      # Elemente im aktiven Fenster
+arc splash "Tragende Funktion"   # Einfärben nach Property-Wert (--clear räumt auf)
 ```
 
 Details: `arc --help` und `reference/mcp-conventions.md § Direkter HTTP-Zugriff`.
