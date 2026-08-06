@@ -3,10 +3,15 @@ name: Build ELM_SAB_Tapir (Kombi-Add-On, AC27/28/29)
 permissions:
   contents: write
 
+# Negationen nach pyRevit-Vorbild (Fingerprint-Idee, billige Variante): Doku- und
+# Beispiel-Änderungen unterhalb von ELM_SAB_Tapir/ ändern nichts am Bundle — ein
+# 6-Kombi-Lauf kostet aber zweistellige macOS-Minuten (zählen zehnfach).
 on:
   push:
     paths:
       - 'ELM_SAB_Tapir/**'
+      - '!ELM_SAB_Tapir/**/*.md'
+      - '!ELM_SAB_Tapir/Examples/**'
       - '.github/workflows/build-elm-sab-tapir.yml'
   workflow_dispatch:
 
