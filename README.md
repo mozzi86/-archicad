@@ -92,7 +92,7 @@ Die CI baut AC27/28/29 × Mac/Win (`.github/workflows/build-elm-sab-tapir.yml`);
 | `SetAddParsOfElements` | ✅ | 0.9.0 | GDL-Parameter via Memo, crash-sicher, mit Rücklese |
 | `CreateRoofs` | ✅ | 0.9.0 | Ebene Dächer mit Pivotlinie und Neigung |
 | `GetColumnDetails` / `SetColumnDetails` / `SetColumnRotation` | ✅ | 0.9.5/0.9.6 | Stützen-Drehwinkel, Ursprung, Kernmaße |
-| `CreateCurtainWallFromAxes` | ✅ | 0.9.8 | Pfosten-Riegel-Fassade aus Achsmaßen, auch Trapez/Giebel |
+| `CreateCurtainWallFromAxes` | ✅ | 0.9.8 | Pfosten-Riegel-Fassade aus Achsmaßen, auch Trapez/Giebel; seit 0.9.14 auch geneigt (`angle` in Grad, ✅* Live-Test offen) |
 | Sicherheitsrückfrage UnusedViewCleaner (Palette) | ✅* | 0.9.13 | Bestätigungsdialog vor dem Löschen unplatzierter Ausschnitte, Abbrechen = Default |
 | 2D-Element-Zeichner (Linien/Kreise/Schraffuren erstellen) | 🔄 | — | Spec ready-for-agent in `~/.scratch/elmonkey/2d-element-zeichner/` |
 | `UpdateDrawings`-Fix (Tapir liefert -2130312306) | 🔄 | — | Kontextfrage offen, Upstream-PR-Kandidat |
