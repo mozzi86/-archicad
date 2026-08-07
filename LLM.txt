@@ -24,7 +24,7 @@ Kurzfassung — die Tiefen-Doku mit allen live erlebten Fallen bleibt kanonisch 
 
 - `ELM_SAB_Tapir/` — das Kombi-Add-On (Tapir-Fork + ELM_SAB-Befehle). DIE Quelle.
   - `Sources/ELMCommandBase.hpp` — Basisklasse für ELM_SAB-Befehle
-  - `Sources/AddOnMain.cpp` — Registrierung (Block „ELM_SAB Commands", ~Zeile 939)
+  - `Sources/AddOnMain.cpp` — Registrierung (nach Kommentar „ELM_SAB Commands" suchen)
   - `Sources/AddOnVersion.hpp` — ELM_SAB_VERSION: bei JEDER Befehls-Änderung bumpen
 - `ELM_SAB_Add-On/` — Vorgänger-Add-On (nur noch Referenz, nicht weiterentwickeln)
 - `SKILL.md`, `reference/`, `recipes/`, `commands/` — der Claude-Code-Skill

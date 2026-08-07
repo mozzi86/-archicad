@@ -83,7 +83,7 @@ Die CI baut AC27/28/29 × Mac/Win (`.github/workflows/build-elm-sab-tapir.yml`);
 | Befehl | Status | Seit | Zweck |
 |---|---|---|---|
 | `GetAddOnVersion` | ✅ | 0.9.9 | Version DIESES Bundles + Tapir-Unterbau + Build-Zeitstempel |
-| `CaptureView` | ✅ | 0.9.12 | Aktives Fenster (2D/3D) als PNG — visuelle Rücklese für Agenten |
+| `CaptureView` | ✅* | 0.9.12 | Aktives Fenster (2D/3D) als PNG — visuelle Rücklese für Agenten (seit 0.9.13 mit Datei-Existenz-Rücklese) |
 | `SetPenOfElements` / `GetPenOfElements` | ✅ | 0.9.0 | Stifte inkl. RGB-Overrides lesen/setzen (produktiv: 32.806 Elemente THN) |
 | `CreatePolygonWalls` | ✅ | 0.9.0 | Polygonwände aus Konturen |
 | `Get2DGeometryOfElements` | ✅ | 0.9.0 | 2D-Geometrie von Line/Arc/Circle/PolyLine/Hatch |
@@ -93,12 +93,14 @@ Die CI baut AC27/28/29 × Mac/Win (`.github/workflows/build-elm-sab-tapir.yml`);
 | `CreateRoofs` | ✅ | 0.9.0 | Ebene Dächer mit Pivotlinie und Neigung |
 | `GetColumnDetails` / `SetColumnDetails` / `SetColumnRotation` | ✅ | 0.9.5/0.9.6 | Stützen-Drehwinkel, Ursprung, Kernmaße |
 | `CreateCurtainWallFromAxes` | ✅ | 0.9.8 | Pfosten-Riegel-Fassade aus Achsmaßen, auch Trapez/Giebel |
-| Skript-Bestätigungsdialog (Palette) | ✅ | 0.9.12 | Rückfrage vor jedem Paletten-Skript; verschärft für UnusedViewCleaner |
+| Sicherheitsrückfrage UnusedViewCleaner (Palette) | ✅* | 0.9.13 | Bestätigungsdialog vor dem Löschen unplatzierter Ausschnitte, Abbrechen = Default |
 | 2D-Element-Zeichner (Linien/Kreise/Schraffuren erstellen) | 🔄 | — | Spec ready-for-agent in `~/.scratch/elmonkey/2d-element-zeichner/` |
 | `UpdateDrawings`-Fix (Tapir liefert -2130312306) | 🔄 | — | Kontextfrage offen, Upstream-PR-Kandidat |
 | Tapir-Unterbau 1.5.7 nachziehen | 🔄 | — | Auto-Update bewusst still — manueller Merge nötig |
 
-Python-Seite dazu (kein C++, via `scripts/arc`): `arc launch` (Start + API-Polling), `arc view-elements` (Elemente im aktiven Fenster), `arc splash` (Einfärben nach Property-Wert + Legende, `--clear` räumt auf).
+\* CI-gebaut und im Binary verifiziert, aber noch nicht live am Modell getestet (Bundle-Einbau ausstehend) — Konvention „Live-Verifikation Pflicht" gilt, der Haken wird nach dem ersten Live-Lauf bestätigt.
+
+Python-Seite dazu (kein C++, via `scripts/arc`): `arc launch` (Start + API-Polling), `arc view-elements` (Elemente im aktiven Fenster, live verifiziert), `arc splash` (Einfärben nach Property-Wert + Legende, `--clear` räumt auf).
 
 ## Installation
 
