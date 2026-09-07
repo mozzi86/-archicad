@@ -123,6 +123,7 @@ Konkrete Rezepte werden in den Folgephasen mit live-verifizierten Inhalten gefü
 - [`recipes/treppen-aus-stufenlinien.md`](recipes/treppen-aus-stufenlinien.md) — Treppenläufe aus Stufenlinien-Clustern (CreateStairs, realistische Steigung, Deckenausschnitt; live-verifiziert 2026-07-14).
 - [`recipes/aussenwaende-aus-schraffur.md`](recipes/aussenwaende-aus-schraffur.md) — Schraffur-Trick: Außenwände aus Wand-Schraffur-Zellen, wenn Konturen nicht schließen (dünne Zellen vereinigen; live-verifiziert 2026-07-14).
 - [`recipes/pfaehle-aus-kreisen.md`](recipes/pfaehle-aus-kreisen.md) — Bohrpfähle/Bohrpfahlwände aus 2D-Kreisen + Kreis-Polylinien (Kreis-Fit, Selektion-als-Muster, tiefe Stützen über mehrere Geschosse; live-verifiziert 2026-07-14).
+- [`recipes/gelaende-aus-punktwolke.md`](recipes/gelaende-aus-punktwolke.md) — Gelände (Mesh) als Boden-„Abdruck" einer platzierten Punktwolke: E57 → 1-m-Bodenraster → Sublines-je-Zeile → Tapir CreateMeshes; Lage-Regel BBox-Min = Objektursprung, skirtLevel absolut (live-verifiziert 2026-09-07).
 - [`recipes/vorlagen-pflege.md`](recipes/vorlagen-pflege.md) — Bürovorlage (.tpl) umbauen: die **Reihenfolge** (Bibliotheken → Attribute → Favoriten → Properties → IFC-Übersetzer), Sicherungsstrategie, Abschlussbeleg, Fallen (live durchlaufen 2026-07-30).
 - [`recipes/wall-operations.md`](recipes/wall-operations.md) — Wand-Operationen (Lesen, Erstellen, Modifizieren, Löschen, Klassifizieren — Create seit Tapir 1.5.3 via `elements_create_walls`).
 - [`recipes/openings.md`](recipes/openings.md) — Fenster, Türen, Wandöffnungen.
