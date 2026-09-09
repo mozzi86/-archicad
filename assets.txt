@@ -1,0 +1,22 @@
+Commit: f0e2c53e153f8f7363bc81abca9b7b9e93671700
+Lauf:   34348384657
+
+total 14900
+-rw-r--r-- 1 runner runner 1671696 Sep  9 12:02 ELM_SAB_Tapir_AC27_Mac.zip
+-rw-r--r-- 1 runner runner 2887168 Sep  9 12:02 ELM_SAB_Tapir_AC27_Win.apx
+-rw-r--r-- 1 runner runner 1681454 Sep  9 12:02 ELM_SAB_Tapir_AC28_Mac.zip
+-rw-r--r-- 1 runner runner 2882048 Sep  9 12:02 ELM_SAB_Tapir_AC28_Win.apx
+-rw-r--r-- 1 runner runner 1788305 Sep  9 12:02 ELM_SAB_Tapir_AC29_Mac.zip
+-rw-r--r-- 1 runner runner 3225600 Sep  9 12:02 ELM_SAB_Tapir_AC29_Win.apx
+-rw-r--r-- 1 runner runner  359747 Sep  9 12:02 build-mac-AC27.log
+-rw-r--r-- 1 runner runner  352805 Sep  9 12:02 build-mac-AC28.log
+-rw-r--r-- 1 runner runner  353725 Sep  9 12:02 build-mac-AC29.log
+-rw-r--r-- 1 runner runner    2439 Sep  9 12:02 build-win-AC27.log
+-rw-r--r-- 1 runner runner    2439 Sep  9 12:02 build-win-AC28.log
+-rw-r--r-- 1 runner runner    3461 Sep  9 12:02 build-win-AC29.log
+-rw-r--r-- 1 runner runner    1003 Sep  9 12:02 cmake-mac-AC27.log
+-rw-r--r-- 1 runner runner    1003 Sep  9 12:02 cmake-mac-AC28.log
+-rw-r--r-- 1 runner runner    1003 Sep  9 12:02 cmake-mac-AC29.log
+-rw-r--r-- 1 runner runner    1049 Sep  9 12:02 cmake-win-AC27.log
+-rw-r--r-- 1 runner runner    1049 Sep  9 12:02 cmake-win-AC28.log
+-rw-r--r-- 1 runner runner    1049 Sep  9 12:02 cmake-win-AC29.log

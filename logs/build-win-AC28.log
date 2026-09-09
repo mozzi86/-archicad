@@ -1,0 +1,71 @@
+MSBuild version 17.14.51+25f168cee for .NET Framework
+
+  Checking File Globs
+  1>Checking Build System
+  Compiling resources...
+  AddOn.grc
+  AddOnFix.grc
+  Microsoft (R) Windows (R) Resource Compiler Version 10.0.10011.16384
+  
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  
+  
+  Building Custom Rule D:/a/-archicad/-archicad/ELM_SAB_Tapir/CMakeLists.txt
+  3DCutPlaneCommands.cpp
+  AboutDialog.cpp
+  AddOnMain.cpp
+  ApplicationCommands.cpp
+  AttributeCommands.cpp
+  ClassificationCommands.cpp
+  CommandBase.cpp
+  Config.cpp
+  CreateCurtainWallCommand.cpp
+  CreatePolygonWallsCommand.cpp
+  CreateRoofsCommand.cpp
+  CreateWallOpeningsCommand.cpp
+  DesignOptionCommands.cpp
+  DeveloperTools.cpp
+  DocumentCreationCommands.cpp
+  ElementCommands.cpp
+  ElementCreationCommands.cpp
+  ElementGDLParameterCommands.cpp
+  ElementGroupingCommands.cpp
+  EventLogCommands.cpp
+  Generating Code...
+  Compiling...
+  ExtendedElementCommands.cpp
+  FavoritesCommands.cpp
+  Get2DGeometryCommand.cpp
+  GetColumnDetailsCommand.cpp
+  GetPenOfElementsCommand.cpp
+  GetTextsCommand.cpp
+  IFCCommands.cpp
+  InspectionCommands.cpp
+  IssueCommands.cpp
+  LibraryCommands.cpp
+  NavigatorCommands.cpp
+  NotificationCommands.cpp
+  ProjectCommands.cpp
+  PropertyCommands.cpp
+  RevisionCommands.cpp
+  SchemaDefinitions.cpp
+  SetAddParsCommand.cpp
+  SetColumnDetailsCommand.cpp
+  SetColumnRotationCommand.cpp
+  SetObjectParametersForceCommand.cpp
+  Generating Code...
+  Compiling...
+  SetPenOfElementsCommand.cpp
+  SetTextSizeCommand.cpp
+  SetTextsCommand.cpp
+  SolidElementOperationCommands.cpp
+  StoryVisibilityCommands.cpp
+  TapirPalette.cpp
+  TeamworkCommands.cpp
+  UvManager.cpp
+  VersionChecker.cpp
+  Generating Code...
+ACAP_STAT.lib(ACAPlib_.obj) : warning LNK4099: PDB 'API_c.pdb' was not found with 'ACAP_STAT.lib(ACAPlib_.obj)' or at 'D:\a\-archicad\-archicad\ELM_SAB_Tapir\Build\RelWithDebInfo\API_c.pdb'; linking object as if no debug info [D:\a\-archicad\-archicad\ELM_SAB_Tapir\Build\AddOn.vcxproj]
+     Creating library D:/a/-archicad/-archicad/ELM_SAB_Tapir/Build/RelWithDebInfo/ELM_SAB_AC28_Win.lib and object D:/a/-archicad/-archicad/ELM_SAB_Tapir/Build/RelWithDebInfo/ELM_SAB_AC28_Win.exp
+  AddOn.vcxproj -> D:\a\-archicad\-archicad\ELM_SAB_Tapir\Build\RelWithDebInfo\ELM_SAB_AC28_Win.apx
+  Building Custom Rule D:/a/-archicad/-archicad/ELM_SAB_Tapir/CMakeLists.txt
