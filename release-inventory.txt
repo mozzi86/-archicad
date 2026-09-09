@@ -1,0 +1,32 @@
+Release-Inventur, Lauf 34348780741, Stand 2026-09-09 12:02 UTC
+Tag:          elm-sab-tapir-latest
+Vorabversion: true
+Publiziert:   2026-07-16T12:16:23Z
+Anzahl Assets: 18
+
+ELM_SAB_Tapir_AC27_Mac.zip            1671696 Bytes   2026-09-09T12:02:41Z
+ELM_SAB_Tapir_AC27_Win.apx            2887168 Bytes   2026-09-09T12:02:40Z
+ELM_SAB_Tapir_AC28_Mac.zip            1681454 Bytes   2026-09-09T12:02:39Z
+ELM_SAB_Tapir_AC28_Win.apx            2882048 Bytes   2026-09-09T12:02:39Z
+ELM_SAB_Tapir_AC29_Mac.zip            1788305 Bytes   2026-09-09T12:02:38Z
+ELM_SAB_Tapir_AC29_Win.apx            3225600 Bytes   2026-09-09T12:02:37Z
+build-mac-AC27.log                     359747 Bytes   2026-09-09T12:02:37Z
+build-mac-AC28.log                     352805 Bytes   2026-09-09T12:02:36Z
+build-mac-AC29.log                     353725 Bytes   2026-09-09T12:02:36Z
+build-win-AC27.log                       2439 Bytes   2026-09-09T12:02:35Z
+build-win-AC28.log                       2439 Bytes   2026-09-09T12:02:35Z
+build-win-AC29.log                       3461 Bytes   2026-09-09T12:02:34Z
+cmake-mac-AC27.log                       1003 Bytes   2026-09-09T12:02:34Z
+cmake-mac-AC28.log                       1003 Bytes   2026-09-09T12:02:33Z
+cmake-mac-AC29.log                       1003 Bytes   2026-09-09T12:02:33Z
+cmake-win-AC27.log                       1049 Bytes   2026-09-09T12:02:32Z
+cmake-win-AC28.log                       1049 Bytes   2026-09-09T12:02:32Z
+cmake-win-AC29.log                       1049 Bytes   2026-09-09T12:02:31Z
+
+Erwartet werden sechs Add-On-Dateien:
+  vorhanden: ELM_SAB_Tapir_AC27_Mac.zip
+  vorhanden: ELM_SAB_Tapir_AC27_Win.apx
+  vorhanden: ELM_SAB_Tapir_AC28_Mac.zip
+  vorhanden: ELM_SAB_Tapir_AC28_Win.apx
+  vorhanden: ELM_SAB_Tapir_AC29_Mac.zip
+  vorhanden: ELM_SAB_Tapir_AC29_Win.apx
