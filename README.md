@@ -43,8 +43,8 @@ Außerdem:
 ## Voraussetzungen
 
 1. **Claude Code** installiert ([Anthropic-Doku](https://docs.anthropic.com/claude-code))
-2. **Archicad-MCP-Server** konfiguriert (z. B. via [`tapir-archicad-mcp`](https://github.com/SzamosiMate/tapir-archicad-MCP) — Registrierung als `archicad` in `~/.claude.json`)
-3. **Archicad 27+** mit aktiviertem [Tapir Add-On](https://github.com/ENZYME-APD/tapir-archicad-automation) (Port 19723)
+2. **MCP-Server `elmonkey-mcp`** aus diesem Repo (`mcp/elmonkey-mcp`, Registrierung als `archicad`) — ersetzt seit 2026-10-14 `tapir-archicad-mcp`
+3. **Archicad 27+** mit **ELMonkey** (Tapir ist eingebaut — kein separates Tapir-Add-On installieren). Einrichtung per Installer: [`recipes/initial-setup.md`](recipes/initial-setup.md)
 4. **Archicad-Projekt offen** (Solo oder Teamwork)
 
 ## ELM_SAB Add-On (optional, empfohlen)

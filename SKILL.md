@@ -115,7 +115,7 @@ Gebrauch waren — die Suche hatte den Attributtyp nicht unterschieden.
 
 Konkrete Rezepte werden in den Folgephasen mit live-verifizierten Inhalten gefüllt. In Phase 1 sind sie als geplante Speicherorte gelistet:
 
-- [`recipes/initial-setup.md`](recipes/initial-setup.md) — **Einmalige Erstinstallation**: Tapir-Add-On + MCP-Server (`tapir-archicad-mcp` via uv) + Claude-Registrierung + Smoke-Test. Hierhin, wenn `mcp__archicad__*`-Tools fehlen oder ein Kollege den Skill neu einrichtet. <!-- 2026-07-10 -->
+- [`recipes/initial-setup.md`](recipes/initial-setup.md) — **Einmalige Erstinstallation**: ELMonkey per Installer (Tapir eingebaut, KEIN separates Tapir) + MCP-Server `elmonkey-mcp` via uv + Claude-Registrierung + Smoke-Test. Hierhin, wenn `mcp__archicad__*`-Tools fehlen oder ein Kollege den Skill neu einrichtet. <!-- 2026-07-10 -->
 - [`recipes/konturen-zu-waende.md`](recipes/konturen-zu-waende.md) — 2D-Konturen → Polygon-Wände: Pipeline, SAB-Regeln (Quell-Ebene=Ziel-Ebene), Gotchas, THN-Worked-Example (live-verifiziert 2026-07-13).
 - [`recipes/decken-und-durchbrueche.md`](recipes/decken-und-durchbrueche.md) — Decken + Durchbruch-Löcher aus Konturen (Footprint-Union, CreateSlabs häppchenweise, Absturz-Lehren; live-verifiziert 2026-07-14).
 - [`recipes/oeffnungen-aus-konturen.md`](recipes/oeffnungen-aus-konturen.md) — Durchbrüche (BD/FBA/WD) als Öffnungs-Elemente mit SAB-Favoriten, normalisiert Rechteck/Kernbohrung, Maße+Höhen aus DWG-Texten (GetTextsOfElements v0.5); inkl. ModifySlabs-Crash-Bug (live-verifiziert 2026-07-14).
