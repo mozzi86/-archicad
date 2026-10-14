@@ -13,6 +13,7 @@ on:
       - '!ELM_SAB_Tapir/**/*.md'
       - '!ELM_SAB_Tapir/Examples/**'
       - '.github/workflows/build-elm-sab-tapir.yml'
+      - 'installer/**'
   workflow_dispatch:
 
 env:
@@ -198,7 +199,15 @@ jobs:
         run: |
           mkdir -p out
           find dist -type f \( -name '*.zip' -o -name '*.apx' -o -name '*.log' \) -exec cp {} out/ \;
+          # ELMonkey 0.9.30: Version fuer Release-Namen (liest der Versionspruefer im Add-On)
+          # und die Installer als Assets mitliefern.
+          ELM_VER=$(sed -n 's/^#define ELM_SAB_VERSION "\(.*\)"/\1/p' ELM_SAB_Tapir/Sources/AddOnVersion.hpp)
+          echo "ELM_VER=${ELM_VER}" >> "$GITHUB_ENV"
+          echo "${ELM_VER}" > out/elmonkey-version.txt
+          cp installer/ELMonkey-Installer-Mac.command installer/ELMonkey-Installer-Windows.ps1 installer/ELMonkey-Installer-Windows.cmd out/ 2>/dev/null || true
           {
+            echo "**ELMonkey ${ELM_VER}** — Installation: Archicad beenden, \`ELMonkey-Installer-Mac.command\` (Mac) bzw. \`ELMonkey-Installer-Windows.cmd\` (Windows) laden und doppelklicken."
+            echo
             echo "Gebaut aus \`${GITHUB_SHA:0:7}\` — Basis Tapir 1.5.4 plus die SAB-eigenen Befehle."
             echo
             echo "| Archicad | macOS | Windows |"
@@ -242,7 +251,11 @@ jobs:
           git commit -qm "Build-Status ${GITHUB_SHA:0:7} (Lauf ${GITHUB_RUN_ID})"
           git push -qf origin HEAD:refs/heads/ci-status
 
+      # ELMonkey 0.9.30: Das Release ist die Installationsquelle fuer alle Kollegen (Installer,
+      # Update-Hinweis im Add-On) - es darf nur den main-Stand zeigen. Branch-Builds landen
+      # weiterhin auf ci-status.
       - name: Release aktualisieren
+        if: github.ref == 'refs/heads/main'
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ env.RELEASE_TAG }}
@@ -250,7 +263,7 @@ jobs:
           # ersten Build stehen, und man kann von außen nicht erkennen, aus welchem
           # Stand die Assets stammen.
           commit: ${{ github.sha }}
-          name: "ELM_SAB_Tapir — AC27/28/29 (CI)"
+          name: "ELMonkey ${{ env.ELM_VER }} — AC27/28/29 (CI)"
           bodyFile: body.md
           prerelease: true
           allowUpdates: true
