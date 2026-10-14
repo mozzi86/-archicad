@@ -1,0 +1,26 @@
+Commit: 83896deb8fa34dc2bc7f4f5b9ddef2e6bbf17e31
+Lauf:   38584401240
+
+total 18612
+-rw-r--r-- 1 runner runner 2151740 Oct 14 14:56 ELM_SAB_Tapir_AC27_Mac.zip
+-rw-r--r-- 1 runner runner 3590656 Oct 14 14:56 ELM_SAB_Tapir_AC27_Win.apx
+-rw-r--r-- 1 runner runner 2164713 Oct 14 14:56 ELM_SAB_Tapir_AC28_Mac.zip
+-rw-r--r-- 1 runner runner 3587072 Oct 14 14:56 ELM_SAB_Tapir_AC28_Win.apx
+-rw-r--r-- 1 runner runner 2281360 Oct 14 14:56 ELM_SAB_Tapir_AC29_Mac.zip
+-rw-r--r-- 1 runner runner 4023296 Oct 14 14:56 ELM_SAB_Tapir_AC29_Win.apx
+-rwxr-xr-x 1 runner runner    4562 Oct 14 14:56 ELMonkey-Installer-Mac.command
+-rw-r--r-- 1 runner runner     795 Oct 14 14:56 ELMonkey-Installer-Windows.cmd
+-rw-r--r-- 1 runner runner    4606 Oct 14 14:56 ELMonkey-Installer-Windows.ps1
+-rw-r--r-- 1 runner runner  398555 Oct 14 14:56 build-mac-AC27.log
+-rw-r--r-- 1 runner runner  391601 Oct 14 14:56 build-mac-AC28.log
+-rw-r--r-- 1 runner runner  392521 Oct 14 14:56 build-mac-AC29.log
+-rw-r--r-- 1 runner runner    2605 Oct 14 14:56 build-win-AC27.log
+-rw-r--r-- 1 runner runner    2605 Oct 14 14:56 build-win-AC28.log
+-rw-r--r-- 1 runner runner    3627 Oct 14 14:56 build-win-AC29.log
+-rw-r--r-- 1 runner runner    1003 Oct 14 14:56 cmake-mac-AC27.log
+-rw-r--r-- 1 runner runner    1003 Oct 14 14:56 cmake-mac-AC28.log
+-rw-r--r-- 1 runner runner    1003 Oct 14 14:56 cmake-mac-AC29.log
+-rw-r--r-- 1 runner runner    1049 Oct 14 14:56 cmake-win-AC27.log
+-rw-r--r-- 1 runner runner    1049 Oct 14 14:56 cmake-win-AC28.log
+-rw-r--r-- 1 runner runner    1049 Oct 14 14:56 cmake-win-AC29.log
+-rw-r--r-- 1 runner runner       7 Oct 14 14:56 elmonkey-version.txt
