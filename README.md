@@ -1,10 +1,10 @@
 # ELMonkey + Archicad skill for Claude Code
 
-**EN** — Let Claude work inside a running Archicad project: build and change model and 2D elements, classify in bulk, set properties, check and read everything back. Two parts: the **ELMonkey add-on** (Archicad 27/28/29, Mac + Windows, with [Tapir](https://github.com/ENZYME-APD/tapir-archicad-automation) built in) and the **Claude Code skill** in this repo, connected through the bundled MCP server `elmonkey-mcp`.
+**EN** — Let Claude work inside a running Archicad project: build and change model and 2D elements, classify in bulk, set properties, check and read everything back. Two parts: the **ELMonkey add-on** (Archicad 27/28/29/30, Mac + Windows, with [Tapir](https://github.com/ENZYME-APD/tapir-archicad-automation) built in) and the **Claude Code skill** in this repo, connected through the bundled MCP server `elmonkey-mcp`.
 
-**DE** — Claude arbeitet direkt im laufenden Archicad-Projekt: Modell- und 2D-Elemente erstellen und ändern, in Masse klassifizieren, Eigenschaften setzen, alles prüfen und zurücklesen. Zwei Teile: das **ELMonkey-Add-On** (Archicad 27/28/29, Mac + Windows, [Tapir](https://github.com/ENZYME-APD/tapir-archicad-automation) eingebaut) und der **Claude-Code-Skill** in diesem Repo, verbunden über den mitgelieferten MCP-Server `elmonkey-mcp`.
+**DE** — Claude arbeitet direkt im laufenden Archicad-Projekt: Modell- und 2D-Elemente erstellen und ändern, in Masse klassifizieren, Eigenschaften setzen, alles prüfen und zurücklesen. Zwei Teile: das **ELMonkey-Add-On** (Archicad 27/28/29/30, Mac + Windows, [Tapir](https://github.com/ENZYME-APD/tapir-archicad-automation) eingebaut) und der **Claude-Code-Skill** in diesem Repo, verbunden über den mitgelieferten MCP-Server `elmonkey-mcp`.
 
-Live-verified on real BIM projects (Teamwork and solo, AC29). · Live erprobt an echten BIM-Projekten (Teamwork und Solo, AC29).
+Live-verified on real BIM projects (Teamwork and solo, AC29). Built on Tapir 1.7.2. · Live erprobt an echten BIM-Projekten (Teamwork und Solo, AC29). Basis: Tapir 1.7.2.
 
 ---
 
@@ -48,7 +48,7 @@ Step-by-step recipe with all pitfalls · Schritt-für-Schritt-Rezept mit allen F
   ```
 - **Windows:** [`ELMonkey-Installer-Windows.cmd`](https://github.com/mozzi86/-archicad/releases/download/elm-sab-tapir-latest/ELMonkey-Installer-Windows.cmd) (asks for admin rights · fragt nach Administratorrechten)
 
-The installer finds every Archicad 27/28/29, installs the matching bundle and backs up existing ELMonkey/Tapir add-ons to `~/ELM_SAB_Backups/`. Later updates: menu **ELMonkey SAB → About → Check for updates**. · Der Installer findet alle Archicad 27/28/29, installiert das passende Bundle und sichert vorhandene ELMonkey-/Tapir-Add-Ons nach `~/ELM_SAB_Backups/`. Updates später: Menü **ELMonkey SAB → Über → Nach Updates suchen**.
+The installer finds every Archicad 27/28/29/30, installs the matching bundle and backs up existing ELMonkey/Tapir add-ons to `~/ELM_SAB_Backups/`. Later updates: menu **ELMonkey SAB → About → Check for updates**. · Der Installer findet alle Archicad 27/28/29/30, installiert das passende Bundle und sichert vorhandene ELMonkey-/Tapir-Add-Ons nach `~/ELM_SAB_Backups/`. Updates später: Menü **ELMonkey SAB → Über → Nach Updates suchen**.
 
 **2. MCP server · MCP-Server** (needs · braucht [`uv`](https://docs.astral.sh/uv/)):
 
@@ -76,7 +76,7 @@ Restart Claude Code and ask "Which Archicad instance is running?" · Claude Code
 
 ## ELMonkey commands · ELMonkey-Befehle (namespace `ELM_SAB`)
 
-44 own commands on top of Tapir's ~175. "Since" is the ELMonkey version that added or last changed the command. All write commands read back what Archicad actually stored. · 44 eigene Befehle zusätzlich zu Tapirs rund 175. „Seit“ ist die ELMonkey-Version, die den Befehl gebracht oder zuletzt geändert hat. Alle schreibenden Befehle lesen zurück, was Archicad wirklich gespeichert hat.
+44 own commands on top of Tapir's 314 (Tapir 1.7.2). "Since" is the ELMonkey version that added or last changed the command. All write commands read back what Archicad actually stored. · 44 eigene Befehle zusätzlich zu Tapirs 314 (Tapir 1.7.2). „Seit“ ist die ELMonkey-Version, die den Befehl gebracht oder zuletzt geändert hat. Alle schreibenden Befehle lesen zurück, was Archicad wirklich gespeichert hat.
 
 ### Model elements · Bauteile
 
@@ -127,23 +127,24 @@ Restart Claude Code and ask "Which Archicad instance is running?" · Claude Code
 | `FindElements` | 0.9.23 | Search like "Find & Select": type, story, layer, property, classification, library part, IFC, Teamwork, host/opening, zone, area … nested and/or/not; optional selection | Suche wie „Suchen & Aktivieren“: Typ, Geschoss, Ebene, Eigenschaft, Klassifizierung, Bibliotheksteil, IFC, Teamwork, Wirt/Öffnung, Zone, Bereich … beliebig verschachtelt; optional auswählen |
 | `GetElementEditState` | 0.9.17 | Tells per element whether and why it can be edited (hidden/locked layer, hotlink, reserved by others …) | Meldet je Element, ob und warum es änderbar ist (Ebene aus/gesperrt, Hotlink, fremd reserviert …) |
 | `GetDeviations` | 0.9.17 | Compares actual dimensions against target values, deviation per axis in mm with tolerance verdict | Vergleicht Ist-Maße mit Sollmaßen, Abweichung je Achse in mm mit Toleranzurteil |
-| `SaveProjectCopy` | 0.9.34 | Backup copy of a local project (save + copy); the open project stays the original; refuses Teamwork/untitled and the original path | Sicherungskopie eines lokalen Projekts (sichern + kopieren); das offene Projekt bleibt das Original; lehnt Teamwork/unbenannt und den Originalpfad ab |
+| `SaveProjectCopy` | 0.10.0 | Backup copy of a local project (save + copy); the open project stays the original; saves like Tapir's `SaveProject` (floor plan briefly active), so a project opened read-only is never overwritten; refuses Teamwork/untitled and the original path | Sicherungskopie eines lokalen Projekts (sichern + kopieren); das offene Projekt bleibt das Original; sichert wie Tapirs `SaveProject` (Grundriss kurz aktiv), ein schreibgeschützt geöffnetes Projekt wird nie überschrieben; lehnt Teamwork/unbenannt und den Originalpfad ab |
 | `CaptureView` | 0.9.25 | Saves the active window (2D or 3D) as PNG — visual check for agents | Speichert das aktive Fenster (2D oder 3D) als PNG — Sichtkontrolle für Agenten |
 | `GetUIState` | 0.9.17 | Open dialogs, current window, Teamwork status and user, project name/path | Offene Dialoge, aktuelles Fenster, Teamwork-Status und Nutzer, Projektname/-pfad |
 | `GetRecentEvents` · `ClearEvents` · `WatchElements` | 0.9.17 | Event log (selection, tool, new/changed/deleted watched elements, reservations) and element observers | Ereignis-Log (Auswahl, Werkzeug, neue/geänderte/gelöschte beobachtete Elemente, Reservierungen) und Element-Observer |
 | `GetAddOnVersion` · `ListCommands` | 0.9.9 · 0.9.30 | Bundle version + Tapir base; catalog of all commands with schemas (used by `elmonkey-mcp`) | Bundle-Version + Tapir-Unterbau; Katalog aller Befehle mit Schema (nutzt `elmonkey-mcp`) |
 
-### ELMonkey improvements to Tapir commands · ELMonkey-Verbesserungen an Tapir-Befehlen (`TapirCommand`)
+### ELMonkey on top of Tapir · ELMonkey über Tapir (`TapirCommand`)
 
-| Since · Seit | EN | DE |
-|---|---|---|
-| 0.9.31 | `CreateSlabs` no longer crashes with favorites that carry side materials; GDL parameters of doors/windows settable | `CreateSlabs` stürzt mit Favoriten samt Seitenmaterialien nicht mehr ab; GDL-Parameter von Türen/Fenstern setzbar |
-| 0.9.32 | Pre-check with clear error codes before Move/Rotate/SetDetails/Delete/Create: `[LAYER_HIDDEN]` `[LAYER_LOCKED]` `[LAYER_NOT_FOUND]` `[NOT_FOUND]` `[ELEMENT_LOCKED]` `[HOTLINK]` `[RESERVED_BY_OTHER]` `[WRONG_WINDOW_TYPE]` `[UNDO_SCOPE_FAILED]` `[NO_EFFECT]` | Vorprüfung mit klaren Fehlercodes vor Verschieben/Drehen/SetDetails/Löschen/Erstellen (Codes links) |
-| 0.9.32 | All create commands take `layerName`/`layerIndex` and report layer and story; `CreateObjects`/`CreateLamps` take `zReference` + `floorIndex` | Alle Erstellbefehle nehmen `layerName`/`layerIndex` und melden Ebene und Geschoss; `CreateObjects`/`CreateLamps` nehmen `zReference` + `floorIndex` |
-| 0.9.33 | `CreateBeams`/`ModifyBeams`: `slantAngle` really works (rafters); `ChangeSelectionOfElements` handles large selections in one call (600 elements in 0.1 s) | `CreateBeams`/`ModifyBeams`: `slantAngle` wirkt wirklich (Sparren); `ChangeSelectionOfElements` schafft große Auswahlen in einem Aufruf (600 Elemente in 0,1 s) |
-| 0.9.34 | `SaveProject` saves with the file path (was `APIERR_READONLY`) and reports the real error code | `SaveProject` sichert mit Dateiangabe (lieferte `APIERR_READONLY`) und meldet den echten Fehlercode |
+ELMonkey 0.10.0 is built on **Tapir 1.7.2** (MIT, ENZYME-APD): 314 Tapir commands incl. Archicad 30, quantities, 3D geometry, MEP, keynotes, graphic overrides, per-item favorites and `floorIndex` for slabs/columns. Several ELMonkey fixes are now solved upstream (slab crash with favorites #452, beam `slantAngle` #508, GDL parameters of doors/windows, `SaveProject` from any window #681) and use Tapir's code. ELMonkey adds: · ELMonkey 0.10.0 baut auf **Tapir 1.7.2** (MIT, ENZYME-APD): 314 Tapir-Befehle inkl. Archicad 30, Mengen, 3D-Geometrie, MEP, Keynotes, grafische Überschreibungen, Favorit je Element und `floorIndex` für Decken/Stützen. Mehrere ELMonkey-Fixes löst Tapir inzwischen selbst (Decken-Absturz mit Favoriten #452, Unterzug-`slantAngle` #508, GDL-Parameter von Türen/Fenstern, `SaveProject` aus jedem Fenster #681) – dort gilt Tapirs Code. ELMonkey ergänzt:
 
-> **Status 0.9.35:** built by CI for AC27/28/29 × Mac/Win and live-tested on AC29 Mac (empty project from the office template: 40 of 41 checks, local project: 8 of 8). Open: roof/shell favorites of the office template (see limits). · gebaut per CI für AC27/28/29 × Mac/Win und live getestet auf AC29 Mac (leeres Projekt aus der Bürovorlage: 40 von 41 Prüfungen, lokales Projekt: 8 von 8). Offen: Dach-/Schalen-Favoriten der Bürovorlage (siehe Grenzen).
+| EN | DE |
+|---|---|
+| Pre-check with clear error codes before Move/Rotate/SetDetails/Delete/Create: `[LAYER_HIDDEN]` `[LAYER_LOCKED]` `[LAYER_NOT_FOUND]` `[NOT_FOUND]` `[ELEMENT_LOCKED]` `[HOTLINK]` `[RESERVED_BY_OTHER]` `[WRONG_WINDOW_TYPE]` `[UNDO_SCOPE_FAILED]` `[NO_EFFECT]`; Move checks that the element really moved | Vorprüfung mit klaren Fehlercodes vor Verschieben/Drehen/SetDetails/Löschen/Erstellen (Codes links); Verschieben prüft, ob sich das Element wirklich bewegt hat |
+| All create commands take `layerName` and report layer and story; `CreateObjects`/`CreateLamps` take `zReference: "story"` | Alle Erstellbefehle nehmen `layerName` und melden Ebene und Geschoss; `CreateObjects`/`CreateLamps` nehmen `zReference: "story"` |
+| `DeleteElements` reserves in Teamwork first and names the reason per element | `DeleteElements` reserviert im Teamwork vorab und nennt den Grund je Element |
+| Tapir's self-update is disabled — updates come only from the ELMonkey release (About → Check for updates) | Tapirs Selbst-Update ist abgeschaltet – Updates nur über das ELMonkey-Release (Über → Nach Updates suchen) |
+
+> **Status 0.10.0:** built by CI for AC27/28/29/30 × Mac/Win; live test in Archicad pending (0.9.35 was live-tested: 40/41 + 8/8). · gebaut per CI für AC27/28/29/30 × Mac/Win; Live-Test in Archicad steht aus (0.9.35 live getestet: 40/41 + 8/8).
 
 Details and examples per version · Details und Beispiele je Version: [`reference/mcp-extension.md`](reference/mcp-extension.md)
 
@@ -214,4 +215,4 @@ Add-on: **ELMonkey SAB → About → Check for updates** · **ELMonkey SAB → �
 
 **Third-party licenses · Fremdlizenzen:** ELMonkey contains MIT-licensed code from [Tapir](https://github.com/ENZYME-APD/tapir-archicad-automation) (© 2024 Enzyme APD) and [archicad-additional-json-commands](https://github.com/tlorantfy/archicad-additional-json-commands) (© 2023 Tibor Lorántfy) — license texts in [`ELM_SAB_Tapir/`](ELM_SAB_Tapir/README.md#lizenzen--licenses). · ELMonkey enthält MIT-lizenzierten Code aus Tapir und archicad-additional-json-commands — Lizenztexte in `ELM_SAB_Tapir/`.
 
-**Repo:** [mozzi86/-archicad](https://github.com/mozzi86/-archicad) · **Status · Stand:** October · Oktober 2026 · **ELMonkey** 0.9.35 (release · Release 0.9.32)
+**Repo:** [mozzi86/-archicad](https://github.com/mozzi86/-archicad) · **Status · Stand:** October · Oktober 2026 · **ELMonkey** 0.10.0 · Tapir 1.7.2
