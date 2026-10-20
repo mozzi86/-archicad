@@ -1,239 +1,213 @@
-# Archicad-Skill für Claude Code
+# ELMonkey + Archicad skill for Claude Code
 
-Ein Claude-Code-Skill, der Claude befähigt, im laufenden Archicad-Projekt zu arbeiten — Wände/Decken/Fenster/Türen klassifizieren, Property-Werte setzen, Bulk-Operationen ausführen, IFC-Probleme diagnostizieren, DWG→IFC-Pipelines bauen. Über den Archicad-MCP-Server (`mcp__archicad__*`) plus optionalem direktem HTTP-Fast-Path.
+**EN** — Let Claude work inside a running Archicad project: build and change model and 2D elements, classify in bulk, set properties, check and read everything back. Two parts: the **ELMonkey add-on** (Archicad 27/28/29, Mac + Windows, with [Tapir](https://github.com/ENZYME-APD/tapir-archicad-automation) built in) and the **Claude Code skill** in this repo, connected through the bundled MCP server `elmonkey-mcp`.
 
-Live-verifiziert an realen BIM-Projekten (Teamwork und Solo, AC29).
+**DE** — Claude arbeitet direkt im laufenden Archicad-Projekt: Modell- und 2D-Elemente erstellen und ändern, in Masse klassifizieren, Eigenschaften setzen, alles prüfen und zurücklesen. Zwei Teile: das **ELMonkey-Add-On** (Archicad 27/28/29, Mac + Windows, [Tapir](https://github.com/ENZYME-APD/tapir-archicad-automation) eingebaut) und der **Claude-Code-Skill** in diesem Repo, verbunden über den mitgelieferten MCP-Server `elmonkey-mcp`.
 
-## Was ist neu in v1.1 (Juli 2026)
-
-Auf Basis einer open source Analyse (tapir-archicad-MCP, ALAI-Archicad-CLI, ProfRino/bonsai-bim-skills, AlpacaLabs/skills-for-architects) sind fünf konkrete Verbesserungen eingeflossen:
-
-- **`/arc`-Slash-Command** — Fast-Path für Read-only-Queries („wieviele Zonen?", „welches Projekt läuft?"). Umgeht MCP-Discovery, 3–5× schneller. → `commands/arc.md`
-- **`arc`-CLI** — 210-Zeilen Python-CLI (stdlib only) für direkten HTTP-Zugriff auf die JSON-API. Verben: `ports`, `info`, `zones`, `layers`, `selected`, `tapir <cmd>`, `call <cmd>`, `doctor`. Umgeht MCP-Pagination bei Bulk-Operationen (kritisch bei >100 Elementen). → `scripts/arc`
-- **Trigger-Phrase-reiche `description`** in SKILL.md — Multi-Line-Frontmatter mit konkreten deutschen User-Utterances („klassifiziere alle Wände", „Bodenbelag synchronisieren", „IFC-Diagnose"). Skill matcht damit zuverlässiger auf natürliche Anfragen. → `SKILL.md`
-- **Discovery-Query Schema-Keyword-Tipp** — Bei Fehltreffern konkrete Parameter-Feldnamen an die Query anhängen (`"get walls elementType filter"` statt `"get walls"`). Der Semantic-Index von tapir-archicad-MCP indexiert auch Schema-Keywords. → `reference/mcp-conventions.md § Discovery-Pattern`
-- **54 „User sagt:"-Opener** vor jedem Worked Example in allen 9 Recipes — macht Trigger-Muster für Claude explizit sichtbar. → `recipes/*.md`
-
-Außerdem:
-- **GitHub-basierte Distribution** statt OneDrive — Updates jetzt per `git pull`
-- **DWG→IFC-Ceiling-Pipeline** aus dem alten Monorepo mit übernommen (5-Step, ifcopenshell-basiert) → `scripts/dwg_to_ceilings/`
-- **Fehlende Sektionen aus dem Monorepo eingepflegt**: Klassifikations-System-GUID-Drift-Warnung, Ports-sind-volatil, Leere-properties-Liste-Bug, IsAlive-blocking → `reference/bulk-operations.md` + `reference/mcp-conventions.md`
-
-## Was der Skill kann
-
-| Bereich | Status | Datei |
-|---|---|---|
-| Klassifikation (bulk, Trust-but-verify) | ✅ live-verifiziert | `reference/bulk-operations.md` |
-| Property-Werte setzen (Bodenbelag-Sync etc.) | ✅ live-verifiziert | `recipes/zones.md` |
-| Wände-Operationen | ✅ live-verifiziert AC29 | `recipes/wall-operations.md` |
-| Fenster/Türen | ✅ live-verifiziert | `recipes/openings.md` |
-| Decken / Stützen / Träger | ✅ live-verifiziert | `recipes/slabs-columns-beams.md` |
-| Zonen / Räume | ✅ live-verifiziert | `recipes/zones.md` |
-| Vorhangfassaden | ✅ live-verifiziert | `recipes/curtain-walls.md` |
-| Bibliothekselemente | ✅ live-verifiziert | `recipes/library-objects.md` |
-| Surfaces / Materials / Composites | ✅ live-verifiziert | `recipes/surfaces-materials.md` |
-| 2D-Hatches (Schraffuren) | ✅ live-verifiziert | `recipes/fills-hatches.md` |
-| 2D-Linien / Polylinien | ✅ live-verifiziert | `recipes/lines-polylines.md` |
-| DWG → IFC-Pipeline (Lageplan/KG 500) | ✅ live-verifiziert | `reference/dwg-ifc-import.md` |
-| DWG → IFC für KG 300 (Wände/Decken/Stützen) | Pattern-Vorlage | `reference/dwg-ifc-kg300.md` |
-| Office-Wissen (Template-Bugs, GUIDs) | konsolidiert | `reference/schwarz-office-facts.md` |
-| **Fast-Path für Read-only-Queries** (`/arc`) | ✅ neu | `commands/arc.md` |
-| **Direkter HTTP-CLI-Wrapper** (`arc`) | ✅ neu | `scripts/arc` |
-
-## Voraussetzungen
-
-1. **Claude Code** installiert ([Anthropic-Doku](https://docs.anthropic.com/claude-code))
-2. **MCP-Server `elmonkey-mcp`** aus diesem Repo (`mcp/elmonkey-mcp`, Registrierung als `archicad`) — ersetzt seit 2026-10-14 `tapir-archicad-mcp`
-3. **Archicad 27+** mit **ELMonkey** (Tapir ist eingebaut — kein separates Tapir-Add-On installieren). Einrichtung per Installer: [`recipes/initial-setup.md`](recipes/initial-setup.md)
-4. **Archicad-Projekt offen** (Solo oder Teamwork)
-
-## ELM_SAB Add-On (optional, empfohlen)
-
-SAB-eigenes Archicad-Add-On (JSON-Namespace `ELM_SAB`), das die JSON-API um Befehle erweitert, die Tapir (noch) nicht hat: **Stifte + RGB-Overrides lesen/setzen** (`GetPenOfElements`, `SetPenOfElements` — produktiv: THN-Farbabgleich über 32.806 Elemente) und **2D-Geometrie lesen** (`Get2DGeometryOfElements` — Line/Arc/Circle/PolyLine, Basis für das Recipe `konturen-zu-waende`). Ohne das Add-On funktionieren Skill + MCP normal weiter; nur die Stift- und Kontur-Workflows brauchen es.
-
-<div align="center">
-
-[![Download macOS](https://img.shields.io/badge/Download-macOS%20(AC29)%20.bundle-2ea44f?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/mozzi86/-archicad/releases/download/elm-sab-latest/ELM_SAB_Add-On_AC29_Mac.zip)
-&nbsp;&nbsp;
-[![Download Windows](https://img.shields.io/badge/Download-Windows%20(AC29)%20.apx-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/mozzi86/-archicad/releases/download/elm-sab-latest/ELM_SAB_Add-On_AC29_Win.apx)
-
-</div>
-
-Direktlinks (falls ein Badge nicht lädt): [`…_Mac.zip`](https://github.com/mozzi86/-archicad/releases/download/elm-sab-latest/ELM_SAB_Add-On_AC29_Mac.zip) · [`…_Win.apx`](https://github.com/mozzi86/-archicad/releases/download/elm-sab-latest/ELM_SAB_Add-On_AC29_Win.apx) · [alle Releases](https://github.com/mozzi86/-archicad/releases/tag/elm-sab-latest)
-
-**Installation macOS (Archicad 29):**
-1. ZIP herunterladen und entpacken → `ELM_SAB_Add-On_AC29_Mac.bundle`
-2. Bundle nach `/Applications/GRAPHISOFT/Archicad 29/Add-Ons/` kopieren
-3. Falls macOS blockt („kann nicht überprüft werden"): `xattr -dr com.apple.quarantine "/Applications/GRAPHISOFT/Archicad 29/Add-Ons/ELM_SAB_Add-On_AC29_Mac.bundle"`
-4. Archicad neu starten → **Optionen → Add-On-Manager**: `ELM_SAB` muss geladen sein
-
-**Installation Windows (Archicad 29):**
-1. `ELM_SAB_Add-On_AC29_Win.apx` herunterladen (bei SmartScreen-Warnung „Trotzdem behalten / ausführen")
-2. Datei nach `C:\Program Files\GRAPHISOFT\Archicad 29\Add-Ons\` kopieren
-3. Archicad neu starten → **Optionen → Add-On-Manager**: `ELM_SAB` muss geladen sein
-
-> Die Downloads sind unsigniert bzw. ad-hoc signiert und tragen noch die Platzhalter-Developer-ID (MDID 1/1) — für den Einsatz auf dem eigenen Rechner ausreichend. Beide Artefakte baut die CI automatisch bei jeder Änderung unter `ELM_SAB_Add-On/`. Quelle + Build siehe [`ELM_SAB_Add-On/`](ELM_SAB_Add-On/).
-
-## ELMonkey SAB — Befehlsstatus (Kombi-Add-On `ELM_SAB_Tapir/`, Namespace `ELM_SAB`)
-
-Statustabelle nach dem Vorbild von revit-mcp-python — ✅ implementiert, 🔄 geplant.
-Nachfolger des alten ELM_SAB_Add-On: Tapir-Basis 1.5.4 plus alle SAB-Befehle in einem Bundle.
-Die CI baut AC27/28/29 × Mac/Win (`.github/workflows/build-elm-sab-tapir.yml`); Bundles liegen auf dem Zweig `ci-status` unter `bundles/`.
-
-| Befehl | Status | Seit | Zweck |
-|---|---|---|---|
-| `GetAddOnVersion` | ✅ | 0.9.9 | Version DIESES Bundles + Tapir-Unterbau + Build-Zeitstempel |
-| `CaptureView` | ✅* | 0.9.12 | Aktives Fenster (2D/3D) als PNG — visuelle Rücklese für Agenten (seit 0.9.13 mit Datei-Existenz-Rücklese) |
-| `SetPenOfElements` / `GetPenOfElements` | ✅ | 0.9.0 | Stifte inkl. RGB-Overrides lesen/setzen (produktiv: 32.806 Elemente THN) |
-| `CreatePolygonWalls` | ✅ | 0.9.0 | Polygonwände aus Konturen |
-| `Get2DGeometryOfElements` | ✅ | 0.9.0 | 2D-Geometrie von Line/Arc/Circle/PolyLine/Hatch |
-| `GetTextsOfElements` / `SetTextsOfElements` | ✅ | 0.9.0 | Texte + Text-Labels lesen/ersetzen |
-| `SetTextSizeOfElements` | ✅ | 0.9.0 | Schriftgröße (mm oder Faktor) |
-| `SetAddParsOfElements` | ✅ | 0.9.0 | GDL-Parameter via Memo, crash-sicher, mit Rücklese |
-| `CreateRoofs` | ✅ | 0.9.0 | Ebene Dächer mit Pivotlinie und Neigung |
-| `GetColumnDetails` / `SetColumnDetails` / `SetColumnRotation` | ✅ | 0.9.5/0.9.6 | Stützen-Drehwinkel, Ursprung, Kernmaße |
-| `CreateCurtainWallFromAxes` | ✅ | 0.9.8 | Pfosten-Riegel-Fassade aus Achsmaßen, auch Trapez/Giebel; seit 0.9.14 auch geneigt (`angle` in Grad, ✅* Live-Test offen) |
-| Sicherheitsrückfrage UnusedViewCleaner (Palette) | ✅* | 0.9.13 | Bestätigungsdialog vor dem Löschen unplatzierter Ausschnitte, Abbrechen = Default |
-| 2D-Element-Zeichner (Linien/Kreise/Schraffuren erstellen) | 🔄 | — | Spec ready-for-agent in `~/.scratch/elmonkey/2d-element-zeichner/` |
-| `UpdateDrawings`-Fix (Tapir liefert -2130312306) | 🔄 | — | Kontextfrage offen, Upstream-PR-Kandidat |
-| Tapir-Unterbau 1.5.7 nachziehen | 🔄 | — | Auto-Update bewusst still — manueller Merge nötig |
-
-\* CI-gebaut und im Binary verifiziert, aber noch nicht live am Modell getestet (Bundle-Einbau ausstehend) — Konvention „Live-Verifikation Pflicht" gilt, der Haken wird nach dem ersten Live-Lauf bestätigt.
-
-Python-Seite dazu (kein C++, via `scripts/arc`): `arc launch` (Start + API-Polling), `arc view-elements` (Elemente im aktiven Fenster, live verifiziert), `arc splash` (Einfärben nach Property-Wert + Legende, `--clear` räumt auf).
-
-## Installation
-
-### Schritt 1 — Repo klonen
-
-```bash
-# per SSH (empfohlen, kein Auth-Prompt bei künftigen Pulls)
-git clone git@github.com:mozzi86/-archicad.git ~/.claude/repos/archicad-skill
-
-# oder per HTTPS
-git clone https://github.com/mozzi86/-archicad.git ~/.claude/repos/archicad-skill
-```
-
-### Schritt 2 — Skill-Ordner verlinken
-
-```bash
-mkdir -p ~/.claude/skills
-ln -s ~/.claude/repos/archicad-skill ~/.claude/skills/archicad
-```
-
-Damit landet der Skill dort, wo Claude Code ihn findet — updates funktionieren dann per `git pull` im Repo, ohne neu zu kopieren.
-
-### Schritt 3 — Claude Code neu starten
-
-Der Skill wird beim nächsten Start automatisch erkannt. Der `description`-Trigger im Frontmatter matcht auf konkrete User-Utterances („klassifiziere alle Wände", „Bodenbelag synchronisieren", „IFC-Diagnose", …) sowie auf jeden Aufruf von `mcp__archicad__*`-Tools.
-
-### Schritt 4 — Verifikation
-
-In Claude Code eingeben:
-```
-Welche Archicad-Instanz läuft?
-```
-Claude sollte den `archicad`-Skill nutzen und via `mcp__archicad__discovery_list_active_archicads` antworten.
-
-### Schritt 5 — Fast-Path aktivieren (optional, empfohlen)
-
-Der Skill kommt mit zwei Beschleunigern für Read-only-Queries und Bulk-Operationen, die den MCP-Discovery-Roundtrip umgehen:
-
-**a) `/arc`-Slash-Command** (für Einzelfragen wie „wieviele Zonen?", „welches Projekt?"):
-```bash
-ln -sf ~/.claude/skills/archicad/commands/arc.md ~/.claude/commands/arc.md
-```
-
-**b) `arc`-CLI** (direkter HTTP-Zugriff, umgeht MCP-Pagination bei Bulk-Operationen):
-```bash
-ln -sf ~/.claude/skills/archicad/scripts/arc ~/.local/bin/arc
-arc doctor   # Self-Check: Instanzen, Tapir-Add-On, MCP-Config
-```
-
-Nutzung im Terminal:
-```bash
-arc ports              # aktive Instanzen
-arc info               # Projekt + Story
-arc zones              # alle Zonen-GUIDs
-arc tapir GetElementsByType '{"elementType":"Wall"}'
-arc call GetProjectInfo
-arc launch Projekt.pln # Archicad kontrolliert starten + auf JSON-API warten
-arc view-elements      # Elemente im aktiven Fenster
-arc splash "Tragende Funktion"   # Einfärben nach Property-Wert (--clear räumt auf)
-```
-
-Details: `arc --help` und `reference/mcp-conventions.md § Direkter HTTP-Zugriff`.
-
-## Was der Skill NICHT kann
-
-Ehrliche Scope-Grenzen (siehe `reference/dwg-ifc-kg300.md` § „Was die Pipeline NICHT kann"):
-
-- **IFC-Übersetzer-Settings** ändern → UI-Aufgabe, MCP hat keine Endpoints
-- **Werkzeug-Standard-Einstellungen** anpassen → UI-Aufgabe
-- **Komposite-Zuweisung** an existierendes Element → `set_details.typeSpecificDetails` ist WallSettings-only
-- **Wand/Tür/Fenster/Curtain-Wall erstellen** → kein MCP-Create-Endpoint in v29 (User zeichnet manuell). Ein community-Vorschlag ([Issue #10 in tapir-archicad-MCP](https://github.com/SzamosiMate/tapir-archicad-MCP/issues/10)) will 54 Creation-Tools nachziehen — nicht gemergt.
-- **DWG-Annotation-Parsing** (Raumcodes, BRH-Werte, Plantext-Specs) → out-of-scope, Backlog
-
-## Benutzungs-Beispiele
-
-**Bulk-Klassifizierung aller Wände:**
-```
-Klassifiziere alle Wände im offenen Projekt nach SAB > Wand. Mit Teamwork-Reserve + Verify.
-```
-
-**Bodenbelag-Sync auf Räume:**
-```
-Setze die Property „Bodenbelag" auf allen Räumen im Erdgeschoss laut Schedule-Liste.
-```
-
-**IFC-Diagnose:**
-```
-Ich habe alles als IfcBuildingElementProxy im Export. Was ist los?
-```
-→ Skill kennt den Schwarz-Template-Bug und die Fix-Anleitung (siehe `reference/schwarz-office-facts.md`).
-
-**Fast-Query per Slash-Command:**
-```
-/arc wieviele Fenster sind auf Story 2?
-```
-→ Umgeht MCP-Discovery, curl direkt an die JSON-API. 3–5× schneller.
-
-## Update-Workflow
-
-Da der Skill via git verlinkt ist:
-
-```bash
-cd ~/.claude/repos/archicad-skill
-git pull
-```
-
-Fertig — beim nächsten Claude-Code-Start ist der neue Stand aktiv.
-
-Wenn du eigene Änderungen hast (z. B. neue Recipes, Fixes):
-```bash
-cd ~/.claude/repos/archicad-skill
-git add . && git commit -m "…" && git push
-```
-
-## Mitwirken / Feedback
-
-Wenn du beim Arbeiten was findest:
-- **Neuer Tool-Name** den MCP zurückgibt, der nicht dokumentiert ist → in `recipes/<passende-datei>.md` mit Datums-Marker ergänzen
-- **Bug** im Office-Template → in `reference/schwarz-office-facts.md` § „Bekannte Schwarz-Template-Bugs"
-- **Neues Workflow-Pattern** das du oft brauchst → eigenes Recipe oder Reference ergänzen
-
-Commit + Push. Pull Requests sind willkommen, wenn's Fremd-User werden.
-
-## Versionshistorie
-
-Siehe `git log` im Repo. 40+ atomic Commits mit Phase-1-bis-6-Entwicklungshistorie, Live-Verify-Lektionen und den Fast-Path-Additions (Juli 2026).
-
-## Lizenz / Nutzung
-
-**Nutzung auf eigene Gefahr, ohne Gewähr.** Der Skill liest und verändert ein laufendes Archicad-Modell — verändernde Operationen (Update/Delete) laufen nur nach Bestätigung, aber die Verantwortung und die Sicherung deines Modells liegen bei dir.
-
-Jeder darf das Repo **klonen/pullen** und den Skill nutzen — und ihn mit **Claude an sein eigenes Büro anpassen**. `reference/schwarz-office-facts.md` enthält Schwarz-Architekturbüro-spezifische GUIDs, Layer-Konventionen und Workflows; für ein anderes Büro einfach Claude bitten, die Datei durch die eigenen Fakten zu ersetzen (oder sie löschen). Alles andere — Recipes, MCP-Conventions, Fast-Path-Tools — ist generisch AC29 + Tapir und für jeden Archicad-Nutzer brauchbar.
+Live-verified on real BIM projects (Teamwork and solo, AC29). · Live erprobt an echten BIM-Projekten (Teamwork und Solo, AC29).
 
 ---
 
-**Repo:** [mozzi86/-archicad](https://github.com/mozzi86/-archicad) · **Stand:** Juli 2026 · **Skill-Version:** v1.1
+## Demo — a house built entirely through the API · ein Haus komplett per API
+
+| Site · Grundstück | House · Haus | Without roof skin · ohne Dachhaut |
+|:---:|:---:|:---:|
+| ![Site with street, sidewalk, trees and plot](docs/images/elmonkey-demo-site.png) | ![House with tiled roof](docs/images/elmonkey-demo-house.png) | ![Roof structure: purlins and rafters](docs/images/elmonkey-demo-roof-structure.png) |
+
+**EN** — Built by Claude on 20 Oct 2026 in an empty Archicad 29 project, using only ELMonkey commands — no manual clicks. Every write was read back and checked against the planned values (heights to the millimetre).
+
+- Ground slab, walls, ceiling, doors and windows from office favorites, rooms (zones) detected automatically
+- Purlin roof as real structure: eaves purlins 14/14, ridge purlin 16/24, 30 rafters 8/20 at 35°, roof skin as composite "Oberdach ohne Sparren 8,5 cm", gable walls trimmed to the roof planes (solid element operations)
+- Site in 3D: terrain mesh, street, sidewalk, green strip, curbs, trees, plot zone, boundary stones and boundary line
+- Building materials (glulam purlins, solid-timber rafters) and the built-in property "Load-bearing" set per element
+
+**DE** — Am 20.10.2026 von Claude in einem leeren Archicad-29-Projekt gebaut, ausschließlich mit ELMonkey-Befehlen, ohne einen Klick von Hand. Jede Schreibung wurde zurückgelesen und gegen die geplanten Werte geprüft (Höhen auf den Millimeter).
+
+- Bodenplatte, Wände, Decke, Türen und Fenster aus Büro-Favoriten, Räume (Zonen) automatisch erkannt
+- Pfettendach als echte Konstruktion: Fußpfetten 14/14, Firstpfette 16/24, 30 Sparren 8/20 mit 35°, Dachhaut als Mehrschicht „Oberdach ohne Sparren 8,5 cm“, Giebelwände per Solid-Operation an die Dachflächen angeschlossen
+- Außenanlage in 3D: Geländenetz, Straße, Gehweg, Grünstreifen, Bordsteine, Bäume, Grundstücks-Zone, Grenzsteine und Grenzlinie
+- Baustoffe (Brettschichtholz-Pfetten, Vollholz-Sparren) und die eingebaute Eigenschaft „Tragende Funktion“ je Element gesetzt
+
+Step-by-step recipe with all pitfalls · Schritt-für-Schritt-Rezept mit allen Fallen: [`recipes/gebaeude-und-aussenanlage.md`](recipes/gebaeude-und-aussenanlage.md)
+
+---
+
+## Install · Installation
+
+| Part · Teil | What · Was | How · Wie |
+|---|---|---|
+| **ELMonkey add-on** | Archicad add-on, Tapir built in (`TapirCommand`) + ELMonkey commands (`ELM_SAB`). Do **not** install Tapir separately. · Tapir eingebaut, Tapir **nicht** zusätzlich installieren. | Installer from the release · Installer aus dem Release |
+| **MCP server `elmonkey-mcp`** | Bridge Claude ↔ Archicad, provides `mcp__archicad__*`; reads the live command catalog (`ELM_SAB.ListCommands`), searches in English and German. · Brücke Claude ↔ Archicad, liest den Befehlskatalog live, sucht deutsch und englisch. | `uv tool install …` |
+| **Skill** | This repo · dieses Repo | `git clone` + symlink |
+
+**1. ELMonkey** — quit Archicad, then run the installer from the [latest release](https://github.com/mozzi86/-archicad/releases/tag/elm-sab-tapir-latest) · Archicad beenden, dann den Installer aus dem [aktuellen Release](https://github.com/mozzi86/-archicad/releases/tag/elm-sab-tapir-latest) starten:
+
+- **macOS:** [`ELMonkey-Installer-Mac.command`](https://github.com/mozzi86/-archicad/releases/download/elm-sab-tapir-latest/ELMonkey-Installer-Mac.command) (double-click; if blocked: right-click → Open · Doppelklick; falls blockiert: Rechtsklick → Öffnen), or · oder:
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/mozzi86/-archicad/main/installer/ELMonkey-Installer-Mac.command | bash
+  ```
+- **Windows:** [`ELMonkey-Installer-Windows.cmd`](https://github.com/mozzi86/-archicad/releases/download/elm-sab-tapir-latest/ELMonkey-Installer-Windows.cmd) (asks for admin rights · fragt nach Administratorrechten)
+
+The installer finds every Archicad 27/28/29, installs the matching bundle and backs up existing ELMonkey/Tapir add-ons to `~/ELM_SAB_Backups/`. Later updates: menu **ELMonkey SAB → About → Check for updates**. · Der Installer findet alle Archicad 27/28/29, installiert das passende Bundle und sichert vorhandene ELMonkey-/Tapir-Add-Ons nach `~/ELM_SAB_Backups/`. Updates später: Menü **ELMonkey SAB → Über → Nach Updates suchen**.
+
+**2. MCP server · MCP-Server** (needs · braucht [`uv`](https://docs.astral.sh/uv/)):
+
+```bash
+uv tool install "git+https://github.com/mozzi86/-archicad#subdirectory=mcp/elmonkey-mcp"
+```
+
+```bash
+claude mcp add --scope user archicad -- ~/.local/bin/elmonkey-mcp
+```
+
+**3. Skill:**
+
+```bash
+git clone https://github.com/mozzi86/-archicad.git ~/.claude/repos/archicad-skill
+```
+
+```bash
+mkdir -p ~/.claude/skills && ln -s ~/.claude/repos/archicad-skill ~/.claude/skills/archicad
+```
+
+Restart Claude Code and ask "Which Archicad instance is running?" · Claude Code neu starten und fragen „Welche Archicad-Instanz läuft?“. Full guide incl. Claude Desktop · Ausführlich inkl. Claude Desktop: [`recipes/initial-setup.md`](recipes/initial-setup.md)
+
+---
+
+## ELMonkey commands · ELMonkey-Befehle (namespace `ELM_SAB`)
+
+44 own commands on top of Tapir's ~175. "Since" is the ELMonkey version that added or last changed the command. All write commands read back what Archicad actually stored. · 44 eigene Befehle zusätzlich zu Tapirs rund 175. „Seit“ ist die ELMonkey-Version, die den Befehl gebracht oder zuletzt geändert hat. Alle schreibenden Befehle lesen zurück, was Archicad wirklich gespeichert hat.
+
+### Model elements · Bauteile
+
+| Command · Befehl | Since · Seit | What it does | Was es macht |
+|---|---|---|---|
+| `CreatePolygonWalls` | 0.9.0 | Polygon walls from outlines | Polygonwände aus Konturen |
+| `CreateRoofs` | 0.9.34 | Single-plane roofs from outline, pivot line (eave) and pitch; structure by composite or building-material name, `layerName`; `thickness` no longer silently ignored on composite tool defaults; read-back of structure and thickness | Ebene Dächer aus Kontur, Pivotlinie (Traufe) und Neigung; Aufbau per Mehrschicht- oder Baustoffname, `layerName`; `thickness` wird bei Mehrschicht-Standard nicht mehr still ignoriert; Rücklese von Aufbau und Dicke |
+| `CreateCurtainWallFromAxes` | 0.9.8 | Mullion/transom curtain wall from axis dimensions, also trapezoid/gable and inclined | Pfosten-Riegel-Fassade aus Achsmaßen, auch Trapez/Giebel und geneigt |
+| `CreateWallOpenings` | 0.9.21 | Replaces opening placeholder symbols with real wall openings in the host wall, with classification (AC29) | Ersetzt Durchbruch-Symbole durch echte Wandöffnungen in der Wirtswand, mit Klassifizierung (AC29) |
+| `SetStructureOfElements` | 0.9.33 | Sets the structure of existing walls, slabs, roofs, shells, columns and beams (basic / composite / profile by name or index) | Setzt den Aufbau bestehender Wände, Decken, Dächer, Schalen, Stützen und Unterzüge (Basis / Mehrschicht / Profil per Name oder Index) |
+| `GetSlabLevels` | 0.9.32 | Absolute top/bottom of slabs plus story-relative values, reference plane, thickness | Ober-/Unterkante von Decken absolut und geschossbezogen, Bezugsfläche, Dicke |
+| `GetColumnDetails` · `SetColumnDetails` · `SetColumnRotation` | 0.9.5–0.9.6 | Read/set column rotation, origin and core size | Stützen-Drehwinkel, Ursprung und Kernmaße lesen/setzen |
+| `SetAddParsOfElements` | 0.9.0 | Sets GDL parameters via memo, crash-safe (also labels) | Setzt GDL-Parameter per Memo, absturzsicher (auch Etiketten) |
+| `SetObjectParametersForce` | 0.9.16 | GDL parameters of objects, lamps, labels, zones, doors, windows with a real error code per element; A/B mirrored into the opening size | GDL-Parameter von Objekten, Lampen, Etiketten, Zonen, Türen, Fenstern mit echtem Fehlercode je Element; A/B in die Öffnungsgröße gespiegelt |
+| `GetStoryVisibilityOfElements` · `SetStoryVisibilityOfElements` | 0.9.15 | Read/set "Show on stories" of objects and lamps | „Auf Geschossen zeigen“ von Objekten/Lampen lesen/setzen |
+
+### 2D drawing · 2D-Zeichnung
+
+| Command · Befehl | Since · Seit | What it does | Was es macht |
+|---|---|---|---|
+| `Create2DElements` | 0.9.28 | Creates lines, arcs, circles, polylines, splines and hatches (fill, pens, RGB, contour, holes); the output of `Get2DGeometryOfElements` can be passed back 1:1; read-back incl. length/area | Legt Linien, Bögen, Kreise, Polylinien, Splines und Schraffuren an (Füllung, Stifte, RGB, Kontur, Löcher); die Ausgabe von `Get2DGeometryOfElements` passt 1:1; Rücklese inkl. Länge/Fläche |
+| `Modify2DElements` | 0.9.34 | Changes existing 2D elements, GUID stays: layer, draw order, pen, line type, remove arrowheads, geometry; hatches: fill, foreground/background/contour pen, set/clear RGB, contour line type, fill angle, polygon with holes | Ändert bestehende 2D-Elemente, die GUID bleibt: Ebene, Anzeigereihenfolge, Stift, Linientyp, Pfeilspitzen aus, Geometrie; Schraffuren: Füllung, Vorder-/Hinter-/Konturstift, RGB setzen/löschen, Konturlinientyp, Winkel, Polygon mit Löchern |
+| `Get2DGeometryOfElements` | 0.9.27 | 2D geometry of lines, arcs, circles, polylines, splines, hatches (with sub-polygons); all other types as shape primitives | 2D-Geometrie von Linien, Bögen, Kreisen, Polylinien, Splines, Schraffuren (mit Teilpolygonen); alle anderen Typen als Zeichenprimitive |
+| `GetPenOfElements` · `SetPenOfElements` | 0.9.0 | Read/set pens incl. RGB overrides of 2D elements | Stifte inkl. RGB-Overrides von 2D-Elementen lesen/setzen |
+
+### Texts, labels, dimensions · Texte, Etiketten, Maße
+
+| Command · Befehl | Since · Seit | What it does | Was es macht |
+|---|---|---|---|
+| `GetTextsOfElements` · `SetTextsOfElements` · `SetTextSizeOfElements` | 0.9.0 | Read/replace content of texts and text labels, set text size (mm or factor) | Inhalt von Texten und Text-Etiketten lesen/ersetzen, Schriftgröße setzen (mm oder Faktor) |
+| `CreateLabels` · `GetLabelsOfElements` | 0.9.19 | Associative symbol labels (also on another story than the owner, optionally like a template label); list labels per owner | Assoziative Symbol-Etiketten (auch auf anderem Geschoss als der Owner, optional wie ein Vorlage-Etikett); Etiketten je Owner auflisten |
+| `GetDimensionDetailsELM` · `CreateDimensionsLikeTemplateELM` · `SetDimensionAppearanceELM` | 0.9.29 | Linear dimensions (also in sections/elevations): read raw data, create like a template, change text size and witness lines | Lineare Maßketten (auch in Schnitt/Ansicht): Rohdaten lesen, wie eine Vorlage anlegen, Schriftgröße und Hilfslinien ändern |
+| `GetSectionElementsELM` · `GetInteriorElevationsELM` · `SetInteriorElevationVerticalRangeELM` | 0.9.29 | Raw section elements per section/elevation; interior elevations and their vertical range | Rohe Schnittelemente je Schnitt/Ansicht; Innenansichten und ihr vertikaler Bereich |
+
+### Layers, properties · Ebenen, Eigenschaften
+
+| Command · Befehl | Since · Seit | What it does | Was es macht |
+|---|---|---|---|
+| `GetLayers` | 0.9.32 | All layers with their real attribute index, hidden/locked/wireframe/xref | Alle Ebenen mit echtem Attribut-Index, ausgeblendet/gesperrt/Drahtmodell/Xref |
+| `SetLayerAttributes` | 0.9.32 | Show/hide, lock/unlock, wireframe — by layer name or index | Ein-/ausblenden, sperren/entsperren, Drahtmodell — per Ebenenname oder Index |
+| `SetLayerOfElements` | 0.9.19 | Moves elements to a layer (by name or id), with Teamwork reservation | Verschiebt Elemente auf eine Ebene (per Name oder ID), mit Teamwork-Reservierung |
+| `ChangePropertyDefinitions` | 0.9.33 | Changes property definitions without a GUID change: append enum values, availability, name, description | Ändert Eigenschafts-Definitionen ohne GUID-Wechsel: Auswahlwerte anhängen, Verfügbarkeit, Name, Beschreibung |
+
+### Search, checks, project · Suche, Prüfung, Projekt
+
+| Command · Befehl | Since · Seit | What it does | Was es macht |
+|---|---|---|---|
+| `FindElements` | 0.9.23 | Search like "Find & Select": type, story, layer, property, classification, library part, IFC, Teamwork, host/opening, zone, area … nested and/or/not; optional selection | Suche wie „Suchen & Aktivieren“: Typ, Geschoss, Ebene, Eigenschaft, Klassifizierung, Bibliotheksteil, IFC, Teamwork, Wirt/Öffnung, Zone, Bereich … beliebig verschachtelt; optional auswählen |
+| `GetElementEditState` | 0.9.17 | Tells per element whether and why it can be edited (hidden/locked layer, hotlink, reserved by others …) | Meldet je Element, ob und warum es änderbar ist (Ebene aus/gesperrt, Hotlink, fremd reserviert …) |
+| `GetDeviations` | 0.9.17 | Compares actual dimensions against target values, deviation per axis in mm with tolerance verdict | Vergleicht Ist-Maße mit Sollmaßen, Abweichung je Achse in mm mit Toleranzurteil |
+| `SaveProjectCopy` | 0.9.34 | Backup copy of a local project (save + copy); the open project stays the original; refuses Teamwork/untitled and the original path | Sicherungskopie eines lokalen Projekts (sichern + kopieren); das offene Projekt bleibt das Original; lehnt Teamwork/unbenannt und den Originalpfad ab |
+| `CaptureView` | 0.9.25 | Saves the active window (2D or 3D) as PNG — visual check for agents | Speichert das aktive Fenster (2D oder 3D) als PNG — Sichtkontrolle für Agenten |
+| `GetUIState` | 0.9.17 | Open dialogs, current window, Teamwork status and user, project name/path | Offene Dialoge, aktuelles Fenster, Teamwork-Status und Nutzer, Projektname/-pfad |
+| `GetRecentEvents` · `ClearEvents` · `WatchElements` | 0.9.17 | Event log (selection, tool, new/changed/deleted watched elements, reservations) and element observers | Ereignis-Log (Auswahl, Werkzeug, neue/geänderte/gelöschte beobachtete Elemente, Reservierungen) und Element-Observer |
+| `GetAddOnVersion` · `ListCommands` | 0.9.9 · 0.9.30 | Bundle version + Tapir base; catalog of all commands with schemas (used by `elmonkey-mcp`) | Bundle-Version + Tapir-Unterbau; Katalog aller Befehle mit Schema (nutzt `elmonkey-mcp`) |
+
+### ELMonkey improvements to Tapir commands · ELMonkey-Verbesserungen an Tapir-Befehlen (`TapirCommand`)
+
+| Since · Seit | EN | DE |
+|---|---|---|
+| 0.9.31 | `CreateSlabs` no longer crashes with favorites that carry side materials; GDL parameters of doors/windows settable | `CreateSlabs` stürzt mit Favoriten samt Seitenmaterialien nicht mehr ab; GDL-Parameter von Türen/Fenstern setzbar |
+| 0.9.32 | Pre-check with clear error codes before Move/Rotate/SetDetails/Delete/Create: `[LAYER_HIDDEN]` `[LAYER_LOCKED]` `[LAYER_NOT_FOUND]` `[NOT_FOUND]` `[ELEMENT_LOCKED]` `[HOTLINK]` `[RESERVED_BY_OTHER]` `[WRONG_WINDOW_TYPE]` `[UNDO_SCOPE_FAILED]` `[NO_EFFECT]` | Vorprüfung mit klaren Fehlercodes vor Verschieben/Drehen/SetDetails/Löschen/Erstellen (Codes links) |
+| 0.9.32 | All create commands take `layerName`/`layerIndex` and report layer and story; `CreateObjects`/`CreateLamps` take `zReference` + `floorIndex` | Alle Erstellbefehle nehmen `layerName`/`layerIndex` und melden Ebene und Geschoss; `CreateObjects`/`CreateLamps` nehmen `zReference` + `floorIndex` |
+| 0.9.33 | `CreateBeams`/`ModifyBeams`: `slantAngle` really works (rafters); `ApplyFavoritesToElementDefaults` works for roofs/shells; `ChangeSelectionOfElements` handles large selections in one call | `CreateBeams`/`ModifyBeams`: `slantAngle` wirkt wirklich (Sparren); `ApplyFavoritesToElementDefaults` geht für Dächer/Schalen; `ChangeSelectionOfElements` schafft große Auswahlen in einem Aufruf |
+| 0.9.34 | `SaveProject` saves with the file path (was `APIERR_READONLY`) and reports the real error code | `SaveProject` sichert mit Dateiangabe (lieferte `APIERR_READONLY`) und meldet den echten Fehlercode |
+
+> **Status 0.9.34:** built by CI for AC27/28/29 × Mac/Win; live test running — until then the release is 0.9.32. · gebaut per CI für AC27/28/29 × Mac/Win; Live-Test läuft — bis dahin ist das Release 0.9.32.
+
+Details and examples per version · Details und Beispiele je Version: [`reference/mcp-extension.md`](reference/mcp-extension.md)
+
+---
+
+## What the skill covers · Was der Skill abdeckt
+
+| Area · Bereich | File · Datei |
+|---|---|
+| Bulk classification, trust-but-verify · Bulk-Klassifizierung | `reference/bulk-operations.md` |
+| Walls · Wände | `recipes/wall-operations.md` |
+| Doors/windows · Türen/Fenster | `recipes/openings.md` |
+| Slabs, columns, beams · Decken, Stützen, Unterzüge | `recipes/slabs-columns-beams.md` |
+| Zones / rooms, property sync · Zonen/Räume, Eigenschaften | `recipes/zones.md` |
+| Building + site, roof structure · Gebäude + Außenanlage, Dachtragwerk | `recipes/gebaeude-und-aussenanlage.md` |
+| Curtain walls · Vorhangfassaden | `recipes/curtain-walls.md` |
+| Library objects · Bibliothekselemente | `recipes/library-objects.md` |
+| Surfaces, materials, composites · Oberflächen, Baustoffe, Aufbauten | `recipes/surfaces-materials.md` |
+| Hatches, lines, polylines · Schraffuren, Linien, Polylinien | `recipes/fills-hatches.md`, `recipes/lines-polylines.md` |
+| DWG → IFC pipelines | `reference/dwg-ifc-import.md`, `reference/dwg-ifc-kg300.md` |
+| Fast read-only queries · schnelle Leseabfragen (`/arc`, `arc` CLI) | `commands/arc.md`, `scripts/arc` |
+
+**Fast path · Schnellweg** (optional):
+
+```bash
+ln -sf ~/.claude/skills/archicad/scripts/arc ~/.local/bin/arc
+```
+
+```bash
+arc doctor
+```
+
+`arc ports` · `arc info` · `arc zones` · `arc tapir <cmd> '<json>'` · `arc call <cmd>` · `arc splash "Tragende Funktion"` — see · siehe `arc --help`.
+
+---
+
+## Limits · Grenzen
+
+**EN**
+- Only single-plane roofs (no multi-plane roof tool); rafter ends are cut square to the axis, plumb cuts are not settable yet.
+- IFC translator settings are UI-only.
+- `CaptureView` does not reproduce RGB hatch colours reliably — check colours by reading values back, not from the PNG.
+- Story changes of 2D elements: create anew instead of `Modify2DElements`.
+
+**DE**
+- Nur ebene Dächer (kein Mehrflächen-Dach); Sparrenenden sind rechtwinklig zur Achse geschnitten, ein lotrechter Schnitt ist noch nicht setzbar.
+- IFC-Übersetzer-Einstellungen nur über die Oberfläche.
+- `CaptureView` gibt RGB-Schraffurfarben nicht zuverlässig wieder — Farben per Rücklese prüfen, nicht am PNG.
+- Geschosswechsel von 2D-Elementen: neu anlegen statt `Modify2DElements`.
+
+## Update
+
+```bash
+cd ~/.claude/repos/archicad-skill && git pull
+```
+
+Add-on: **ELMonkey SAB → About → Check for updates** · **ELMonkey SAB → Über → Nach Updates suchen**. MCP server · MCP-Server: `uv tool upgrade elmonkey-mcp`.
+
+## License / use · Lizenz / Nutzung
+
+**EN** — Use at your own risk, without warranty. The skill reads and changes a running Archicad model; changing operations (update/delete) only run after confirmation, but backing up your model is your responsibility. Anyone may clone the repo and adapt it to their own office with Claude. `reference/schwarz-office-facts.md` contains office-specific facts of Schwarz Architekturbüro — replace or delete it for another office.
+
+**DE** — Nutzung auf eigene Gefahr, ohne Gewähr. Der Skill liest und verändert ein laufendes Archicad-Modell; verändernde Operationen (Ändern/Löschen) laufen nur nach Bestätigung, die Sicherung des Modells liegt aber bei dir. Jeder darf das Repo klonen und mit Claude an das eigene Büro anpassen. `reference/schwarz-office-facts.md` enthält bürospezifische Fakten des Schwarz Architekturbüros — für ein anderes Büro ersetzen oder löschen.
+
+---
+
+**Repo:** [mozzi86/-archicad](https://github.com/mozzi86/-archicad) · **Status · Stand:** October · Oktober 2026 · **ELMonkey** 0.9.34 (release · Release 0.9.32)
