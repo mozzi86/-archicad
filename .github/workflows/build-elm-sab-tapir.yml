@@ -1,4 +1,4 @@
-name: Build ELM_SAB_Tapir (Kombi-Add-On, AC27/28/29)
+name: Build ELM_SAB_Tapir (Kombi-Add-On, AC27/28/29/30)
 
 permissions:
   contents: write
@@ -28,15 +28,16 @@ concurrency:
 # Jede Archicad-Hauptversion braucht ihr eigenes Bundle — ein AC29-Bundle lädt nicht in
 # AC28 und erscheint dort gar nicht im Add-On-Manager, ohne Fehlermeldung.
 #
-# fail-fast ist aus: eine kaputte Version darf die anderen fünf nicht mitreißen.
+# fail-fast ist aus: eine kaputte Version darf die anderen nicht mitreißen.
 # Veröffentlicht wird erst am Ende in EINEM Job — sechs parallele Release-Writes auf
 # denselben Tag überschreiben sich gegenseitig.
 #
-# DevKit-Builds bewusst identisch mit dem Upstream-Tapir-CI (27.3001 / 28.3001 / 29.3000),
+# DevKit-Builds bewusst identisch mit dem Upstream-Tapir-CI (27.3001 / 28.3001 / 29.3000 / 30.3000),
 # weil dort genau dieser Quellstand damit für AC25–29 grün baut. Neuere Builds existieren
 # (27.6003, 28.4001, 29.3100), sind für diese Quellen aber unerprobt — nur wechseln, wenn
 # es einen Grund gibt.
 #
+# ELMonkey 0.10.0: AC30 dazu (Tapir 1.7.2 baut es mit DevKit 30.3000, v143 / macos-latest).
 # Windows: Toolset v142 für AC27/28, v143 ab AC29 (Upstream-Split). Der Runner ist auf
 # windows-2022 gepinnt, weil v142 auf dem windows-2025-Image nicht mehr mitkommt.
 # macOS: ein Xcode-Generator für alle Versionen; ab AC26 baut CMakeCommon.cmake universal
@@ -50,6 +51,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - ac: 30
+            devkit: https://github.com/GRAPHISOFT/archicad-api-devkit/releases/download/30.3000/API.Development.Kit.MAC.30.3000.zip
           - ac: 29
             devkit: https://github.com/GRAPHISOFT/archicad-api-devkit/releases/download/29.3000/API.Development.Kit.MAC.29.3000.zip
           - ac: 28
@@ -118,6 +121,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - ac: 30
+            devkit: https://github.com/GRAPHISOFT/archicad-api-devkit/releases/download/30.3000/API.Development.Kit.WIN.30.3000.zip
+            toolset: v143
           - ac: 29
             devkit: https://github.com/GRAPHISOFT/archicad-api-devkit/releases/download/29.3000/API.Development.Kit.WIN.29.3000.zip
             toolset: v143
@@ -212,7 +218,7 @@ jobs:
             echo
             echo "| Archicad | macOS | Windows |"
             echo "|---|---|---|"
-            for ac in 29 28 27; do
+            for ac in 30 29 28 27; do
               M="**fehlgeschlagen**"; W="**fehlgeschlagen**"
               [ -f "out/ELM_SAB_Tapir_AC${ac}_Mac.zip" ] && M="\`ELM_SAB_Tapir_AC${ac}_Mac.zip\`"
               [ -f "out/ELM_SAB_Tapir_AC${ac}_Win.apx" ] && W="\`ELM_SAB_Tapir_AC${ac}_Win.apx\`"
@@ -263,7 +269,7 @@ jobs:
           # ersten Build stehen, und man kann von außen nicht erkennen, aus welchem
           # Stand die Assets stammen.
           commit: ${{ github.sha }}
-          name: "ELMonkey ${{ env.ELM_VER }} — AC27/28/29 (CI)"
+          name: "ELMonkey ${{ env.ELM_VER }} — AC27/28/29/30 (CI)"
           bodyFile: body.md
           prerelease: true
           allowUpdates: true
