@@ -98,7 +98,7 @@ Restart Claude Code and ask "Which Archicad instance is running?" · Claude Code
 | Command · Befehl | Since · Seit | What it does | Was es macht |
 |---|---|---|---|
 | `Create2DElements` | 0.9.28 | Creates lines, arcs, circles, polylines, splines and hatches (fill, pens, RGB, contour, holes); the output of `Get2DGeometryOfElements` can be passed back 1:1; read-back incl. length/area | Legt Linien, Bögen, Kreise, Polylinien, Splines und Schraffuren an (Füllung, Stifte, RGB, Kontur, Löcher); die Ausgabe von `Get2DGeometryOfElements` passt 1:1; Rücklese inkl. Länge/Fläche |
-| `Modify2DElements` | 0.9.34 | Changes existing 2D elements, GUID stays: layer, draw order, pen, line type, remove arrowheads, geometry; hatches: fill, foreground/background/contour pen, set/clear RGB, contour line type, fill angle, polygon with holes | Ändert bestehende 2D-Elemente, die GUID bleibt: Ebene, Anzeigereihenfolge, Stift, Linientyp, Pfeilspitzen aus, Geometrie; Schraffuren: Füllung, Vorder-/Hinter-/Konturstift, RGB setzen/löschen, Konturlinientyp, Winkel, Polygon mit Löchern |
+| `Modify2DElements` | 0.9.35 | Changes existing 2D elements, GUID stays: layer, pen, line type, remove arrowheads, geometry (polygons keep valid vertex IDs); hatches: fill, foreground/background/contour pen, set/clear RGB, contour line type, fill angle, polygon with holes | Ändert bestehende 2D-Elemente, die GUID bleibt: Ebene, Stift, Linientyp, Pfeilspitzen aus, Geometrie (Polygone mit gültigen Vertex-IDs); Schraffuren: Füllung, Vorder-/Hinter-/Konturstift, RGB setzen/löschen, Konturlinientyp, Winkel, Polygon mit Löchern |
 | `Get2DGeometryOfElements` | 0.9.27 | 2D geometry of lines, arcs, circles, polylines, splines, hatches (with sub-polygons); all other types as shape primitives | 2D-Geometrie von Linien, Bögen, Kreisen, Polylinien, Splines, Schraffuren (mit Teilpolygonen); alle anderen Typen als Zeichenprimitive |
 | `GetPenOfElements` · `SetPenOfElements` | 0.9.0 | Read/set pens incl. RGB overrides of 2D elements | Stifte inkl. RGB-Overrides von 2D-Elementen lesen/setzen |
 
@@ -140,10 +140,10 @@ Restart Claude Code and ask "Which Archicad instance is running?" · Claude Code
 | 0.9.31 | `CreateSlabs` no longer crashes with favorites that carry side materials; GDL parameters of doors/windows settable | `CreateSlabs` stürzt mit Favoriten samt Seitenmaterialien nicht mehr ab; GDL-Parameter von Türen/Fenstern setzbar |
 | 0.9.32 | Pre-check with clear error codes before Move/Rotate/SetDetails/Delete/Create: `[LAYER_HIDDEN]` `[LAYER_LOCKED]` `[LAYER_NOT_FOUND]` `[NOT_FOUND]` `[ELEMENT_LOCKED]` `[HOTLINK]` `[RESERVED_BY_OTHER]` `[WRONG_WINDOW_TYPE]` `[UNDO_SCOPE_FAILED]` `[NO_EFFECT]` | Vorprüfung mit klaren Fehlercodes vor Verschieben/Drehen/SetDetails/Löschen/Erstellen (Codes links) |
 | 0.9.32 | All create commands take `layerName`/`layerIndex` and report layer and story; `CreateObjects`/`CreateLamps` take `zReference` + `floorIndex` | Alle Erstellbefehle nehmen `layerName`/`layerIndex` und melden Ebene und Geschoss; `CreateObjects`/`CreateLamps` nehmen `zReference` + `floorIndex` |
-| 0.9.33 | `CreateBeams`/`ModifyBeams`: `slantAngle` really works (rafters); `ApplyFavoritesToElementDefaults` works for roofs/shells; `ChangeSelectionOfElements` handles large selections in one call | `CreateBeams`/`ModifyBeams`: `slantAngle` wirkt wirklich (Sparren); `ApplyFavoritesToElementDefaults` geht für Dächer/Schalen; `ChangeSelectionOfElements` schafft große Auswahlen in einem Aufruf |
+| 0.9.33 | `CreateBeams`/`ModifyBeams`: `slantAngle` really works (rafters); `ChangeSelectionOfElements` handles large selections in one call (600 elements in 0.1 s) | `CreateBeams`/`ModifyBeams`: `slantAngle` wirkt wirklich (Sparren); `ChangeSelectionOfElements` schafft große Auswahlen in einem Aufruf (600 Elemente in 0,1 s) |
 | 0.9.34 | `SaveProject` saves with the file path (was `APIERR_READONLY`) and reports the real error code | `SaveProject` sichert mit Dateiangabe (lieferte `APIERR_READONLY`) und meldet den echten Fehlercode |
 
-> **Status 0.9.34:** built by CI for AC27/28/29 × Mac/Win; live test running — until then the release is 0.9.32. · gebaut per CI für AC27/28/29 × Mac/Win; Live-Test läuft — bis dahin ist das Release 0.9.32.
+> **Status 0.9.35:** built by CI for AC27/28/29 × Mac/Win and live-tested on AC29 Mac (empty project from the office template: 40 of 41 checks, local project: 8 of 8). Open: roof/shell favorites of the office template (see limits). · gebaut per CI für AC27/28/29 × Mac/Win und live getestet auf AC29 Mac (leeres Projekt aus der Bürovorlage: 40 von 41 Prüfungen, lokales Projekt: 8 von 8). Offen: Dach-/Schalen-Favoriten der Bürovorlage (siehe Grenzen).
 
 Details and examples per version · Details und Beispiele je Version: [`reference/mcp-extension.md`](reference/mcp-extension.md)
 
@@ -186,13 +186,15 @@ arc doctor
 - Only single-plane roofs (no multi-plane roof tool); rafter ends are cut square to the axis, plumb cuts are not settable yet.
 - IFC translator settings are UI-only.
 - `CaptureView` does not reproduce RGB hatch colours reliably — check colours by reading values back, not from the PNG.
-- Story changes of 2D elements: create anew instead of `Modify2DElements`.
+- Story changes and draw order of existing 2D elements: Archicad ignores them on change — create anew instead of `Modify2DElements`. A hatch foreground RGB replaces the pen (Archicad sets pen 1); RGB is stored in 8 bit.
+- Roof and shell favorites of the office template cannot be applied as tool defaults yet (`APIERR_BADINDEX`); favorites created in the project work (`CreateFavoritesFromElements`), or set the structure directly (`CreateRoofs` `compositeName`).
 
 **DE**
 - Nur ebene Dächer (kein Mehrflächen-Dach); Sparrenenden sind rechtwinklig zur Achse geschnitten, ein lotrechter Schnitt ist noch nicht setzbar.
 - IFC-Übersetzer-Einstellungen nur über die Oberfläche.
 - `CaptureView` gibt RGB-Schraffurfarben nicht zuverlässig wieder — Farben per Rücklese prüfen, nicht am PNG.
-- Geschosswechsel von 2D-Elementen: neu anlegen statt `Modify2DElements`.
+- Geschosswechsel und Anzeigereihenfolge bestehender 2D-Elemente: Archicad ignoriert sie beim Ändern — neu anlegen statt `Modify2DElements`. RGB-Vordergrund einer Schraffur ersetzt den Stift (Archicad setzt Stift 1); RGB wird in 8 Bit gespeichert.
+- Dach- und Schalen-Favoriten der Bürovorlage lassen sich noch nicht als Werkzeug-Standard anwenden (`APIERR_BADINDEX`); im Projekt erzeugte Favoriten gehen (`CreateFavoritesFromElements`), oder den Aufbau direkt setzen (`CreateRoofs` `compositeName`).
 
 ## Update
 
@@ -210,4 +212,4 @@ Add-on: **ELMonkey SAB → About → Check for updates** · **ELMonkey SAB → �
 
 ---
 
-**Repo:** [mozzi86/-archicad](https://github.com/mozzi86/-archicad) · **Status · Stand:** October · Oktober 2026 · **ELMonkey** 0.9.34 (release · Release 0.9.32)
+**Repo:** [mozzi86/-archicad](https://github.com/mozzi86/-archicad) · **Status · Stand:** October · Oktober 2026 · **ELMonkey** 0.9.35 (release · Release 0.9.32)
