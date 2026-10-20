@@ -212,4 +212,6 @@ Add-on: **ELMonkey SAB → About → Check for updates** · **ELMonkey SAB → �
 
 ---
 
+**Third-party licenses · Fremdlizenzen:** ELMonkey contains MIT-licensed code from [Tapir](https://github.com/ENZYME-APD/tapir-archicad-automation) (© 2024 Enzyme APD) and [archicad-additional-json-commands](https://github.com/tlorantfy/archicad-additional-json-commands) (© 2023 Tibor Lorántfy) — license texts in [`ELM_SAB_Tapir/`](ELM_SAB_Tapir/README.md#lizenzen--licenses). · ELMonkey enthält MIT-lizenzierten Code aus Tapir und archicad-additional-json-commands — Lizenztexte in `ELM_SAB_Tapir/`.
+
 **Repo:** [mozzi86/-archicad](https://github.com/mozzi86/-archicad) · **Status · Stand:** October · Oktober 2026 · **ELMonkey** 0.9.35 (release · Release 0.9.32)
