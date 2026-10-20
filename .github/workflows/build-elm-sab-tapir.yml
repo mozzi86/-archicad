@@ -42,6 +42,9 @@ concurrency:
 # windows-2022 gepinnt, weil v142 auf dem windows-2025-Image nicht mehr mitkommt.
 # macOS: ein Xcode-Generator für alle Versionen; ab AC26 baut CMakeCommon.cmake universal
 # (x86_64 + arm64), macos-latest genügt daher.
+# Bei Engpässen bricht GitHub wartende Mac-Jobs nach ~15 min mit "cancelled" ab ("The job was not
+# acquired by Runner of type hosted even after multiple attempts", 20.10.2026) - kein Code-Fehler,
+# einfach erneut auslösen (Re-run failed jobs bzw. neuer Push).
 
 jobs:
   build_mac:
