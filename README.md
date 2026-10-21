@@ -144,7 +144,7 @@ ELMonkey 0.10.0 is built on **Tapir 1.7.2** (MIT, ENZYME-APD): 314 Tapir command
 | `DeleteElements` reserves in Teamwork first and names the reason per element | `DeleteElements` reserviert im Teamwork vorab und nennt den Grund je Element |
 | Tapir's self-update is disabled — updates come only from the ELMonkey release (About → Check for updates) | Tapirs Selbst-Update ist abgeschaltet – Updates nur über das ELMonkey-Release (Über → Nach Updates suchen) |
 
-> **Status 0.10.0:** built by CI for AC27/28/29/30 × Mac/Win; live test in Archicad pending (0.9.35 was live-tested: 40/41 + 8/8). · gebaut per CI für AC27/28/29/30 × Mac/Win; Live-Test in Archicad steht aus (0.9.35 live getestet: 40/41 + 8/8).
+> **Status 0.10.0:** built by CI for AC27/28/29/30 × Mac/Win; live-tested on Archicad 29 Mac (empty project from the office template): 51 of 52 checks — open: roof/shell favorites of the office template (see limits). · gebaut per CI für AC27/28/29/30 × Mac/Win; live getestet auf Archicad 29 Mac (leeres Projekt aus der Bürovorlage): 51 von 52 Prüfungen – offen: Dach-/Schalen-Favoriten der Bürovorlage (siehe Grenzen).
 
 Details and examples per version · Details und Beispiele je Version: [`reference/mcp-extension.md`](reference/mcp-extension.md)
 
