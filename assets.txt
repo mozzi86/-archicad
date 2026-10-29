@@ -1,0 +1,32 @@
+Commit: d24c211111cf130a89f18ae3b2e6c9a7ac2260fb
+Lauf:   40900635952
+
+total 43932
+-rw-r--r-- 1 runner runner 3504835 Oct 29 15:34 ELM_SAB_Tapir_AC27_Mac.zip
+-rw-r--r-- 1 runner runner 6632960 Oct 29 15:34 ELM_SAB_Tapir_AC27_Win.apx
+-rw-r--r-- 1 runner runner 3636854 Oct 29 15:34 ELM_SAB_Tapir_AC28_Mac.zip
+-rw-r--r-- 1 runner runner 6814720 Oct 29 15:34 ELM_SAB_Tapir_AC28_Win.apx
+-rw-r--r-- 1 runner runner 3798050 Oct 29 15:34 ELM_SAB_Tapir_AC29_Mac.zip
+-rw-r--r-- 1 runner runner 7368704 Oct 29 15:34 ELM_SAB_Tapir_AC29_Win.apx
+-rw-r--r-- 1 runner runner 3872936 Oct 29 15:34 ELM_SAB_Tapir_AC30_Mac.zip
+-rw-r--r-- 1 runner runner 7375360 Oct 29 15:34 ELM_SAB_Tapir_AC30_Win.apx
+-rwxr-xr-x 1 runner runner    4633 Oct 29 15:34 ELMonkey-Installer-Mac.command
+-rw-r--r-- 1 runner runner     795 Oct 29 15:34 ELMonkey-Installer-Windows.cmd
+-rw-r--r-- 1 runner runner    4616 Oct 29 15:34 ELMonkey-Installer-Windows.ps1
+-rw-r--r-- 1 runner runner  476171 Oct 29 15:34 build-mac-AC27.log
+-rw-r--r-- 1 runner runner  469193 Oct 29 15:34 build-mac-AC28.log
+-rw-r--r-- 1 runner runner  470113 Oct 29 15:34 build-mac-AC29.log
+-rw-r--r-- 1 runner runner  470329 Oct 29 15:34 build-mac-AC30.log
+-rw-r--r-- 1 runner runner    2975 Oct 29 15:34 build-win-AC27.log
+-rw-r--r-- 1 runner runner    2975 Oct 29 15:34 build-win-AC28.log
+-rw-r--r-- 1 runner runner    3997 Oct 29 15:34 build-win-AC29.log
+-rw-r--r-- 1 runner runner    4783 Oct 29 15:34 build-win-AC30.log
+-rw-r--r-- 1 runner runner    1003 Oct 29 15:34 cmake-mac-AC27.log
+-rw-r--r-- 1 runner runner    1003 Oct 29 15:34 cmake-mac-AC28.log
+-rw-r--r-- 1 runner runner    1003 Oct 29 15:34 cmake-mac-AC29.log
+-rw-r--r-- 1 runner runner    1003 Oct 29 15:34 cmake-mac-AC30.log
+-rw-r--r-- 1 runner runner    1049 Oct 29 15:34 cmake-win-AC27.log
+-rw-r--r-- 1 runner runner    1049 Oct 29 15:34 cmake-win-AC28.log
+-rw-r--r-- 1 runner runner    1049 Oct 29 15:34 cmake-win-AC29.log
+-rw-r--r-- 1 runner runner    1049 Oct 29 15:34 cmake-win-AC30.log
+-rw-r--r-- 1 runner runner       7 Oct 29 15:34 elmonkey-version.txt
