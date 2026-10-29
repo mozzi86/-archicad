@@ -145,7 +145,7 @@ ELMonkey 0.10.0 is built on **Tapir 1.7.2** (MIT, ENZYME-APD): 314 Tapir command
 | `DeleteElements` reserves in Teamwork first and names the reason per element | `DeleteElements` reserviert im Teamwork vorab und nennt den Grund je Element |
 | Tapir's self-update is disabled — updates come only from the ELMonkey release (About → Check for updates) | Tapirs Selbst-Update ist abgeschaltet – Updates nur über das ELMonkey-Release (Über → Nach Updates suchen) |
 
-> **Status 0.10.1:** built by CI for AC27/28/29/30 × Mac/Win (8/8 green); new `GetConstructionPensOfElements` / `SetConstructionPensOfElements` are **not yet live-tested** — use `dryRun` first. 0.10.0 base: 59 of 60 live checks. · gebaut per CI für AC27/28/29/30 × Mac/Win (8/8 grün); die neuen Befehle `GetConstructionPensOfElements` / `SetConstructionPensOfElements` sind **noch nicht live getestet** – zuerst mit `dryRun` arbeiten. Basis 0.10.0: 59 von 60 Live-Prüfungen.
+> **Status 0.10.1:** built by CI for AC27/28/29/30 × Mac/Win (8/8 green); new `GetConstructionPensOfElements` / `SetConstructionPensOfElements` live-tested on AC29 Mac (21/21 + 11/11, undo per call). 0.10.0 base: 59 of 60 live checks. · gebaut per CI für AC27/28/29/30 × Mac/Win (8/8 grün); die neuen Befehle `GetConstructionPensOfElements` / `SetConstructionPensOfElements` live getestet auf AC29 Mac (21/21 + 11/11, Undo je Aufruf). Basis 0.10.0: 59 von 60 Live-Prüfungen.
 
 Details and examples per version · Details und Beispiele je Version: [`reference/mcp-extension.md`](reference/mcp-extension.md)
 
