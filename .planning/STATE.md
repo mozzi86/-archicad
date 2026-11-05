@@ -61,6 +61,7 @@ Commits dieser Session: 9 atomic (DWG-IFC Lageplan + KG-300 + 3× Phase-6-Live-P
 | 2026-10-29 | 261029-f9d | ELMonkey 0.10.1 (Branch elm-0.10.1-bauteilstifte): Get/SetConstructionPensOfElements – Bauteilstifte lesen/setzen, cutFill-Überschreibung löschen, dryRun, Teamwork, Rücklese; syn1 STRICT 27–30 ok, CI + Live-Test offen |
 | 2026-11-03 | thn-schalenbau-learnings | Worked Example Kern + Schalen, Gotchas offset/Mittelachse, neue Elemente freigeben, fehlender Grundrissumriss |
 | 2026-11-03 | 261103-m9g | ELMonkey 0.10.4: SetLayerAttributes isHidden/isLocked/isWireframe-Alias, SetLayerOfElements Code+Ist-Ebene je Element, Doku Stahlprofile per CreateProfiles newSkins + Morph body, MCP-Registrierung (CI ausstehend, nicht live getestet) |
+| 2026-11-05 | 261105-ih4 | Ebene per Property lesen: „Ebenenname“ statt „Ebene“ (6702), Verweis in 6001-Diagnose (Live Futurelab) |
 
 ## Performance Metrics
 
