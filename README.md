@@ -8,6 +8,18 @@ Live-verified on real BIM projects (Teamwork and solo, AC29). Built on Tapir 1.7
 
 ---
 
+## Three monkeys · Drei Monkeys
+
+| Monkey | Where · Wo | What · Was |
+|---|---|---|
+| **Archicad monkey · Archicad-Monkey** | ELMonkey add-on (`ELM_SAB` + `TapirCommand`) | writes in Archicad · schreibt in Archicad |
+| **Python monkey · Python-Monkey** | core `elmonkey` + MCP server `elmonkey-mcp` ([mozzi86/ELMonkey](https://github.com/mozzi86/ELMonkey)) | any AI, outside Archicad · jede KI, außerhalb von Archicad |
+| **Platform monkey · Plattform-Monkey** | `core/plattform_monkey` in the Schwarz Platform (private · privat) | on the platform's base model · am Grundmodell der Plattform |
+
+**EN** — The three monkeys are **functionally identical**: same find (and/or/not), same pre-check codes before every write, same read-back after every write, same terms and exchange formats. They are **always kept in sync** — a change to one goes into the other two in the same step.
+
+**DE** — Die drei Monkeys sind **funktionsgleich**: dasselbe Finden (und/oder/nicht), dieselben Vorprüf-Codes vor jedem Schreiben, dieselbe Rücklese nach jedem Schreiben, dieselben Begriffe und Austauschformate. Sie werden **immer angeglichen** — eine Änderung an einem kommt im selben Zug in die beiden anderen. Abgleich zuletzt 09.11.2026: Add-On 0.11.12 · Kern 0.3.0 · MCP 0.2.2 · Plattform-Monkey = Kern 0.3.0.
+
 ## Demo — a house built entirely through the API · ein Haus komplett per API
 
 | Site · Grundstück | House · Haus | Without roof skin · ohne Dachhaut |

@@ -37,6 +37,7 @@ Commits dieser Session: 9 atomic (DWG-IFC Lageplan + KG-300 + 3× Phase-6-Live-P
 
 | Datum | Slug | Ergebnis |
 |-------|------|----------|
+| 2026-11-09 | 261109-mr8 | README: drei Monkeys funktionsgleich + immer angeglichen |
 | 2026-11-09 | 261109-mnr | Installer + README auf mozzi86/ELMonkey-Release umgestellt (Kollegen sahen nur 0.10.x), Status 0.11.12, ExportSurfaces |
 | 2026-09-03 | datumskorrektur | Datumsmarker der drei Tageseinträge 01.09. → 03.09. (Sitzungstag), keine Inhaltsänderung |
 | 2026-09-03 | teamwork-6001-diagnose | 6001 = zuerst Ebene ausgeblendet/Hotlink prüfen (Rezept ein-/ausblenden); 4001 nennt Dialog; API-Selektion ortsgebunden (3 Dateien) |
