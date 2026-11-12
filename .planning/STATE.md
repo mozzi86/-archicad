@@ -37,6 +37,7 @@ Commits dieser Session: 9 atomic (DWG-IFC Lageplan + KG-300 + 3× Phase-6-Live-P
 
 | Datum | Slug | Ergebnis |
 |-------|------|----------|
+| 2026-11-12 | 261112-qb1-wand-baustoff-setzen-elm-sab | Wand-Baustoff setzen nur via ELM_SAB.SetStructureOfElements; „fehlt“-Fall über IFC; commandNamespace-Falle |
 | 2026-09-03 | datumskorrektur | Datumsmarker der drei Tageseinträge 01.09. → 03.09. (Sitzungstag), keine Inhaltsänderung |
 | 2026-09-03 | teamwork-6001-diagnose | 6001 = zuerst Ebene ausgeblendet/Hotlink prüfen (Rezept ein-/ausblenden); 4001 nennt Dialog; API-Selektion ortsgebunden (3 Dateien) |
 | 2026-09-07 | 260907-k1t | Rezept „Gelände aus Punktwolke" (E57 → Bodenraster → Tapir CreateMeshes) + drei parametrisierte Skripte in SKILL.md verlinkt |
