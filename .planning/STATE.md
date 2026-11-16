@@ -37,6 +37,7 @@ Commits dieser Session: 9 atomic (DWG-IFC Lageplan + KG-300 + 3× Phase-6-Live-P
 
 | Datum | Slug | Ergebnis |
 |-------|------|----------|
+| 2026-11-16 | 261116-osp-holen-aus-archicad-volles-paket | „Holen aus Archicad“ = volles Paket (Objekte, Baustoffe, echte Oberflächen, nie Überschreibungen als Material) + Rezept Archicad → Plattform, live BSZ 10659 |
 | 2026-11-16 | 261116-gus-lernstand-09-16-11-einspielen | Lernstand 09.–16.11. von sp eingespielt: Layouts, Bemaßung, liegende Fassaden, GDL, Punktwolke, Plattform-Übernahme + Rückweg ohne Komplett-IFC |
 | 2026-11-12 | 261112-qb1-wand-baustoff-setzen-elm-sab | Wand-Baustoff setzen nur via ELM_SAB.SetStructureOfElements; „fehlt“-Fall über IFC; commandNamespace-Falle |
 | 2026-09-03 | datumskorrektur | Datumsmarker der drei Tageseinträge 01.09. → 03.09. (Sitzungstag), keine Inhaltsänderung |
