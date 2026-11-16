@@ -267,6 +267,10 @@ Neue ELM_SAB-Befehle: `SetTextSizeOfElements` (Text+Label, mm/Faktor),
   Prozess/CPU. Drawing-Elemente sind übrigens auch bei AKTIVEM Layout nicht
   per GetElementsByType lesbar (0 Treffer, offizielle wie Tapir-Variante);
   der verlässliche Weg ist Selektion durch den User + `GetSelectedElements`.
+  **Korrektur 2026-11-11 (Futurelab, Tapir 1.7.2):** nach `ChangeWindow`
+  mit `windowType:"Layout"` + `databaseId` liefert Tapir `GetElementsByType
+  Drawing` die Zeichnungen des Layouts zuverlässig (12 Layouts, je 5–7
+  Treffer). Details siehe `recipes/zeichnungen-auf-layouts.md`. <!-- 2026-11-11 -->
   Und `API.GetTypesOfElements` kennt Drawings nicht (7203) — der Typ-Check
   läuft dort ins Leere. **Merksatz:** Ein Upstream-Befehl, der etwas ändert und
   NICHT in `ACAPI_CallUndoableCommand` läuft, ist ein Crash-Kandidat — beim
@@ -2112,3 +2116,111 @@ Alle übrigen Stiftfelder (`coreSymbolPen`, `hiddenLinePen`, `refPen`, `hiddenCo
 * **0.10.3:** `GetElementEditState` (`reservedByUser`, `isReservedByMe`, Sperrgrund) und die Teamwork-Filter in `FindElements` (frei/meine/fremde) lesen jetzt ebenfalls `userId`; `lockUserId` bleibt als Rohwert in der Ausgabe.
 * **0.10.3 Ausgabe Bauteilstifte:** Ohne Überschreibung liefern Get und Set (`before`/`after`/`readBack`) nur `{"overridden": false}` ohne `pen` — Archicad setzt den Wert beim Abschalten auf 0, ein mitgeschriebener Alt-Stift sah wie eine Rücklese-Abweichung aus (THN: 595 Schein-Abweichungen bei korrektem Modell). Vergleiche immer über `overridden` (und `pen` nur wenn `overridden`).
 * **Testlücke:** Das leere Testprojekt hat kein Teamwork — Reservierungslogik nur in einem Teamwork-Projekt prüfbar (dort nur lesen bzw. mit Freigabe).
+
+## ELMonkey 0.10.4 — SetLayerAttributes-Aliasse, SetLayerOfElements-Diagnose <!-- 2026-11-03 -->
+
+* **Befund live 03.11.** (eingebautes 0.10.3, Port 19731, unbenanntes Projekt): `ELM_SAB.SetLayerAttributes` mit `isHidden` -> 4002 Schemafehler, weil `TapirCommand.CreateLayers` diese Namen nutzt, SetLayerAttributes aber nur `hidden`/`locked`/`wireframe` kannte.
+* **Fix 0.10.4:** `isHidden`/`isLocked`/`isWireframe` sind als Alias zulaessig (`additionalProperties:false` bleibt). Widerspruechliche Angaben (z. B. `hidden:true` + `isHidden:false`) ergeben `[CONFLICT]` NUR fuer diese Ebene, die uebrigen laufen weiter. Die Antwort meldet weiter `hidden`/`locked`/`wireframe`.
+* **SetLayerOfElements:** Eine Tuer (Door, in einer Wand) liess sich nicht von A_01_TRAGWAND auf A_013_TUER umstellen, die Sammelmeldung verschwieg die Ursache; Ursache noch offen. Neu je fehlgeschlagenem Element: `error.code`, `elementType`, `layerIndexTarget`, `layerIndexActual`, `layerNameActual` und eine unterscheidbare Meldung: "Element nicht lesbar", "Archicad lehnt Aenderung ab (code N)", "Ruecklese nicht moeglich" bzw. "Ruecklese weicht ab (Ist-Ebene X)". Erfolgszweig, Reservierung und Undo-Scope unveraendert. Es wurde bewusst kein Workaround geraten.
+* **Offen:** Beim naechsten Live-Test die Tuer erneut probieren und Code + Ist-Ebene hier nachtragen.
+* **Testluecke:** nur Code-Lesung + CI-Build, noch nicht live getestet.
+
+## ELMonkey 0.11.0 — RKs Linie 0.10.1–0.10.8 mit der Hauptlinie zusammengeführt <!-- 2026-11-05 -->
+
+Bis 0.10.x gab es zwei Linien mit gleichen Versionsnummern (gemeinsamer Vorfahr `39abbc6`):
+die Hauptlinie (Bauteilstifte, Teamwork-Besitzer, Ebenen-Fixes 0.10.4) und RKs Linie
+(Designoptionen/Ausschnitte, LibraryPartScripts, UpdateLibraryPart, GSM-Sicherung, fillPen,
+Bogenwand, Hotlinks, GetDrawingLinks). Ab 0.11.0 ist das eine Linie; **„0.10.4" allein sagt
+nicht, welche gemeint ist** — immer `ELM_SAB.GetAddOnVersion` plus Build-Stempel lesen.
+
+Neu aus RKs 0.10.8 (live getestet von RK am 04.11., AC29 Mac):
+
+- `CreateWalls`/`ModifyWalls`: `flipped`; **negativer `arcAngle` = Bogen links** (Außenseite =
+  1. Verbundschicht bleibt). `ELM_SAB.CreatePolygonWalls`: `polygonArcs` (0-basiert wie CreateSlabs).
+- `renovationStatus` (Existing/New/ToBeDemolished oder Bestand/Neubau/Abbruch) in allen
+  Tapir-Create*-Befehlen für Modellelemente, CreateRoofs und CreatePolygonWalls.
+- Oberflächen beim Erzeugen: Wände `referenceMaterial/oppositeMaterial/sideMaterial`,
+  Decken `topMaterial/sideMaterial/bottomMaterial`, Dächer beim Erzeugen und Ändern.
+- `GetHotlinkInstances`, `DeleteHotlinkNodes` (im Undo-Rahmen, Ebenen des Moduls bleiben).
+- `ELM_SAB.GetDrawingLinks`: linkType, filePath, fileExists, status eingesetzter Zeichnungen.
+
+Fallen:
+
+- Ohne `renovationStatus` bekommen neue Elemente den Werkzeug-Standard (meist „Bestand") —
+  beim Neubau immer mitgeben.
+- `CreatePolygonWalls` ohne `floorIndex` landet im **aktuellen** Geschoss.
+- Dach-Oberflächen lassen sich nicht zurücklesen (GetDetails zeigt sie bei Dächern nicht) →
+  Rücklese `ungeprueft` melden, nicht `ok`.
+- `GetDrawingLinks.status` ist bei externen DWG/PDF immer `Unknown`
+  (`ACAPI_Drawing_CheckDrawingStatus` liefert −1) — `fileExists` ist der verlässliche Wert.
+- Teamwork: mit „Abbruch" erzeugte Elemente erst per `ReserveElements` reservieren, sonst 6001.
+- Das MCP-Discovery-Schema hinkt hinterher (z. B. kein `arcAngle`). Maßgeblich sind
+  `ELM_SAB.ListCommands` und die Quelle (`ExtendedElementCommands.cpp`).
+- RKs Linie war nur für AC29 lokal gebaut. In der CI fiel AC30 an `UniString::ToLowerCase` durch
+  (DevKit 30: `GetLowerCased`). In Headern deshalb ein eigener Makroname (`ELM_LOWER_CASED`),
+  nicht `#define ToLowerCase`, das in jede einbindende Datei durchschlagen würde.
+- **0.11.1–0.11.11 Polygonwände, GELÖST (05.11.2026):** `ELM_SAB.CreatePolygonWalls` stürzte in 0.10.4/0.11.0
+  ab (SIGABRT, `ProfileTo3DTransformer::SetupCoordinateSystemFromWall`, Nullrichtung `begC == endC`) bzw.
+  legte ab 0.11.1 eine **gerade Normalwand** an. Ursache nach zehn Diagnose-Builds: **Archicad entscheidet
+  beim `ACAPI_Element_Create` über die Annahme von `APIWtyp_Poly` anhand der Wand-Werkzeug-Voreinstellung
+  der Datei, nicht anhand des übergebenen Elements.** Ist die Voreinstellung *mehrschichtig* (INT-Vorlage,
+  aktuelle Bürovorlage), wird das Polygon verworfen und aus `begC/endC` eine Normalwand gebaut — mit
+  `begC == endC` der Absturz. Ist sie *Basis* (Projekt im Juli, oder nachdem einmal von Hand eine Polygonwand
+  gezeichnet wurde), klappt derselbe Aufruf. Beleg: Diff der Voreinstellung vor/nach einer Handwand in
+  derselben Datei — einziges geändertes Feld `modelElemStructureType 1 → 0`; eine Handwand per
+  `ClonePolygonWall` 1:1 kopiert wird polygonal. Reproduziert in AC28 (7006) und AC29 (5101), unabhängig
+  von Vorlage, Memo (vertexIDs/edgeIDs/parcs), rLinInd, Referenzlinie. Das Graphisoft-Forum kennt den
+  Absturz seit 2024 ohne Erklärung (Thread „Wall Geometry Method: Polygonal", Bug-Report offen).
+  **Fix 0.11.10/0.11.11:** vor `GetDefaults` die Voreinstellung per `ACAPI_Element_ChangeDefaults` (Maske
+  `modelElemStructureType`) auf Basis stellen, nach dem Erzeugen zurückstellen (`forceBasicDefaults`,
+  Default an). Dazu: `begC/endC` = Referenzlinien-Kante (`referenceLineEdge`), `rLinInd/rLinEndInd`,
+  `vertexIDs [n,1..n,1]`/`edgeIDs [0,1..n,1]` wie bei Handwänden, `parcs`-Handle immer, Top-Link gelöst,
+  wenn `height` gesetzt. Live verifiziert in frischer INT-Datei: 4×0,2×1 m, mit Bogen, mit
+  `compositeIndex` (Ergebnis bleibt Basic — Polygonwände sind in AC immer Basis), drei Wände je Aufruf.
+  Diagnosebefehle bleiben: `GetPolygonWallInfo` (Rohfelder + Memo einer Wand), `ClonePolygonWall`
+  (Wand 1:1 per Create kopieren), Parameter `debug`, `typeOverride`, `minimal`, `forceBasicDefaults`.
+  Gegenprobe Bürovorlage (Kopie, 05.11.): polygonal, aber Unterkante bei −0,15 m — `bottomOffset` erbt wie
+  alle Tapir-Create-Befehle die Werkzeug-Voreinstellung; wer die Wand auf Geschossniveau will, gibt
+  `bottomOffset: 0` mit. Schreibtest `test_0110.py` 14/14 in INT- und SAB-Datei.
+  Testskripte: `~/.scratch/elmonkey/tools/test_polywand.py`, `test_clonewand.py`, `test_0110.py`.
+  Weitergabe: Tapir-Issue https://github.com/ENZYME-APD/tapir-archicad-automation/issues/1914 (05.11.2026);
+  Forum-Antwort im Thread „Wall Geometry Method: Polygonal":
+  https://community.graphisoft.com/t5/Archicad-C-API/I-would-like-to-know-how-to-create-a-wall-using-Wall-Geometry/m-p/719915 (05.11.2026).
+
+## ELM_SAB 0.11.13 — GetSolidBounds (Körper-Box für den Diff-Checker) <!-- 2026-11-16, NICHT live erprobt -->
+
+- **`ELM_SAB.GetSolidBounds`** `{elements: [{elementId: {guid}}]}` → `solidBounds`, je Element
+  `{boundingBox3D: {xMin…zMax}, source, bodies}` oder `{error}`. Liest nur.
+- `source: "solid"`: Box aus den 3D-Körpern des Bauteils, also nach Anschlüssen und Verschneidungen — so, wie die
+  Geometrie im IFC herauskäme. `source: "calcBounds"`: Rückfall auf die rohe Hüllbox, weil das Bauteil keinen
+  Körper im 3D-Modell hat (Umbau-Filter, ausgeblendete Ebene). Diese Box ist **nicht vergleichbar**.
+- Warum: `TapirCommand.Get3DBoundingBoxes` nimmt für Wände die rohe Hüllbox. Im AFWC-Abgleich (16.11.) wichen
+  die Wände dadurch um 20–35 cm ab und sahen fast alle geändert aus.
+- Decke ohne Körper → `{error}`, kein Rückfall: `CalcBounds` stürzt bei Decken ab, die im aktiven Fenster nicht
+  gezeichnet sind (Tapir #686).
+- Offen bis zum ersten Live-Lauf: ob das 3D-Modell Körper liefert, wenn das 3D-Fenster in der Sitzung noch nie
+  offen war. Kommt überall `calcBounds` zurück, das 3D-Fenster einmal öffnen (alle Ebenen, Umbau-Filter „alles
+  zeigen“) und erneut lesen.
+
+## ELM_SAB 0.11.12 — ExportSurfaces (Oberflächen + Texturbilder) <!-- 2026-11-09 -->
+
+- **`ELM_SAB.ExportSurfaces`** schreibt alle Oberflächen des Projekts als Ordner
+  `<Ziel>/<Projekt>_oberflaechen_<JJJJMMTT-hhmmss>/` mit `oberflaechen.json`, `texturen/` und `LIESMICH.md`
+  (Format `sab-oberflaechen/1`, Beschreibung `archicad-addon/ELM_SAB_Tapir/Tools/oberflaechen/FORMAT_sab-oberflaechen-1.md`).
+  Parameter nur `targetFolder` (optional, Standard `<Benutzer>/Downloads`). Antwort: `folder`, `project`,
+  `archicadVersion`, `surfaces`, `withImage`, `imageMissing`, `withoutTexture`, `images`; Fehler als `{error}`.
+- Gleiches Format wie der Oberflächen-Export des Plattform-Add-ons — der Ordner geht unverändert durch das
+  Einlese-Werkzeug der Plattform. Die IFC-Stilnamen im Modell sind die Oberflächennamen, darüber ordnet die
+  Plattform zu; `breite_m`/`hoehe_m` (Kachelmaß) fehlen im IFC und kommen nur hierüber.
+- Bilder: `texture.fileLoc` wird vor `ACAPI_Attribute_Get` angelegt; liegt das Bild als Datei vor, wird es kopiert,
+  sonst über `IO::File` gelesen (eingebettete Bibliothek, `.lcf`). Was so nicht lesbar ist, steht mit
+  `bild_fehlt: "Datei fehlt: …"` drin — die Plattform holt solche Bilder beim Einlesen selbst aus dem `.lcf`.
+- Fallen aus der Vorlage: `API_ProjectInfo` nicht selbst freigeben (doppeltes delete → Absturz);
+  Attribut-Indizes haben Lücken (Fehler bei Get = überspringen); Zahlen immer mit Punkt (`locale::classic`).
+- Liest nur, reserviert nichts. Prüfen ohne Archicad: `python3 Tools/oberflaechen/pruefen.py <Ordner>`.
+- **Stand 09.11.:** syntaxgeprüft gegen DevKit 28/29/30 (clang, `-Wall -Wextra -Werror`), CI AC27–30 × Mac/Win.
+  **Live verifiziert 09.11. (AC29, Mac, Teamwork-Projekt):** 238 Oberflächen, 161 mit Bild, 0 ohne Bilddatei,
+  77 ohne Textur, 146 Bilddateien (alle echte JPEG/PNG, 31 MB) in 0,15 s; `pruefen.py` „In Ordnung“; der
+  Plattform-Leser (`paket_lesen`/`plan`) liest den Ordner ohne Fehler und Warnung (238 Materialien). Umlaute in
+  Namen und im Ordnernamen bleiben erhalten. Stichprobe Mauerziegel DF: Kachel 1,5 × 1,488 m, im Bild ~23
+  Schichten = 64 mm Schichthöhe — Kachelmaß passt zum Bild. Windows noch nicht live.

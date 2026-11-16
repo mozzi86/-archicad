@@ -59,6 +59,7 @@ Merke: der Trick wirkt am stärksten, wenn ein Schema-Feld einen ungewöhnlich s
 | Erfolgsmeldung, aber unerwartetes Ergebnis | Stoppen, lesen was tatsächlich passiert ist, **NICHT** auto-korrigieren | 0 |
 | Pagination-Token vorhanden | Weiter-anfragen bis vollständig (siehe Sektion 4) | bis fertig |
 | Netzwerk-/Timeout-Fehler | 1 Retry nach kurzer Pause, dann User informieren | 1 |
+| pydantic `extra_forbidden` bei GetStories/Schema ohne `body` <!-- 2026-11-03 --> | Alter `tapir-archicad-mcp` 0.4.3 registriert: auf `elmonkey-mcp` umstellen, Details in [`../recipes/initial-setup.md`](../recipes/initial-setup.md) (Troubleshooting) | 0 |
 | **MCP-Call hängt oder timeoutet ohne Response** | **Modal-Dialog blockiert Archicad** — User bitten, offene Dialoge zu prüfen und sauber zu schließen (siehe Sektion „Modal-Dialoge"). | 0 |
 | **`Invalid program status (there is an open modal dialog: <Dialog-Name>)` — Code 4001** | Spezifische Form des Modal-Block-Fehlers; Dialog-Name aus Fehlermeldung extrahieren + an User weiterleiten. | 0 |
 | **Leere Liste von `discovery_list_active_archicads`, obwohl Archicad nachweislich läuft** | **Modaler Dialog, kein MCP-Defekt** — die Discovery verwandelt den 4001-Fehler still in eine leere Liste: der offene Dialog (Add-On-Manager, Element-Einstellungen …) blockiert die JSON-API, `connect.all()` bekommt keine Projekt-Infos, der unvollständige Header wird von `is_header_fully_initialized()` weggefiltert → leere Liste ohne jede Fehlermeldung („blinde Null"). **Diagnose-Einzeiler:** `curl -s -X POST http://127.0.0.1:19723 -d '{"command":"API.GetProductInfo"}'` — nennt den blockierenden Dialog im Klartext. Kein Prozess-Neustart nötig; User bitten, den Dialog zu schließen, dann Discovery wiederholen. <!-- 2026-08-05, live beim 0.9.11-Update --> | 1 nach Dialog-Schluss |
@@ -314,6 +315,38 @@ Falsch (verschachteltes `propertyValues`) → Top-Level-Fehler **4002** „`The 
 Flach (`classificationSystemId`/`classificationItemId` direkt neben `elementId`) → 4002. Es gibt auch einen Tapir-Command gleichen Namens (gleiches nested Schema), aber der **maskiert die echten Fehler**: er liefert nur generisch `Failed to set classification item for element` (Code -2130312310), wo der offizielle Command präzise `6001 TeamWork permission denied` (fehlende Reservierung) oder `7203 Element not supported` (Elementtyp nicht klassifizierbar, z. B. Polylinie/2D) meldet. Live verifiziert an 297 Wänden (Teamwork, AC29).
 
 **Wann den HTTP-Bypass NICHT nehmen:** Für normale, kleine Operationen (< ~100 Elemente, keine kaputten Tools) bleibt der MCP-Tool-Pfad der Default — er ist Discovery-geführt und versionsrobust. Der Bypass ist das Werkzeug für **Massendaten** und **die bekannten Schema-Drift-Tools**. Port immer aus dem Warm-up/Discovery beziehen, nie hardcoden (Ports sind volatil, siehe oben).
+
+## MCP-Schema ≠ installiertes Add-on (Tapir 1.7.2 unter ELMonkey) <!-- 2026-11-16, live AFWC -->
+
+`discovery_list_active_archicads` warnt bei ELMonkey-Installationen: „Installed Tapir version
+(1.7.2) is older than supported (2.0.0)“ (am 12.11. hieß es noch 1.8.0 — der MCP-Server zieht
+mit). Die Schemas aus `archicad_get_command_schema` beschreiben dann die **neuere** Tapir-Version,
+das installierte Add-on kennt aber nur 1.7.2. Folgen, live an AFWC (Teamwork, AC29):
+
+| Was | Antwort des Add-ons | Ausweg |
+|---|---|---|
+| `CreateBeams` mit `id` oder `layerIndex` | 4002 `additionalProperties … beamsData/0/id` | Ohne beide anlegen. Das Element landet auf der Ebene des Werkzeug-Standards (hier „A_80_MASKENBLOCK“!). Danach `SetDetailsOfElements {details:{layerIndex}}`. |
+| Element-ID setzen (`details.id`) | 4002 | `API.GetPropertyIds [{type:"BuiltIn", nonLocalizedName:"General_ElementID"}]`, dann `API.SetPropertyValuesOfElements` mit `propertyValue {type:"string", status:"normal", value}` (ohne `type`/`status` → 4002 `oneOf`). |
+| `GetDetailsOfElements` mit `filter`, `favorites_search_favorites` mit `query` | 4002 bzw. 4010 | Ohne Filter lesen, lokal filtern. |
+| `GetLayerOfElementDefaults`, `SearchFavorites`, `SetZoom`, `ZoomToElements`, `GetView3DImage` | 4010 (nicht registriert) | Ebenen-Index über Tapir `GetAttributesByType {attributeType:"Layer"}` (liefert `index`; die offizielle `API.GetLayerAttributes` liefert keinen). Zoomen geht nicht, siehe Bilder unten. |
+| `ChangeWindow {windowType:"FloorPlan", storyIndex}`, `SaveCurrentWindowAsImage {imageFilePath}`, `ChangeSelectionOfElements`, `Get3DBoundingBoxes`, `DeleteElements` | gehen | — |
+
+**Falle: Create-Befehle nie in einer Schleife mit Varianten „ausprobieren“.** Jede Variante, die
+durchgeht, legt ein Element an. Am 16.11. sind so zwei Probe-Träger entstanden, einer doppelt.
+Erst das Schema an einer einzigen Probe klären, nach jeder Probe zurücklesen und zählen,
+Duplikate sofort entfernen und der Nutzerin melden.
+
+**Bilder ohne Zoom-Befehl:** `SaveCurrentWindowAsImage` speichert den aktuellen Fensterausschnitt
+und liefert im Grundriss dessen `zoom`-Box (Modellmeter) mit. Daraus ergibt sich die Abbildung
+Modell → Pixel (Achsen gleich skaliert, y gespiegelt). Dünne Bauteile (22-mm-Traversen in
+Vorwänden) sieht man im gespeicherten Grundriss kaum; dann die Bauteile als SVG-Linien über das
+Bild legen und mit `qlmanage -t -s <px> -o . datei.svg` in PNG wandeln (PIL ist hier nicht
+installiert; `qlmanage` liefert ein quadratisches Bild, also per `viewBox` passend zuschneiden).
+Die Nutzerin wechselt nebenbei Fenster und Zoom: direkt vor dem Speichern `ChangeWindow` erneut
+aufrufen und die zurückgegebene `zoom`-Box verwenden, nicht eine ältere.
+
+**`HighlightElements` bleibt stehen**, bis man sie mit einer leeren Liste aufhebt. Nach dem Zeigen
+selbst wieder aufheben; die orange Markierung hat die Nutzerin am 10.11. gestört. <!-- 2026-11-10 -->
 
 ## Verhalten bei „nein" oder Mid-Batch-Fehler
 
