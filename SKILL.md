@@ -92,6 +92,19 @@ Methode an einem bekannten Positivfall gegengeprüft wurde.** Ein Nullbefund ohn
 hat in dieser Arbeit schon zur falschen Empfehlung geführt, Attribute zu löschen, die in
 Gebrauch waren — die Suche hatte den Attributtyp nicht unterschieden.
 
+## Holen aus Archicad = volles Paket <!-- 2026-11-16 -->
+
+Heißt der Auftrag „hol es aus Archicad“ oder „schau es dir in Archicad an und bau es nach“ (Weisung
+vom 2026-11-16), dann immer das **volle Paket**:
+
+- (a) richtige Objekte und Geometrien aus dem richtigen IFC,
+- (b) richtige Baustoffe,
+- (c) richtige Oberflächen (`ELM_SAB.ExportSurfaces` → `archicad_oberflaechen_hochladen` → `archicad_oberflaechen_einpflegen`).
+
+Grafische Überschreibungen sind nie ein Material. Umbau-Farben (Neubau rot, Abbruch gelb) sind in der
+Plattform ein Anzeige-Schalter (PR SchwarzArchitekturbuero/SchwarzPlatform#345), kein Material.
+Ablauf, Prüfungen und Fallen: [`recipes/archicad-nach-plattform.md`](recipes/archicad-nach-plattform.md).
+
 ## Wo welches Wissen liegt
 
 ### Reference (Hintergrund + Konventionen)
@@ -129,6 +142,7 @@ Konkrete Rezepte werden in den Folgephasen mit live-verifizierten Inhalten gefü
 - [`recipes/zeichnungen-auf-layouts.md`](recipes/zeichnungen-auf-layouts.md) — Zeichnungen auf Layouts platzieren, zuschneiden und anordnen (Raumstempel-Ausschnitt; Grundriss mittig + Wandansichten bündig mit 10 mm, Titel per Neuverknüpfung entfernen): Abbildung Modell→Layout, `pos` nach `CreateDrawings` neu setzen, Titel kommt aus dem Werkzeug-Standard, Bildvergleich vorher/nachher (live Futurelab 2026-11-11). <!-- 2026-11-11 -->
 - [`recipes/punktwolke-abgleich.md`](recipes/punktwolke-abgleich.md) — Punktwolke (E57) gegen das Modell: Platzierung prüfen, raumhohe Wolkenzellen gegen Modellmaske, fehlt/versetzt/ausgeblendet, Best-Fit-Drehung, Tapir-1.7.2-Lücken (live Futurelab 2026-11-12). <!-- 2026-11-16 -->
 - [`recipes/plattform-bauteile-uebernehmen.md`](recipes/plattform-bauteile-uebernehmen.md) — Bauteile aus der Schwarz Platform nach Archicad: IFC-Export der Plattform liegt in Archicad-Koordinaten, Register vs. Ebene, Höhen- und Drehungs-Umrechnung, Einrasten auf Achsen, Anlegen unter Tapir 1.7.2 (live AFWC-Traversen 2026-11-16). <!-- 2026-11-16 -->
+- [`recipes/archicad-nach-plattform.md`](recipes/archicad-nach-plattform.md) — Modell aus Archicad in die Schwarz Platform holen (volles Paket): Fenster nur lesen, IFC-Export `EntireProject`, Prüfung auf eingebackene Überschreibungsfarben, 400-MB-Grenze/SharePoint-Weg, Oberflächen-Export mit NFC-ZIP, Falle fehlende Elemente ohne 3D-Körper (live BSZ 10659 2026-11-16). <!-- 2026-11-16 -->
 - [`recipes/gebaeude-und-aussenanlage.md`](recipes/gebaeude-und-aussenanlage.md) — **Gebäude + Außenanlage komplett per API, fachlich und in 3D**: Höhenkette, Favoriten, Pfettendach (Pfetten/Sparren/Giebel-SEO), Straßenraum, Grundstück, „Tragende Funktion“, Fallen (Heimatgeschoss aus absoluter Höhe, CaptureView-Farben, Bibliotheksnamen). <!-- 2026-10-20 -->
 - [`recipes/wall-operations.md`](recipes/wall-operations.md) — Wand-Operationen (Lesen, Erstellen, Modifizieren, Löschen, Klassifizieren — Create seit Tapir 1.5.3 via `elements_create_walls`).
 - [`recipes/openings.md`](recipes/openings.md) — Fenster, Türen, Wandöffnungen.
