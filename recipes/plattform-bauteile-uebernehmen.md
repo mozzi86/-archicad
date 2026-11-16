@@ -60,3 +60,28 @@ Plattform mit `modell_bauen` entsteht (Duofix-Elemente, Kernbohrungen, Stahlteil
   AFWC: Träger auf „A_28_EINBAU_SANIT“, Element-ID = Skizzen-ID in Großbuchstaben.
 - Ob eingebettete Teile (Traversen in Duofix-Elementen) mitkommen.
 - Senden in Teamwork.
+
+## Rückweg: Archicad-Änderungen in die Plattform (ohne Komplett-IFC) <!-- 2026-11-16, live AFWC -->
+
+Die Nutzerin will **kein ganzes IFC** übertragen. Live am 16.11.: Nur die Unterschiede wurden
+einzeln als Vorschläge geschrieben (AFWC Vorschläge 19, 21–26).
+
+1. `archicad_abgleich_lesen` → `stand.json` (alle Plattform-Bauteile mit IFC-Eigenschaften).
+2. Vergleich je GlobalId, Toleranz 3 mm. Geometrie **wie im IFC** (getrimmt, Teile von Mehrschicht-
+   Bauteilen zusammengefasst), nicht die rohe Archicad-3D-Box. Alle `IfcElement`-Klassen nehmen
+   (sonst fehlt z. B. `IfcFurniture`), Werte normalisieren (`.T.`/Ja, `IFCLABEL('X')`, `\X\E4`),
+   reine Mengenabweichungen nicht werten, Abbruch nicht durch den Umbau-Filter verlieren,
+   `IfcOpeningElement`-GUIDs ignorieren (pro Export neu).
+3. Schreiben mit `modell_bauteile_aendern` (Standard: Vorschlag): `eigenschaften_setzen`
+   (status + psets) · `geometrie laenge {ende:[O,N], um}` entlang der Längsachse · `dicke {um, fest:
+   Gegenseite}` quer · `hoehe {kante, bis: z + (hoeheNN − nullniveauNN)}` · `hinzufuegen` (platte/
+   verbund, `koordinaten:"archicad"`, `geschoss` als GUID — zwei Geschosse heißen „Obergeschoss“) ·
+   bei nicht rechteckigem Grundriss `ersetzen` mit `guid_behalten` (Schichtaufbau geht verloren).
+4. Große Antworten (> 40 Ops) landen in einer Datei; nur `geschrieben`, `nr`, Fehler auswerten.
+   Ein Fehler in einem Op verwirft den ganzen Satz — nicht rechteckige Bauteile vorher aussortieren.
+5. Vorschläge sind in `modell_zeigen` und `modell_ansicht` nicht sichtbar (nur blau in Web/iPad).
+
+**Geplant:** ELMonkey-Befehl `DiffPlattformELM`, der direkt im Archicad gegen `stand.json`
+vergleicht, ohne Export. Anforderung in
+`ZZ_Austausch/ELMonkey Diff-Checker Plattform-Abgleich 2026-11-16/ANFORDERUNG_Diff-Checker.md`.
+Bis dahin: Export nur in den Scratchpad, danach löschen.
