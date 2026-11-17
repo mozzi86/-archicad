@@ -69,6 +69,15 @@ Meldung. --> Deshalb als **Pflichtschritt jeder Update-Prozedur**: vor dem Archi
 den `Add-Ons/`-Ordner auf `*.bak`/Backup-Bundles prüfen (`ls`) und Sicherungen NUR
 außerhalb ablegen (z. B. `~/ELM_SAB_Backups/`).
 
+## Bundle-Wechsel am Mac: Ablauf <!-- 2026-11-17 -->
+
+Live THN (Teamwork, AC29):
+
+- Vor dem Beenden senden, empfangen, alles freigeben und das alte Bundle sichern.
+- `osascript … quit` kann mit -128 „abgebrochen“ zurückkommen, wenn Archicad gerade „PLN-Snapshot wird hochgeladen“ zeigt (modaler Dialog, API-Code 4001). Dann warten: Archicad beendet sich nach dem Upload selbst (die API meldet zuletzt 2004 „Program is shutting down“).
+- Das alte Bundle nicht löschen, sondern per `mv` aus dem Add-Ons-Ordner in den Sicherungsordner verschieben.
+- Nach `open -a "Archicad 29"` öffnet Archicad das zuletzt offene Teamwork-Projekt wieder; die API ist nach ca. 2 Minuten erreichbar. Version per `ELM_SAB.GetUIState` → `elmSabVersion` zurücklesen.
+
 ## Erweiterungs-Entscheidungsbaum
 
 1. **Kombi aus vorhandenen Befehlen?** → Python, `tools/custom/functions.py` im
@@ -709,6 +718,7 @@ Aus dem revit-mcp-python-Vergleich (Abwägung: `~/.scratch/elmonkey/pyrevit-verg
   Seit 0.9.13 mit Datei-Existenz-Rücklese via `IO::fileSystem.Contains` — NoError vom
   Save allein beweist nichts. **Live-Test am Modell steht aus** (Bundle noch nicht eingebaut).
   **Korrektur 2026-10-13 (0.9.25):** `APIColorDepth_FromSourceImage` war selbst falsch. Es ist nur für die Bildkonvertierung definiert, beim Fenster-Export gibt es kein Quellbild → Save lieferte APIERR_BADID, CaptureView hat nie ein Bild geliefert. Seit 0.9.25 gilt die Echtfarbtiefe je Plattform (`MiC`/`TC24`) mit Rückfall `256C`, siehe Abschnitt „ELM_SAB 0.9.25“ unten. **Live verifiziert erst mit 0.9.25 (WiSchu 13.10.).**
+- **Sichtprüfung auf einen Bereich (live 2026-11-17):** <!-- 2026-11-17 --> `TapirCommand.FitInWindow` zoomt immer auf alles, auch mit Auswahl; ein Zoom auf einen Bereich fehlt. `ELM_SAB.CaptureView` liefert dann nur die Gesamtansicht und ist für eine Detailprüfung ungeeignet.
 - **Paletten-Rückfrage** (TapirPalette::ExecuteScript): Sicherheitsdialog NUR für
   `UnusedViewCleaner.py` (Nutzer-Auftrag nach Vorfall 2026-08-06; Abbrechen = Default-Button).
   0.9.12 hatte zusätzlich einen generischen Dialog vor jedem Skript — als unbeauftragter
