@@ -37,6 +37,7 @@ Commits dieser Session: 9 atomic (DWG-IFC Lageplan + KG-300 + 3× Phase-6-Live-P
 
 | Datum | Slug | Ergebnis |
 |-------|------|----------|
+| 2026-11-17 | 261117-k7x-thn-lerneintraege-waende-bereinigen | THN-Lerneinträge Teil 2: Überlappungen/Doppelungen bereinigen (Umriss aus Get2DGeometryOfElements, Rangregel), Polygonwand-Neubau mit Datenübernahme, Durchbruch-Wirtswand via GetConnectedElements, gerundete Ecken aus Bestands-DXF, TeamworkReceive/Pause-Abschluss |
 | 2026-11-17 | 261117-tfw-lerneintraege-thn-fassaden-waende | THN-Lerneinträge: Fassaden-Spaltenraster nachträglich per SetCurtainWallSegmentELM (nur 0.11.12.1; „kein ModifyCurtainWall“ überholt), Wand-Gotchas 12–15 (ModifyWalls, Referenzlinie, Stärke, gesperrte Ebene), UI-Kleinigkeiten |
 | 2026-11-16 | 261116-osp-holen-aus-archicad-volles-paket | „Holen aus Archicad“ = volles Paket (Objekte, Baustoffe, echte Oberflächen, nie Überschreibungen als Material) + Rezept Archicad → Plattform, live BSZ 10659 |
 | 2026-11-16 | 261116-gus-lernstand-09-16-11-einspielen | Lernstand 09.–16.11. von sp eingespielt: Layouts, Bemaßung, liegende Fassaden, GDL, Punktwolke, Plattform-Übernahme + Rückweg ohne Komplett-IFC |
