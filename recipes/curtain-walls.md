@@ -58,7 +58,8 @@ Live THN 2026-11-17: 206 von 255 Fassaden auf 1,20 m Feldbreite gestellt.
 
 - Das Spaltenraster läuft ab dem **Ursprungspunkt** des Segments (`API_CWSegmentType.gridOrigin`, 3D-Punkt), nicht ab dem Segmentanfang. Bei bestehenden Fassaden liegt dieser Punkt irgendwo im Segment (THN-Beispiel 27BB6F2C: 0,986 m hinter dem Anfang); das Muster wird von dort aus gelegt und nach vorn umgebrochen, an diesem Punkt steht immer ein Pfosten.
 - `gridOriginType` (ELMonkey 0.11.14: `columnOrigin`) stand dort schon auf `start` und ändert daran nichts; `columnOrigin` setzt nur den Typ.
-- Ungleiche Feldfolgen (z. B. 0,85 | 1,2 | 1,2 | 0,9 | 1,2 | 1,2 | 0,87) gehen nur, wenn der Ursprungspunkt auf den Segmentanfang gesetzt wird. Die Lösung `gridOriginAtStart` ist in ELMonkey 0.11.15 in Arbeit und noch nicht live getestet.
+- Ungleiche Feldfolgen (z. B. 0,85 | 1,2 | 1,2 | 0,9 | 1,2 | 1,2 | 0,87) gingen nur mit dem Ursprungspunkt am Segmentanfang. **Live getestet 17.11. (AC29 Mac, ELMonkey 0.11.16): der Ursprungspunkt lässt sich per API (DevKit 29) nicht verschieben.** `SetCurtainWallSegmentELM` mit `gridOriginAtStart` bzw. `gridOrigin` meldet `success: true`, `errorCode` 0, aber `gridOriginReached: false`; die Rücklese bleibt (0,0,0), die Pfosten bleiben unverändert, weder über das Memo noch über das Segment-Element (`gridOriginVia: segment|both`). Ungleiche Bestandsteilungen gehen damit nur per Neubau (`CreateCurtainWallFromAxes`, Klassen/Paneele/Eigenschaften nachtragen, vorher Freigabe).
+- `GetCurtainWallFramesELM` (0.11.16) funktioniert und liefert je Pfosten `classRole`, `uBeg`/`uEnd` ab Segmentanfang usw.; der „feste“ Pfosten 1,016 m ab Segmentanfang war am THN-Beispiel ein normaler Rasterpfosten (`class0`), kein Einzelpfosten.
 - Rückbau auf `[1.2]` stellt den alten Zustand exakt wieder her (Pfosten 0,986 / 2,186 / …).
 - Messen immer gegen einen festen Weltbezug, nicht gegen die Bbox des geänderten Zustands (die verschiebt sich mit den Randfeldern).
 
