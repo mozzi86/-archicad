@@ -38,6 +38,22 @@ Claude ──► tapir-archicad-mcp (Python, uv tool "archicad-server")
   `{"navigatorTreeId": {"type": "LayoutBook"}}` — liefert Layouts, Subsets, Master
   und **platzierte Zeichnungen (DrawingItem) pro Layout mit Namen**. THN: 264 Layouts,
   357 Zeichnungen. Achtung: Antwort >500 KB → landet als Datei, mit Python parsen.
+- **Navigator-Namen zurücklesen nur über Tapir** <!-- 2026-11-17 -->: Live THN (AC29 Teamwork,
+  Tapir 1.7.2) lieferte das offizielle `API.GetNavigatorItemTree` (ViewMap und LayoutBook) nach einer
+  Umbenennung im UI weiter den **alten** Namen, auch nach `TeamworkReceive`. Tapir
+  `GetNavigatorItemTree {navigatorMapId:"PublicViewMap"|"LayoutBook"}` zeigte sofort den neuen Namen,
+  dazu `customName`, `uiId` und `sourceNavigatorItemId`. Antwort: `children[].navigatorItem`.
+- **Plankopf-Titel = Zeichnungsname = Name des Quell-Ausschnitts** <!-- 2026-11-17 -->: Bei
+  DrawingItems mit `customName:false` folgt der Name dem Ausschnitt aus `sourceNavigatorItemId`.
+  Falscher Titel auf mehreren Layouts („0. OBERGESCHOSS“ auf 5 EG-Blättern) → den einen Ausschnitt
+  umbenennen, nicht Geschoss oder Layout. Geschossnamen vorher per `GetStories` gegenprüfen.
+- **`RenameNavigatorItem` in Teamwork** <!-- 2026-11-17 -->: scheitert mit „Failed to rename
+  navigator item.“ (Code `-2130312910`), wenn der Ausschnitt nicht reserviert ist. Einzelne
+  Ausschnitte lassen sich per API nicht reservieren (`ReserveLockableObjectSet` kennt nur ganze
+  Mengen; die ganze Ausschnittmappe zu reservieren blockiert Kollegen). Weg: Nutzer reserviert im UI
+  (Rechtsklick → Reservieren → Ausschnitt-Einstellungen → Name), danach per Tapir zurücklesen.
+  Vorsicht beim Ändern von Geschossnummern in Titeln: THN-Kriechkeller WD liegt auf Geschoss −2,
+  zählt nach Türnummern (WD_U1_…) aber zum 1. UG – Titel „-1. …/KRIECHKELLER“ ist gewollt.
 - Ansicht-Settings lesen/schreiben: `navigator_get_view_settings` / `navigator_set_view_settings`
   (LayerCombination, PenSet, MVO, GraphicOverride, DimStyle — pro View).
 - 2D-Elemente inkl. Line/PolyLine/Arc/Circle/Spline/Hatch/Text/Label/Dimension per
