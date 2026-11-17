@@ -482,6 +482,23 @@ Hinweis: `General_HotlinkAndElementID` ohne Hotlink-Präfix = lokales, klassifiz
     schon verschmälert ist, mit den **Kanten aus der Erstlesung** fortsetzen, nicht
     neu messen — die aktuelle Wand ist ja schon dünner. <!-- 2026-11-02 -->
 
+12. **`TapirCommand.ModifyWalls`: Felder direkt neben `elementId`.** Form
+    `{"elementId":{…},"offset":0,"begCoordinate":{…}}`; ein `details`-Objekt gibt 4002.
+    <!-- 2026-11-17 -->
+
+13. **Referenzlinie auf die Wandseite legen, ohne die Wand zu bewegen.** Bei Versatz ≠ 0
+    `offset:0` setzen und die Achse quer um den alten Versatz verschieben; bei Bezugslinie
+    Mitte `referenceLineLocation:"Outside"` setzen und die Achse nachführen. Immer beide
+    Wandkanten vorher und nachher messen und bei Abweichung über 1 mm zurücksetzen
+    (live THN: 201 + 757 Wände, 3 zurückgesetzt). <!-- 2026-11-17 -->
+
+14. **Stärke ändern mit fester Seite.** `thickness` setzen, Kanten messen, Achse quer
+    nachschieben, bis die feste Kante wieder stimmt. <!-- 2026-11-17 -->
+
+15. **„Failed to modify wall" (-2130312913) trotz eigener Reservierung = Ebene gesperrt.**
+    `ELM_SAB.GetElementEditState` zeigt `layerLocked: true`. Das betrifft dann meist alle
+    Ebenen (Ebenenkombination); der Nutzer muss umschalten. <!-- 2026-11-17 -->
+
 ---
 
 ## Verwandte Recipes
