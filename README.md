@@ -8,6 +8,18 @@ Live-verified on real BIM projects (Teamwork and solo, AC29). Built on Tapir 1.7
 
 ---
 
+## Three monkeys · Drei Monkeys
+
+| Monkey | Where · Wo | What · Was |
+|---|---|---|
+| **Archicad monkey · Archicad-Monkey** | ELMonkey add-on (`ELM_SAB` + `TapirCommand`) | writes in Archicad · schreibt in Archicad |
+| **Python monkey · Python-Monkey** | core `elmonkey` + MCP server `elmonkey-mcp` ([mozzi86/ELMonkey](https://github.com/mozzi86/ELMonkey)) | any AI, outside Archicad · jede KI, außerhalb von Archicad |
+| **Platform monkey · Plattform-Monkey** | `core/plattform_monkey` in the Schwarz Platform (private · privat) | on the platform's base model · am Grundmodell der Plattform |
+
+**EN** — The three monkeys are **functionally identical**: same find (and/or/not), same pre-check codes before every write, same read-back after every write, same terms and exchange formats. They are **always kept in sync** — a change to one goes into the other two in the same step.
+
+**DE** — Die drei Monkeys sind **funktionsgleich**: dasselbe Finden (und/oder/nicht), dieselben Vorprüf-Codes vor jedem Schreiben, dieselbe Rücklese nach jedem Schreiben, dieselben Begriffe und Austauschformate. Sie werden **immer angeglichen** — eine Änderung an einem kommt im selben Zug in die beiden anderen. Abgleich zuletzt 09.11.2026: Add-On 0.11.12 · Kern 0.3.0 · MCP 0.2.2 · Plattform-Monkey = Kern 0.3.0.
+
 ## Demo — a house built entirely through the API · ein Haus komplett per API
 
 | Site · Grundstück | House · Haus | Without roof skin · ohne Dachhaut |
@@ -40,20 +52,20 @@ Step-by-step recipe with all pitfalls · Schritt-für-Schritt-Rezept mit allen F
 | **MCP server `elmonkey-mcp`** | Bridge Claude ↔ Archicad, provides `mcp__archicad__*`; reads the live command catalog (`ELM_SAB.ListCommands`), searches in English and German. · Brücke Claude ↔ Archicad, liest den Befehlskatalog live, sucht deutsch und englisch. | `uv tool install …` |
 | **Skill** | This repo · dieses Repo | `git clone` + symlink |
 
-**1. ELMonkey** — quit Archicad, then run the installer from the [latest release](https://github.com/mozzi86/-archicad/releases/tag/elm-sab-tapir-latest) · Archicad beenden, dann den Installer aus dem [aktuellen Release](https://github.com/mozzi86/-archicad/releases/tag/elm-sab-tapir-latest) starten:
+**1. ELMonkey** — quit Archicad, then run the installer from the [latest release](https://github.com/mozzi86/ELMonkey/releases/tag/elm-sab-tapir-latest) · Archicad beenden, dann den Installer aus dem [aktuellen Release](https://github.com/mozzi86/ELMonkey/releases/tag/elm-sab-tapir-latest) starten:
 
-- **macOS:** [`ELMonkey-Installer-Mac.command`](https://github.com/mozzi86/-archicad/releases/download/elm-sab-tapir-latest/ELMonkey-Installer-Mac.command) (double-click; if blocked: right-click → Open · Doppelklick; falls blockiert: Rechtsklick → Öffnen), or · oder:
+- **macOS:** [`ELMonkey-Installer-Mac.command`](https://github.com/mozzi86/ELMonkey/releases/download/elm-sab-tapir-latest/ELMonkey-Installer-Mac.command) (double-click; if blocked: right-click → Open · Doppelklick; falls blockiert: Rechtsklick → Öffnen), or · oder:
   ```bash
-  curl -fsSL https://raw.githubusercontent.com/mozzi86/-archicad/main/installer/ELMonkey-Installer-Mac.command | bash
+  curl -fsSL https://raw.githubusercontent.com/mozzi86/ELMonkey/main/archicad-addon/installer/ELMonkey-Installer-Mac.command | bash
   ```
-- **Windows:** [`ELMonkey-Installer-Windows.cmd`](https://github.com/mozzi86/-archicad/releases/download/elm-sab-tapir-latest/ELMonkey-Installer-Windows.cmd) (asks for admin rights · fragt nach Administratorrechten)
+- **Windows:** [`ELMonkey-Installer-Windows.cmd`](https://github.com/mozzi86/ELMonkey/releases/download/elm-sab-tapir-latest/ELMonkey-Installer-Windows.cmd) (asks for admin rights · fragt nach Administratorrechten)
 
 The installer finds every Archicad 27/28/29/30, installs the matching bundle and backs up existing ELMonkey/Tapir add-ons to `~/ELM_SAB_Backups/`. Later updates: menu **ELMonkey SAB → About → Check for updates**. · Der Installer findet alle Archicad 27/28/29/30, installiert das passende Bundle und sichert vorhandene ELMonkey-/Tapir-Add-Ons nach `~/ELM_SAB_Backups/`. Updates später: Menü **ELMonkey SAB → Über → Nach Updates suchen**.
 
 **2. MCP server · MCP-Server** (needs · braucht [`uv`](https://docs.astral.sh/uv/)):
 
 ```bash
-uv tool install "git+https://github.com/mozzi86/-archicad#subdirectory=mcp/elmonkey-mcp"
+uv tool install "git+https://github.com/mozzi86/ELMonkey#subdirectory=mcp/elmonkey-mcp"
 ```
 
 ```bash
@@ -129,6 +141,7 @@ Restart Claude Code and ask "Which Archicad instance is running?" · Claude Code
 | `GetElementEditState` | 0.9.17 | Tells per element whether and why it can be edited (hidden/locked layer, hotlink, reserved by others …) | Meldet je Element, ob und warum es änderbar ist (Ebene aus/gesperrt, Hotlink, fremd reserviert …) |
 | `GetDeviations` | 0.9.17 | Compares actual dimensions against target values, deviation per axis in mm with tolerance verdict | Vergleicht Ist-Maße mit Sollmaßen, Abweichung je Achse in mm mit Toleranzurteil |
 | `SaveProjectCopy` | 0.10.0 | Backup copy of a local project (save + copy); the open project stays the original; saves like Tapir's `SaveProject` (floor plan briefly active), so a project opened read-only is never overwritten; refuses Teamwork/untitled and the original path | Sicherungskopie eines lokalen Projekts (sichern + kopieren); das offene Projekt bleibt das Original; sichert wie Tapirs `SaveProject` (Grundriss kurz aktiv), ein schreibgeschützt geöffnetes Projekt wird nie überschrieben; lehnt Teamwork/unbenannt und den Originalpfad ab |
+| `ExportSurfaces` | 0.11.12 | Exports all surfaces of the project with their texture images as a folder `sab-oberflaechen/1` (`oberflaechen.json` + `texturen/`): color, gloss, transparency, tile size in the model, rotation; images from the embedded library and `.lcf` included; read-only; the Schwarz Platform reads the folder directly | Exportiert alle Oberflächen des Projekts samt Texturbildern als Ordner `sab-oberflaechen/1` (`oberflaechen.json` + `texturen/`): Farbe, Glanz, Transparenz, Kachelmaß im Modell, Drehung; Bilder aus eingebetteter Bibliothek und `.lcf` inklusive; nur lesen; die Schwarz Platform liest den Ordner direkt ein |
 | `CaptureView` | 0.9.25 | Saves the active window (2D or 3D) as PNG — visual check for agents | Speichert das aktive Fenster (2D oder 3D) als PNG — Sichtkontrolle für Agenten |
 | `GetUIState` | 0.9.17 | Open dialogs, current window, Teamwork status and user, project name/path | Offene Dialoge, aktuelles Fenster, Teamwork-Status und Nutzer, Projektname/-pfad |
 | `GetRecentEvents` · `ClearEvents` · `WatchElements` | 0.9.17 | Event log (selection, tool, new/changed/deleted watched elements, reservations) and element observers | Ereignis-Log (Auswahl, Werkzeug, neue/geänderte/gelöschte beobachtete Elemente, Reservierungen) und Element-Observer |
@@ -145,7 +158,9 @@ ELMonkey 0.10.0 is built on **Tapir 1.7.2** (MIT, ENZYME-APD): 314 Tapir command
 | `DeleteElements` reserves in Teamwork first and names the reason per element | `DeleteElements` reserviert im Teamwork vorab und nennt den Grund je Element |
 | Tapir's self-update is disabled — updates come only from the ELMonkey release (About → Check for updates) | Tapirs Selbst-Update ist abgeschaltet – Updates nur über das ELMonkey-Release (Über → Nach Updates suchen) |
 
-> **Status 0.10.4:** 0.10.4 lets `SetLayerAttributes` accept `isHidden`/`isLocked`/`isWireframe` and makes `SetLayerOfElements` report the reason per element. Built by CI only and NOT yet live-tested; the live-tested state is 0.10.3 (CI 8/8 green for AC27/28/29/30 x Mac/Win, Archicad 29 Mac: empty project 21/21 + 11/11, Teamwork project THN 3,014 walls). · 0.10.4 lässt `SetLayerAttributes` auch `isHidden`/`isLocked`/`isWireframe` annehmen und `SetLayerOfElements` den Grund je Element melden. Nur per CI gebaut und noch NICHT live getestet; live getestet ist der Stand 0.10.3 (CI 8/8 grün für AC27/28/29/30 × Mac/Win, Archicad 29 Mac: leeres Projekt 21/21 + 11/11, Teamwork-Projekt THN 3.014 Wände).
+> **Status 0.11.12 (09.11.2026):** built by CI for AC27/28/29/30 × Mac/Win (8/8 green); `ExportSurfaces` live-tested on Archicad 29 Mac in the Teamwork project THN (238 surfaces, 0 missing images). Since 0.11 the add-on is developed in [mozzi86/ELMonkey](https://github.com/mozzi86/ELMonkey); installers and updates come from its release. · gebaut per CI für AC27/28/29/30 × Mac/Win (8/8 grün); `ExportSurfaces` live getestet auf Archicad 29 Mac im Teamwork-Projekt THN (238 Oberflächen, kein Bild fehlt). Seit 0.11 wird das Add-On in [mozzi86/ELMonkey](https://github.com/mozzi86/ELMonkey) entwickelt; Installer und Updates kommen aus dessen Release.
+>
+> **Earlier · Früher – Status 0.10.4 (03.11.2026):** 0.10.4 lets `SetLayerAttributes` accept `isHidden`/`isLocked`/`isWireframe` and makes `SetLayerOfElements` report the reason per element. Built by CI only and NOT yet live-tested; the live-tested state is 0.10.3 (CI 8/8 green for AC27/28/29/30 x Mac/Win, Archicad 29 Mac: empty project 21/21 + 11/11, Teamwork project THN 3,014 walls). · 0.10.4 lässt `SetLayerAttributes` auch `isHidden`/`isLocked`/`isWireframe` annehmen und `SetLayerOfElements` den Grund je Element melden. Nur per CI gebaut und noch NICHT live getestet; live getestet ist der Stand 0.10.3 (CI 8/8 grün für AC27/28/29/30 × Mac/Win, Archicad 29 Mac: leeres Projekt 21/21 + 11/11, Teamwork-Projekt THN 3.014 Wände).
 
 Details and examples per version · Details und Beispiele je Version: [`reference/mcp-extension.md`](reference/mcp-extension.md)
 
@@ -216,4 +231,4 @@ Add-on: **ELMonkey SAB → About → Check for updates** · **ELMonkey SAB → �
 
 **Third-party licenses · Fremdlizenzen:** ELMonkey contains MIT-licensed code from [Tapir](https://github.com/ENZYME-APD/tapir-archicad-automation) (© 2024 Enzyme APD) and [archicad-additional-json-commands](https://github.com/tlorantfy/archicad-additional-json-commands) (© 2023 Tibor Lorántfy) — license texts in [`ELM_SAB_Tapir/`](ELM_SAB_Tapir/README.md#lizenzen--licenses). · ELMonkey enthält MIT-lizenzierten Code aus Tapir und archicad-additional-json-commands — Lizenztexte in `ELM_SAB_Tapir/`.
 
-**Repo:** [mozzi86/-archicad](https://github.com/mozzi86/-archicad) · **Status · Stand:** November · November 2026 · **ELMonkey** 0.10.4 · Tapir 1.7.2
+**Repo:** [mozzi86/-archicad](https://github.com/mozzi86/-archicad) · **Status · Stand:** November 2026 · **ELMonkey** 0.11.12 ([mozzi86/ELMonkey](https://github.com/mozzi86/ELMonkey)) · Tapir 1.7.2

@@ -45,6 +45,8 @@ Commits dieser Session: 9 atomic (DWG-IFC Lageplan + KG-300 + 3× Phase-6-Live-P
 | 2026-11-16 | 261116-osp-holen-aus-archicad-volles-paket | „Holen aus Archicad“ = volles Paket (Objekte, Baustoffe, echte Oberflächen, nie Überschreibungen als Material) + Rezept Archicad → Plattform, live BSZ 10659 |
 | 2026-11-16 | 261116-gus-lernstand-09-16-11-einspielen | Lernstand 09.–16.11. von sp eingespielt: Layouts, Bemaßung, liegende Fassaden, GDL, Punktwolke, Plattform-Übernahme + Rückweg ohne Komplett-IFC |
 | 2026-11-12 | 261112-qb1-wand-baustoff-setzen-elm-sab | Wand-Baustoff setzen nur via ELM_SAB.SetStructureOfElements; „fehlt“-Fall über IFC; commandNamespace-Falle |
+| 2026-11-09 | 261109-mr8 | README: drei Monkeys funktionsgleich + immer angeglichen |
+| 2026-11-09 | 261109-mnr | Installer + README auf mozzi86/ELMonkey-Release umgestellt (Kollegen sahen nur 0.10.x), Status 0.11.12, ExportSurfaces |
 | 2026-09-03 | datumskorrektur | Datumsmarker der drei Tageseinträge 01.09. → 03.09. (Sitzungstag), keine Inhaltsänderung |
 | 2026-09-03 | teamwork-6001-diagnose | 6001 = zuerst Ebene ausgeblendet/Hotlink prüfen (Rezept ein-/ausblenden); 4001 nennt Dialog; API-Selektion ortsgebunden (3 Dateien) |
 | 2026-09-07 | 260907-k1t | Rezept „Gelände aus Punktwolke" (E57 → Bodenraster → Tapir CreateMeshes) + drei parametrisierte Skripte in SKILL.md verlinkt |
