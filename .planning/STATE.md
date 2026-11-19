@@ -37,6 +37,7 @@ Commits dieser Session: 9 atomic (DWG-IFC Lageplan + KG-300 + 3× Phase-6-Live-P
 
 | Datum | Slug | Ergebnis |
 |-------|------|----------|
+| 2026-11-19 | 261119-u4u | origin/main (ELMonkey 630e6e0, „Projekt synchronisieren“) in elm-0.10.4-fixes gemergt, 7 Konflikte zusammengeführt (Merge b5d6ee7); Rückweg-Liste nach ELMonkey (10 Punkte); nicht gepusht |
 | 2026-11-17 | 261117-k7x-thn-lerneintraege-waende-bereinigen | THN-Lerneinträge Teil 2: Überlappungen/Doppelungen bereinigen (Umriss aus Get2DGeometryOfElements, Rangregel), Polygonwand-Neubau mit Datenübernahme, Durchbruch-Wirtswand via GetConnectedElements, gerundete Ecken aus Bestands-DXF, TeamworkReceive/Pause-Abschluss |
 | 2026-11-17 | 261117-tfw-lerneintraege-thn-fassaden-waende | THN-Lerneinträge: Fassaden-Spaltenraster nachträglich per SetCurtainWallSegmentELM (nur 0.11.12.1; „kein ModifyCurtainWall“ überholt), Wand-Gotchas 12–15 (ModifyWalls, Referenzlinie, Stärke, gesperrte Ebene), UI-Kleinigkeiten |
 | 2026-11-17 | 261117-p3e-thn-lernstand-teil3 | THN-Lerneinträge Teil 3: Einpassung prüfen, Wandstärke-Schutzregeln, Putzlinien, Rundungen an Türleibungen, Fassaden-Rasterursprung (gridOrigin), Bundle-Wechsel am Mac, FitInWindow/CaptureView |
