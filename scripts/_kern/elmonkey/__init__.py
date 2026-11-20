@@ -1,0 +1,10 @@
+"""ELMonkey-Kern: finden, vorpruefen, ruecklesen — neutral für jede Quelle."""
+from .kern import (BLOCKIEREND, HOECHSTENS, MIT_FINDEN, blockiert, finden, kurz, ops_ausrollen, passt,
+                   ruecklesen, schluessel, vorpruefen)
+from .plattform import Plattform, regeln_aus, stand_nach
+from .regeln import STANDARD, ElmFehler, Regeln
+from . import abgleich, diff_plattform
+
+__version__ = "0.4.0"
+__all__ = ["abgleich", "diff_plattform", "BLOCKIEREND", "HOECHSTENS", "MIT_FINDEN", "STANDARD", "ElmFehler", "Plattform", "Regeln", "blockiert", "finden",
+           "kurz", "ops_ausrollen", "passt", "ruecklesen", "regeln_aus", "schluessel", "stand_nach", "vorpruefen"]

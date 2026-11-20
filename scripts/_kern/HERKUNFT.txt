@@ -1,0 +1,4 @@
+Quelle: https://github.com/mozzi86/ELMonkey
+Pfad: core/elmonkey
+Commit: feec09d8caa8713f3cc135f45f347cf5b6979419
+Nicht von Hand ändern — kommt aus mozzi86/ELMonkey core/elmonkey und wird vom Workflow skill-spiegeln überschrieben.
