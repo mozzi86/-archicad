@@ -37,6 +37,7 @@ Commits dieser Session: 9 atomic (DWG-IFC Lageplan + KG-300 + 3× Phase-6-Live-P
 
 | Datum | Slug | Ergebnis |
 |-------|------|----------|
+| 2026-11-20 | 261120-f2k | origin/main 84b6e82 (Spiegel ELMonkey 6a5d0b4, PR #5: Klassen-System, Skill-Regel Eigenschaften selbst anlegen) gemergt; mit dabei Mudis CLAUDE.md-Kürzung 05d11c5; geprüft per python3 -I; nicht gepusht |
 | 2026-11-20 | 261120-dqm | origin/main cba27ca (Spiegel ELMonkey bf65da7, PR #4: bauen mit Bauliste-Netzen) in elm-0.10.4-fixes gemergt; Skript läuft mit `python3 -I`; nicht gepusht |
 | 2026-11-20 | 261120-bwe | origin/main 04459bd (Spiegel ELMonkey PR #3: Kern unter scripts/_kern) in elm-0.10.4-fixes gemergt; plattform_abgleich.py läuft jetzt mit `python3 -I` ohne ELMonkey-Checkout; nicht gepusht |
 | 2026-11-20 | 261120-bqp | origin/main 25cf856 (Spiegel ELMonkey PR #2: Verbünde Kopf + Unterteile, Mehrfachkanten) in elm-0.10.4-fixes gemergt, nur plattform_abgleich.py, konfliktfrei, byte-gleich; Skript braucht elmonkey-core (PYTHONPATH=<ELMonkey>/core), war schon vorher so; nicht gepusht |
