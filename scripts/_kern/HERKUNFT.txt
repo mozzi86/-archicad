@@ -1,4 +1,4 @@
 Quelle: https://github.com/mozzi86/ELMonkey
 Pfad: core/elmonkey
-Commit: bf65da71681904fa2a3b0891b58fc7af6c37f9ef
+Commit: 6a5d0b47ed318f7c8221b464dd76c445ee950132
 Nicht von Hand ändern — kommt aus mozzi86/ELMonkey core/elmonkey und wird vom Workflow skill-spiegeln überschrieben.
