@@ -37,6 +37,7 @@ Commits dieser Session: 9 atomic (DWG-IFC Lageplan + KG-300 + 3× Phase-6-Live-P
 
 | Datum | Slug | Ergebnis |
 |-------|------|----------|
+| 2026-11-20 | 261120-bwe | origin/main 04459bd (Spiegel ELMonkey PR #3: Kern unter scripts/_kern) in elm-0.10.4-fixes gemergt; plattform_abgleich.py läuft jetzt mit `python3 -I` ohne ELMonkey-Checkout; nicht gepusht |
 | 2026-11-20 | 261120-bqp | origin/main 25cf856 (Spiegel ELMonkey PR #2: Verbünde Kopf + Unterteile, Mehrfachkanten) in elm-0.10.4-fixes gemergt, nur plattform_abgleich.py, konfliktfrei, byte-gleich; Skript braucht elmonkey-core (PYTHONPATH=<ELMonkey>/core), war schon vorher so; nicht gepusht |
 | 2026-11-19 | 261119-u4u | origin/main (ELMonkey 630e6e0, „Projekt synchronisieren“) in elm-0.10.4-fixes gemergt, 7 Konflikte zusammengeführt (Merge b5d6ee7); Rückweg-Liste nach ELMonkey (10 Punkte); nicht gepusht |
 | 2026-11-17 | 261117-k7x-thn-lerneintraege-waende-bereinigen | THN-Lerneinträge Teil 2: Überlappungen/Doppelungen bereinigen (Umriss aus Get2DGeometryOfElements, Rangregel), Polygonwand-Neubau mit Datenübernahme, Durchbruch-Wirtswand via GetConnectedElements, gerundete Ecken aus Bestands-DXF, TeamworkReceive/Pause-Abschluss |
