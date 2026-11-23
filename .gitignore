@@ -1,1 +1,4 @@
 __pycache__/
+
+# Planungsnotizen bleiben lokal (enthalten Projektdaten), seit 23.11.2026
+.planning/

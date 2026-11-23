@@ -13,7 +13,7 @@ ein kleines Zusatz-Add-On bleibt von Tapir-Updates unberührt, und beide sind pa
 | Befehl | Status | Zweck |
 |---|---|---|
 | `GetPenOfElements` | v0.2 | Stifte + RGB-Overrides (Hatch: hasForeground/BackgroundRGB + Farbwerte) von 2D-Elementen lesen. |
-| `SetPenOfElements` | v0.2 | Stifte setzen + RGB-Overrides löschen (`clearForegroundRGB`/`clearBackgroundRGB`); optionaler `databases`-Parameter wechselt selbst durch Arbeitsblätter (v0.1-Limit behoben). Produktiv erprobt: THN-Farbabgleich, 32.806 Elemente. |
+| `SetPenOfElements` | v0.2 | Stifte setzen + RGB-Overrides löschen (`clearForegroundRGB`/`clearBackgroundRGB`); optionaler `databases`-Parameter wechselt selbst durch Arbeitsblätter (v0.1-Limit behoben). Produktiv erprobt: Projekt-A-Farbabgleich, 32.806 Elemente. |
 
 Geplant: ggf. `SetFillTypeOfElements`, RGB-Override gezielt SETZEN (bisher nur löschen).
 

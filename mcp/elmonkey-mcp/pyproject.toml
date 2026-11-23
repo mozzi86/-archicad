@@ -1,7 +1,7 @@
 [project]
 name = "elmonkey-mcp"
 version = "0.1.0"
-description = "MCP-Server fuer Archicad mit ELMonkey (Tapir + ELM_SAB) - Schwarz Architekturbuero"
+description = "MCP-Server fuer Archicad mit ELMonkey (Tapir + ELM_SAB)"
 requires-python = ">=3.10"
 dependencies = ["mcp>=1.2,<2"]
 

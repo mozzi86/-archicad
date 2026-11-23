@@ -8,7 +8,7 @@
     ],
     "version": "0.8.1",
     "copyright": {
-        "name": "ELM / Schwarz Architekturbüro Nürnberg GbR",
+        "name": "ELM / das Büro",
         "year": "2026-%Y"
     },
     "description": "SAB-eigene JSON-Befehle für Archicad (Erweiterung neben Tapir): SetPenOfElements u.a."

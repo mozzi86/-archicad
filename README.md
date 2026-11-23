@@ -158,7 +158,7 @@ ELMonkey 0.10.0 is built on **Tapir 1.7.2** (MIT, ENZYME-APD): 314 Tapir command
 | `DeleteElements` reserves in Teamwork first and names the reason per element | `DeleteElements` reserviert im Teamwork vorab und nennt den Grund je Element |
 | Tapir's self-update is disabled — updates come only from the ELMonkey release (About → Check for updates) | Tapirs Selbst-Update ist abgeschaltet – Updates nur über das ELMonkey-Release (Über → Nach Updates suchen) |
 
-> **Status 0.11.12 (09.11.2026):** built by CI for AC27/28/29/30 × Mac/Win (8/8 green); `ExportSurfaces` live-tested on Archicad 29 Mac in the Teamwork project THN (238 surfaces, 0 missing images). Since 0.11 the add-on is developed in [mozzi86/ELMonkey](https://github.com/mozzi86/ELMonkey); installers and updates come from its release. · gebaut per CI für AC27/28/29/30 × Mac/Win (8/8 grün); `ExportSurfaces` live getestet auf Archicad 29 Mac im Teamwork-Projekt THN (238 Oberflächen, kein Bild fehlt). Seit 0.11 wird das Add-On in [mozzi86/ELMonkey](https://github.com/mozzi86/ELMonkey) entwickelt; Installer und Updates kommen aus dessen Release.
+> **Status 0.11.12 (09.11.2026):** built by CI for AC27/28/29/30 × Mac/Win (8/8 green); `ExportSurfaces` live-tested on Archicad 29 Mac in the Teamwork project Projekt-A (238 surfaces, 0 missing images). Since 0.11 the add-on is developed in [mozzi86/ELMonkey](https://github.com/mozzi86/ELMonkey); installers and updates come from its release. · gebaut per CI für AC27/28/29/30 × Mac/Win (8/8 grün); `ExportSurfaces` live getestet auf Archicad 29 Mac im Teamwork-Projekt Projekt-A (238 Oberflächen, kein Bild fehlt). Seit 0.11 wird das Add-On in [mozzi86/ELMonkey](https://github.com/mozzi86/ELMonkey) entwickelt; Installer und Updates kommen aus dessen Release.
 
 Details and examples per version · Details und Beispiele je Version: [`reference/mcp-extension.md`](reference/mcp-extension.md)
 
@@ -221,9 +221,9 @@ Add-on: **ELMonkey SAB → About → Check for updates** · **ELMonkey SAB → �
 
 ## License / use · Lizenz / Nutzung
 
-**EN** — Use at your own risk, without warranty. The skill reads and changes a running Archicad model; changing operations (update/delete) only run after confirmation, but backing up your model is your responsibility. Apache License 2.0: free to use and adapt; anyone using ELMonkey or parts of it must credit it per [`NOTICE`](NOTICE). `reference/schwarz-office-facts.md` contains office-specific facts of Schwarz Architekturbüro — replace or delete it for another office.
+**EN** — Use at your own risk, without warranty. The skill reads and changes a running Archicad model; changing operations (update/delete) only run after confirmation, but backing up your model is your responsibility. Apache License 2.0: free to use and adapt; anyone using ELMonkey or parts of it must credit it per [`NOTICE`](NOTICE). Office-specific facts (classification, layers, pens of the office template) are not part of this repo.
 
-**DE** — Nutzung auf eigene Gefahr, ohne Gewähr. Der Skill liest und verändert ein laufendes Archicad-Modell; verändernde Operationen (Ändern/Löschen) laufen nur nach Bestätigung, die Sicherung des Modells liegt aber bei dir. Apache-Lizenz 2.0: frei nutzbar und anpassbar; wer ELMonkey oder Teile davon verwendet, muss es nach [`NOTICE`](NOTICE) nennen. `reference/schwarz-office-facts.md` enthält bürospezifische Fakten des Schwarz Architekturbüros — für ein anderes Büro ersetzen oder löschen.
+**DE** — Nutzung auf eigene Gefahr, ohne Gewähr. Der Skill liest und verändert ein laufendes Archicad-Modell; verändernde Operationen (Ändern/Löschen) laufen nur nach Bestätigung, die Sicherung des Modells liegt aber bei dir. Apache-Lizenz 2.0: frei nutzbar und anpassbar; wer ELMonkey oder Teile davon verwendet, muss es nach [`NOTICE`](NOTICE) nennen. Bürospezifisches Wissen (Klassifizierung, Ebenen, Stifte der Bürovorlage) gehört nicht in dieses Repo.
 
 ---
 
