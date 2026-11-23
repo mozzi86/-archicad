@@ -221,11 +221,13 @@ Add-on: **ELMonkey SAB → About → Check for updates** · **ELMonkey SAB → �
 
 ## License / use · Lizenz / Nutzung
 
-**EN** — Use at your own risk, without warranty. The skill reads and changes a running Archicad model; changing operations (update/delete) only run after confirmation, but backing up your model is your responsibility. Anyone may clone the repo and adapt it to their own office with Claude. `reference/schwarz-office-facts.md` contains office-specific facts of Schwarz Architekturbüro — replace or delete it for another office.
+**EN** — Use at your own risk, without warranty. The skill reads and changes a running Archicad model; changing operations (update/delete) only run after confirmation, but backing up your model is your responsibility. All rights reserved: using, copying, changing or passing on the code requires the author's express written permission — see [`LICENSE`](LICENSE); third-party parts: [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md). `reference/schwarz-office-facts.md` contains office-specific facts of Schwarz Architekturbüro — replace or delete it for another office.
 
-**DE** — Nutzung auf eigene Gefahr, ohne Gewähr. Der Skill liest und verändert ein laufendes Archicad-Modell; verändernde Operationen (Ändern/Löschen) laufen nur nach Bestätigung, die Sicherung des Modells liegt aber bei dir. Jeder darf das Repo klonen und mit Claude an das eigene Büro anpassen. `reference/schwarz-office-facts.md` enthält bürospezifische Fakten des Schwarz Architekturbüros — für ein anderes Büro ersetzen oder löschen.
+**DE** — Nutzung auf eigene Gefahr, ohne Gewähr. Der Skill liest und verändert ein laufendes Archicad-Modell; verändernde Operationen (Ändern/Löschen) laufen nur nach Bestätigung, die Sicherung des Modells liegt aber bei dir. Alle Rechte vorbehalten: Nutzen, Kopieren, Ändern oder Weitergeben nur mit ausdrücklicher schriftlicher Erlaubnis des Urhebers — siehe [`LICENSE`](LICENSE); Fremdbestandteile: [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md). `reference/schwarz-office-facts.md` enthält bürospezifische Fakten des Schwarz Architekturbüros — für ein anderes Büro ersetzen oder löschen.
 
 ---
+
+**License · Lizenz:** © 2026 Mohamed Elmokadem, all rights reserved · alle Rechte vorbehalten — [`LICENSE`](LICENSE).
 
 **Third-party licenses · Fremdlizenzen:** ELMonkey contains MIT-licensed code from [Tapir](https://github.com/ENZYME-APD/tapir-archicad-automation) (© 2024 Enzyme APD) and [archicad-additional-json-commands](https://github.com/tlorantfy/archicad-additional-json-commands) (© 2023 Tibor Lorántfy) — license texts in [`ELM_SAB_Tapir/`](ELM_SAB_Tapir/README.md#lizenzen--licenses). · ELMonkey enthält MIT-lizenzierten Code aus Tapir und archicad-additional-json-commands — Lizenztexte in `ELM_SAB_Tapir/`.
 

@@ -11,7 +11,7 @@ aufbaut.
 
 ## Lizenzen / Licenses
 
-ELMonkey enthält Code aus folgenden MIT-lizenzierten Projekten; die Lizenztexte liegen in diesem Ordner und gehören zu jeder Weitergabe (Quelltext und Bundles):
+ELMonkey selbst steht unter [`LICENSE`](../LICENSE) (alle Rechte vorbehalten). Es enthält Code aus folgenden MIT-lizenzierten Projekten; die Lizenztexte liegen in diesem Ordner und gehören zu jeder Weitergabe (Quelltext und Bundles):
 
 | Projekt | Lizenz | Datei |
 |---|---|---|

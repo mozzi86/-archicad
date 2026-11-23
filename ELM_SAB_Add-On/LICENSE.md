@@ -1,3 +1,5 @@
+> **Hinweis · Note:** Dieser MIT-Text gilt nur für die Teile aus der Graphisoft-Add-On-Vorlage. Alles Übrige: [`../LICENSE`](../LICENSE) (alle Rechte vorbehalten). · This MIT text covers only the parts from the Graphisoft add-on template. Everything else: [`../LICENSE`](../LICENSE) (all rights reserved).
+
 MIT License
 
 Copyright (c) 2020 GRAPHISOFT
